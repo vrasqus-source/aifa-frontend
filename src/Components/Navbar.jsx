@@ -109,7 +109,7 @@ const navLinks = [
   },
   { name: "HIRE TALENT"  , link: "/hire-talent" },
   { name: "CourseFullPage", link: "/bootcamp" },
-  { name: "JOBS" },
+  { name: "JOBS", link: "/jobs" },
   {
     name: "RESOURCES",
     dropdown: [
