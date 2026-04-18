@@ -5,19 +5,19 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const courses = [
   {
     title: "Google Flow Masterclass",
-    image: "/courses/courses1.png",
+    image: "/courses/v1.png",
     duration: "1h 10m",
     price: "₹49.00",
   },
   {
     title: "Kling AI Video Masterclass",
-    image: "/courses/courses2.png",
+    image: "/courses/v2.png",
     duration: "1h 10m",
     price: "₹49.00",
   },
   {
     title: "AI Background Magic",
-    image: "/courses/courses3.png",
+    image: "/courses/v3.png",
     duration: "1h 10m",
     price: "₹49.00",
   },
