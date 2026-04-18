@@ -108,6 +108,7 @@ const navLinks = [
     dropdown: ["BOOTCAMP", "VIDEO COURSES", "WORKSHOPS"],
   },
   { name: "HIRE TALENT" },
+  { name: "CourseFullPage", link: "/bootcamp" },
   { name: "JOBS" },
   {
     name: "RESOURCES",
@@ -145,7 +146,18 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
               {/* MAIN ITEM */}
               <div className="flex items-center gap-1 cursor-pointer">
                 <span className="text-gray-300 text-xs font-semibold tracking-widest hover:text-white transition">
-                  {item.name}
+                  {item.link ? (
+                    <Link
+                      to={item.link}
+                      className="text-gray-300 text-xs font-semibold tracking-widest hover:text-white transition"
+                    >
+                      {item.name}
+                    </Link>
+                  ) : (
+                    <span className="text-gray-300 text-xs font-semibold tracking-widest hover:text-white transition">
+                      {item.name}
+                    </span>
+                  )}
                 </span>
 
                 {item.dropdown && (
@@ -222,7 +234,19 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
                 onClick={() => setOpenDropdown(openDropdown === i ? null : i)}
                 className="flex justify-between items-center cursor-pointer"
               >
-                <span className="text-gray-200 text-sm">{item.name}</span>
+                <span className="text-gray-200 text-sm">
+                  {item.link ? (
+                    <Link
+                      to={item.link}
+                      onClick={() => setOpen(false)}
+                      className="text-gray-200 text-sm"
+                    >
+                      {item.name}
+                    </Link>
+                  ) : (
+                    <span className="text-gray-200 text-sm">{item.name}</span>
+                  )}
+                </span>
                 {item.dropdown && <ChevronDown size={14} />}
               </div>
 
