@@ -128,6 +128,7 @@ import SignUpModal from "./authentication/SignUpModal";
 import CourseFullPage from "./pages/CourseFullPage";
 import HireTalent from "./pages/HireTalent";
 import JobsSection from "./pages/JobsSection";
+import PromptLibrary from "./pages/PromptLibrary";
 
 export default function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -155,6 +156,7 @@ export default function App() {
         <Route path="/bootcamp" element={<CourseFullPage />} />
         <Route path="/hire-talent" element={<HireTalent />} />
         <Route path="/jobs" element={<JobsSection />} />
+        <Route path="/prompt-library" element={<PromptLibrary />} />
       </Routes>
 
       {/* FOOTER */}

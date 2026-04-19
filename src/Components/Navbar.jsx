@@ -105,19 +105,24 @@ import { Link } from "react-router-dom";
 const navLinks = [
   {
     name: "COURSES",
-    dropdown: ["BOOTCAMP", "VIDEO COURSES", "WORKSHOPS"],
+    dropdown: [
+      { label: "BOOTCAMP", path: "/bootcamp" },
+      { label: "VIDEO COURSES", path: "/courses" },
+      { label: "WORKSHOPS", path: "/workshops" },
+    ],
   },
-  { name: "HIRE TALENT"  , link: "/hire-talent" },
+  { name: "HIRE TALENT", link: "/hire-talent" },
   { name: "CourseFullPage", link: "/bootcamp" },
+
   { name: "JOBS", link: "/jobs" },
   {
     name: "RESOURCES",
     dropdown: [
-      "PROMPT LIBRARY",
-      "WORKFLOW",
-      "PROJECTS",
-      "LEARNING TIPS",
-      "AI DEALS",
+      { label: "PROMPT LIBRARY", path: "/prompt-library" },
+      { label: "WORKFLOW", path: "/workflow" },
+      { label: "PROJECTS", path: "/projects" },
+      { label: "LEARNING TIPS", path: "/learning" },
+      { label: "AI DEALS", path: "/deals" },
     ],
   },
   {
@@ -145,20 +150,18 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
             <div key={i} className="relative group">
               {/* MAIN ITEM */}
               <div className="flex items-center gap-1 cursor-pointer">
-                <span className="text-gray-300 text-xs font-semibold tracking-widest hover:text-white transition">
-                  {item.link ? (
-                    <Link
-                      to={item.link}
-                      className="text-gray-300 text-xs font-semibold tracking-widest hover:text-white transition"
-                    >
-                      {item.name}
-                    </Link>
-                  ) : (
-                    <span className="text-gray-300 text-xs font-semibold tracking-widest hover:text-white transition">
-                      {item.name}
-                    </span>
-                  )}
-                </span>
+                {item.link ? (
+                  <Link
+                    to={item.link}
+                    className="text-gray-300 text-xs font-semibold tracking-widest hover:text-white transition"
+                  >
+                    {item.name}
+                  </Link>
+                ) : (
+                  <span className="text-gray-300 text-xs font-semibold tracking-widest hover:text-white transition">
+                    {item.name}
+                  </span>
+                )}
 
                 {item.dropdown && (
                   <ChevronDown
@@ -174,39 +177,44 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
               {/* DROPDOWN */}
               {item.dropdown && (
                 <div className="absolute left-0 top-full mt-3 w-48 bg-[#111] border border-white/10 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                  {item.dropdown.map((sub, idx) => (
-                    <div key={idx}>
-                      {sub === "VIDEO COURSES" ? (
-                        <Link
-                          to="/courses"
-                          className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white"
-                        >
-                          {sub}
-                        </Link>
-                      ) : (
-                        <span className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer">
-                          {sub}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                  {item.dropdown.map((sub, idx) => {
+                    const isObject = typeof sub === "object";
+
+                    return isObject ? (
+                      <Link
+                        key={idx}
+                        to={sub.path}
+                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white"
+                      >
+                        {sub.label}
+                      </Link>
+                    ) : (
+                      <span
+                        key={idx}
+                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
+                      >
+                        {sub}
+                      </span>
+                    );
+                  })}
                 </div>
               )}
             </div>
           ))}
         </nav>
+
         {/* RIGHT BUTTONS */}
         <div className="hidden md:flex items-center gap-2">
           <button
             onClick={onLoginClick}
-            className="px-3 py-1 text-xs text-black bg-white rounded hover:cursor-pointer hover:opacity-90 transition"
+            className="px-3 py-1 text-xs text-black bg-white rounded hover:opacity-90 transition"
           >
             + login
           </button>
 
           <button
             onClick={onSignupClick}
-            className="px-3 py-1 text-xs text-white border border-white rounded hover:bg-white hover:text-black transition hover:cursor-pointer"
+            className="px-3 py-1 text-xs text-white border border-white rounded hover:bg-white hover:text-black transition"
           >
             JOIN
           </button>
@@ -234,47 +242,51 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
                 onClick={() => setOpenDropdown(openDropdown === i ? null : i)}
                 className="flex justify-between items-center cursor-pointer"
               >
-                <span className="text-gray-200 text-sm">
-                  {item.link ? (
-                    <Link
-                      to={item.link}
-                      onClick={() => setOpen(false)}
-                      className="text-gray-200 text-sm"
-                    >
-                      {item.name}
-                    </Link>
-                  ) : (
-                    <span className="text-gray-200 text-sm">{item.name}</span>
-                  )}
-                </span>
+                {item.link ? (
+                  <Link
+                    to={item.link}
+                    onClick={() => setOpen(false)}
+                    className="text-gray-200 text-sm"
+                  >
+                    {item.name}
+                  </Link>
+                ) : (
+                  <span className="text-gray-200 text-sm">{item.name}</span>
+                )}
+
                 {item.dropdown && <ChevronDown size={14} />}
               </div>
 
               {/* DROPDOWN ITEMS */}
               {item.dropdown && openDropdown === i && (
                 <div className="mt-2 flex flex-col gap-2 pl-3">
-                  {item.dropdown.map((sub, idx) => (
-                    <div key={idx}>
-                      {sub === "VIDEO COURSES" ? (
-                        <Link
-                          to="/courses"
-                          onClick={() => setOpen(false)} // close menu
-                          className="block text-gray-400 text-xs hover:text-white"
-                        >
-                          {sub}
-                        </Link>
-                      ) : (
-                        <span className="block text-gray-400 text-xs hover:text-white cursor-pointer">
-                          {sub}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                  {item.dropdown.map((sub, idx) => {
+                    const isObject = typeof sub === "object";
+
+                    return isObject ? (
+                      <Link
+                        key={idx}
+                        to={sub.path}
+                        onClick={() => setOpen(false)}
+                        className="block text-gray-400 text-xs hover:text-white"
+                      >
+                        {sub.label}
+                      </Link>
+                    ) : (
+                      <span
+                        key={idx}
+                        className="block text-gray-400 text-xs hover:text-white cursor-pointer"
+                      >
+                        {sub}
+                      </span>
+                    );
+                  })}
                 </div>
               )}
             </div>
           ))}
 
+          {/* BUTTONS */}
           <button
             onClick={onLoginClick}
             className="mt-4 py-2 bg-white text-black rounded"
