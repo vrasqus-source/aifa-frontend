@@ -132,6 +132,7 @@ import PromptLibrary from "./pages/PromptLibrary";
 import Workflow from "./pages/workflow";
 import Projects from "./pages/Projects";
 import LearningTips from "./pages/LearningTips";
+import AiDeals from "./pages/AiDeals";
 
 export default function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -162,6 +163,7 @@ export default function App() {
         <Route path="/workflow" element={<Workflow />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/learning" element={<LearningTips />} />
+        <Route path="/deals" element={<AiDeals />} />
       </Routes>
 
       {/* FOOTER */}
