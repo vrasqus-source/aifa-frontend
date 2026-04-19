@@ -27,7 +27,6 @@ export default function Courses() {
   return (
     <section className="w-full bg-[#0B0F10] py-16">
       <div className="max-w-7xl mx-auto px-6">
-
         {/* HEADER */}
         <div className="flex justify-between items-center mb-10">
           <h2 className="text-white text-3xl md:text-4xl font-semibold">
@@ -46,13 +45,11 @@ export default function Courses() {
 
         {/* CARDS */}
         <div className="grid md:grid-cols-3 gap-6">
-
           {courses.map((course, i) => (
             <div
               key={i}
               className="bg-[#111516] border border-white/10 rounded-xl overflow-hidden"
             >
-
               {/* IMAGE */}
               <div className="relative">
                 <img
@@ -69,19 +66,14 @@ export default function Courses() {
 
               {/* CONTENT */}
               <div className="p-5">
-
                 <h3 className="text-white text-base font-semibold mb-3">
                   {course.title}
                 </h3>
 
                 {/* PRICE */}
                 <div className="flex items-center gap-2 text-sm mb-5">
-                  <span className="text-[#C7E36B] font-semibold">
-                    95% off
-                  </span>
-                  <span className="line-through text-gray-400">
-                    ₹799
-                  </span>
+                  <span className="text-[#C7E36B] font-semibold">95% off</span>
+                  <span className="line-through text-gray-400">₹799</span>
                 </div>
 
                 {/* BUTTON */}
@@ -91,7 +83,6 @@ export default function Courses() {
               </div>
             </div>
           ))}
-
         </div>
 
         {/* BOTTOM BUTTON */}
@@ -100,7 +91,6 @@ export default function Courses() {
             + Explore Courses
           </button>
         </div>
-
       </div>
     </section>
   );
