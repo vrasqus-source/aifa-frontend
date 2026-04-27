@@ -132,7 +132,6 @@ const directors = [
 export default function Directors() {
   const [active, setActive] = useState(1);
 
-  // 🎬 AUTO SLIDE
   useEffect(() => {
     const interval = setInterval(() => {
       setActive((prev) => (prev + 1) % directors.length);
@@ -142,18 +141,17 @@ export default function Directors() {
   }, []);
 
   return (
-    <section className="w-full bg-[#0B0F10] py-20 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-16">
+    <section className="w-full bg-[#0B0F10] py-16 md:py-20 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center gap-10 md:gap-16">
         {/* LEFT */}
-        <div className="flex-1">
-          <h2 className="text-white text-5xl font-semibold mb-6 leading-tight">
+        <div className="flex-1 text-center md:text-left">
+          <h2 className="text-white text-3xl md:text-5xl font-semibold mb-4 md:mb-6 leading-tight">
             The AI Directors era <br /> has arrived
           </h2>
 
-          <p className="text-gray-400 mb-8 max-w-md">
-           From vision to final frame, work with the most renowned AI Video
-             Directors to create scroll-stopping content and campaigns that drive
-             real impact.
+          <p className="text-gray-400 text-sm md:text-base mb-6 md:mb-8 max-w-md mx-auto md:mx-0">
+            From vision to final frame, work with the most renowned AI Video
+            Directors to create scroll-stopping content.
           </p>
 
           <button className="bg-[#C7E36B] text-black px-6 py-3 rounded-md font-medium hover:scale-105 transition">
@@ -161,53 +159,74 @@ export default function Directors() {
           </button>
         </div>
 
-        {/* RIGHT - ADVANCED CAROUSEL */}
-        <div className="flex-1 relative flex justify-center items-center h-[420px]">
-          {directors.map((item, i) => {
-            const offset = i - active;
-
-            return (
-              <motion.div
+        {/* RIGHT */}
+        <div className="flex-1 w-full">
+          {/* 🔥 MOBILE (SCROLL) */}
+          <div className="flex md:hidden gap-4 overflow-x-auto scrollbar-hide px-1">
+            {directors.map((item, i) => (
+              <div
                 key={i}
-                onClick={() => setActive(i)}
-                animate={{
-                  x: offset * 180,
-                  scale: offset === 0 ? 1.15 : 0.85,
-                  opacity: offset === 0 ? 1 : 0.4,
-                  filter: offset === 0 ? "blur(0px)" : "blur(3px)",
-                  zIndex: offset === 0 ? 30 : 10,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 120,
-                  damping: 20,
-                }}
-                className="absolute cursor-pointer"
+                className="min-w-[200px] h-[280px] rounded-2xl overflow-hidden relative bg-black flex-shrink-0"
               >
-                {/* CARD */}
-                <div className="w-56 h-[360px] rounded-[28px] overflow-hidden relative bg-black group border border-white/10">
-                  {/* IMAGE */}
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full h-full object-cover transition duration-700 group-hover:scale-110"
-                  />
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-full object-cover"
+                />
 
-                  {/* OVERLAY */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent"></div>
 
-                  {/* TEXT */}
-                  <div className="absolute bottom-4 left-4">
-                    <p className="text-white font-semibold">{item.name}</p>
-                    <p className="text-gray-300 text-sm">{item.role}</p>
-                  </div>
-
-                  {/* GLOW */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-white/10 blur-xl"></div>
+                <div className="absolute bottom-3 left-3">
+                  <p className="text-white text-sm font-semibold">
+                    {item.name}
+                  </p>
+                  <p className="text-gray-300 text-xs">{item.role}</p>
                 </div>
-              </motion.div>
-            );
-          })}
+              </div>
+            ))}
+          </div>
+
+          {/* 🎬 DESKTOP (CAROUSEL) */}
+          <div className="hidden md:flex relative justify-center items-center h-[420px]">
+            {directors.map((item, i) => {
+              const offset = i - active;
+
+              return (
+                <motion.div
+                  key={i}
+                  onClick={() => setActive(i)}
+                  animate={{
+                    x: offset * 180,
+                    scale: offset === 0 ? 1.15 : 0.85,
+                    opacity: offset === 0 ? 1 : 0.4,
+                    filter: offset === 0 ? "blur(0px)" : "blur(3px)",
+                    zIndex: offset === 0 ? 30 : 10,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 120,
+                    damping: 20,
+                  }}
+                  className="absolute cursor-pointer"
+                >
+                  <div className="w-56 h-[360px] rounded-[28px] overflow-hidden relative bg-black group border border-white/10">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full h-full object-cover transition duration-700 group-hover:scale-110"
+                    />
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+
+                    <div className="absolute bottom-4 left-4">
+                      <p className="text-white font-semibold">{item.name}</p>
+                      <p className="text-gray-300 text-sm">{item.role}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
