@@ -178,7 +178,7 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
 
               {/* DROPDOWN */}
               {item.dropdown && (
-                <div className="absolute left-0 top-full mt-3 w-48 bg-[#111] border border-white/10 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+               <div className="absolute left-0 top-full mt-3 w-[220px] bg-[#0F1112] border border-[#414243] rounded-[8px] overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                   {item.dropdown.map((sub, idx) => {
                     const isObject = typeof sub === "object";
 
@@ -186,14 +186,14 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
                       <Link
                         key={idx}
                         to={sub.path}
-                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white"
+                        className="flex items-center gap-[10px] px-[18px] py-[16px] text-[#F0F0F0] font-montserrat text-[16px] leading-[24px] font-semibold border-t border-[#414243] first:border-none hover:bg-white/10 transition"
                       >
                         {sub.label}
                       </Link>
                     ) : (
                       <span
                         key={idx}
-                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
+                        className="flex items-center gap-[10px] px-[18px] py-[16px] text-[#F0F0F0] font-montserrat text-[16px] leading-[24px] font-semibold border-t border-[#414243] first:border-none hover:bg-white/10 transition cursor-pointer"
                       >
                         {sub}
                       </span>
