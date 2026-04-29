@@ -114,13 +114,13 @@ export default function Features() {
               <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-[28px] overflow-hidden transition">
                 {/* IMAGE */}
                 <div className="relative overflow-hidden">
-                  <motion.img
-                    src={item.image}
-                    alt="feature"
-                    className="w-full h-[220px] object-cover"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                  />
+                <motion.img
+  src={item.image}
+  alt="feature"
+  className="w-[386px] h-[275px] object-cover rounded-[72px]"
+  whileHover={{ scale: 1.1 }}
+  transition={{ duration: 0.6 }}
+/>
 
                   {/* cinematic overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
@@ -128,7 +128,7 @@ export default function Features() {
 
                 {/* CONTENT */}
                 <div className="p-6">
-                  <h3 className="text-white text-lg font-semibold mb-3">
+                  <h3 className="text-[#F0F0F0] font-montserrat text-[20px] leading-[28px] font-bold mb-3">
                     {item.title}
                   </h3>
 
@@ -140,16 +140,15 @@ export default function Features() {
 
                   {/* BUTTON */}
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="relative bg-[#C7E36B] text-black px-5 py-3 text-sm font-medium rounded-md overflow-hidden group"
+                    className="flex items-center justify-center gap-[4px] px-[30px] py-[12px] bg-[#C7E36B] text-black font-semibold text-[14px] leading-[20px] rounded-[8px]"
                   >
-                    <span className="relative z-10">
-                      + Learn about video hosting →
-                    </span>
-
-                    {/* glow */}
-                    <span className="absolute inset-0 bg-white/40 blur-xl opacity-0 group-hover:opacity-40 transition duration-500"></span>
+                    <span> Learn about video hosting</span>
+                    <img
+                      src="/Arrowleft2.svg"
+                      alt=""
+                      className="w-[14px] h-[14px]"
+                    />
                   </motion.button>
                 </div>
               </div>

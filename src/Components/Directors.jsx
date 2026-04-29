@@ -144,19 +144,25 @@ export default function Directors() {
     <section className="w-full bg-[#0B0F10] py-16 md:py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center gap-10 md:gap-16">
         {/* LEFT */}
-        <div className="flex-1 text-center md:text-left">
-          <h2 className="text-white text-3xl md:text-5xl font-semibold mb-4 md:mb-6 leading-tight">
-            The AI Directors era <br /> has arrived
-          </h2>
+       <div className="flex-1 text-center md:text-left">
+  <h2 className="text-[#F0F0F0] font-montserrat text-[48px] leading-[56px] font-normal mb-4 md:mb-6">
+    The AI Directors era <br /> has arrived
+  </h2>
 
-          <p className="text-gray-400 text-sm md:text-base mb-6 md:mb-8 max-w-md mx-auto md:mx-0">
-            From vision to final frame, work with the most renowned AI Video
-            Directors to create scroll-stopping content.
-          </p>
 
-          <button className="bg-[#C7E36B] text-black px-6 py-3 rounded-md font-medium hover:scale-105 transition">
-            + Find your AI Director →
-          </button>
+        <p className="text-[#F0F0F0] font-montserrat text-[14px] leading-[20px] font-medium mb-6 md:mb-8 max-w-md mx-auto md:mx-0">
+  From vision to final frame, work with the most renowned AI Video
+  Directors to create scroll-stopping content.
+</p>
+
+         <button className="flex items-center justify-center gap-[4px] px-[30px] py-[12px] bg-[#D0E46A] text-black font-medium text-[14px] leading-[20px] rounded-[12px]">
+  <span> Find your AI Director</span>
+ <img
+                      src="/Arrowleft2.svg"
+                      alt=""
+                      className="w-[14px] h-[14px]"
+                    />
+</button>
         </div>
 
         {/* RIGHT */}

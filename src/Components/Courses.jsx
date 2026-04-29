@@ -147,22 +147,34 @@ export default function Courses() {
             Self Paced Courses
           </h2>
 
-          <div className="flex gap-3">
-            <button
-              onClick={() => scroll("left")}
-              className="bg-[#C7E36B] p-3 rounded-md hover:scale-110 transition"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              onClick={() => scroll("right")}
-              className="bg-[#C7E36B] p-3 rounded-md hover:scale-110 transition"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-        </div>
+         <div className="flex gap-[12px]">
 
+  {/* LEFT BUTTON */}
+  <button
+    onClick={() => scroll("left")}
+    className="flex items-center justify-center bg-[#D0E46A] p-[12px] rounded-[8px] hover:opacity-90 transition"
+  >
+    <img
+   src="/Arrowleft1.svg"
+      alt="left"
+      className="w-[18px] h-[18px]"
+    />
+  </button>
+
+  {/* RIGHT BUTTON */}
+  <button
+    onClick={() => scroll("right")}
+    className="flex items-center justify-center bg-[#D0E46A] p-[12px] rounded-[8px] hover:opacity-90 transition"
+  >
+    <img
+      src="/Arrowleft2.svg"
+      alt="right"
+      className="w-[18px] h-[18px]"
+    />
+  </button>
+
+</div>
+</div>
         {/* CAROUSEL */}
         <div
           ref={scrollRef}
@@ -204,7 +216,7 @@ export default function Courses() {
                 </div>
 
                 {/* BUTTON */}
-                <button className="w-full bg-[#E5E5E5] text-black py-2 rounded-md text-sm font-medium hover:bg-white transition">
+                <button className="flex w-full items-center justify-center gap-[8px] bg-[#F0F0F0] text-[#0F1112] px-[16px] py-[8px] text-[14px] leading-[20px] font-medium font-montserrat rounded-[4px] transition">
                   Buy {course.price}
                 </button>
               </div>
@@ -217,8 +229,8 @@ export default function Courses() {
 
         {/* BOTTOM BUTTON */}
         <div className="flex justify-center mt-14">
-          <button className="bg-[#C7E36B] text-black px-6 py-3 text-sm font-semibold rounded-md hover:scale-105 transition">
-            + Explore Courses
+          <button className="flex items-center justify-center gap-[4px] bg-[#D0E46A] text-[#0F1112] px-[30px] py-[12px] text-[18px] leading-[28px] font-bold font-montserrat rounded-[12px] transition">
+            Explore Courses
           </button>
         </div>
       </div>

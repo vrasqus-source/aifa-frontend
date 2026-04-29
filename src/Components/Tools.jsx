@@ -86,13 +86,13 @@ export default function Tools() {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-white text-3xl md:text-4xl font-semibold mb-14"
+          className="text-[#F0F0F0] font-montserrat text-[40px] leading-[48px] font-semibold text-center"
         >
           Tools we will use
         </motion.h2>
 
         {/* GRID */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6 mt-6.5">
           {tools.map((tool, i) => (
             <motion.div
               key={i}
