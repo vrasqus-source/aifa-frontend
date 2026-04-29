@@ -362,6 +362,12 @@ const bootcamps = [
 export default function Bootcamps() {
   return (
     <section className="w-full bg-[#0B0F10] py-[64px] flex justify-center">
+   <div className="w-full max-w-[1180px] px-[16px] flex flex-col gap-[32px]">
+
+    {/* HEADING */}
+    <h1 className="text-[#E5E7EB] font-montserrat text-[40px] leading-[48px] font-semibold">
+      AI Filmmaking Bootcamp
+    </h1>
       <div className="w-full max-w-[1180px] px-[16px]">
         <div className="flex flex-col gap-[24px]">
           {bootcamps.map((item, i) => (
@@ -460,6 +466,7 @@ export default function Bootcamps() {
             </motion.div>
           ))}
         </div>
+      </div>
       </div>
     </section>
   );

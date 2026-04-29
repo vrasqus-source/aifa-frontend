@@ -132,6 +132,7 @@ const directors = [
 export default function Directors() {
   const [active, setActive] = useState(1);
 
+  // 🔥 Auto slide
   useEffect(() => {
     const interval = setInterval(() => {
       setActive((prev) => (prev + 1) % directors.length);
@@ -144,95 +145,70 @@ export default function Directors() {
     <section className="w-full bg-[#0B0F10] py-16 md:py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center gap-10 md:gap-16">
         {/* LEFT */}
-       <div className="flex-1 text-center md:text-left">
-  <h2 className="text-[#F0F0F0] font-montserrat text-[48px] leading-[56px] font-normal mb-4 md:mb-6">
-    The AI Directors era <br /> has arrived
-  </h2>
+        <div className="flex-1 text-center md:text-left">
+          <h2 className="text-[#F0F0F0] font-montserrat text-[48px] leading-[56px] font-normal mb-4 md:mb-6">
+            The AI Directors era <br /> has arrived
+          </h2>
 
+          <p className="text-[#F0F0F0] font-montserrat text-[14px] leading-[20px] font-medium mb-6 md:mb-8 max-w-md mx-auto md:mx-0">
+            From vision to final frame, work with the most renowned AI Video
+            Directors to create scroll-stopping content.
+          </p>
 
-        <p className="text-[#F0F0F0] font-montserrat text-[14px] leading-[20px] font-medium mb-6 md:mb-8 max-w-md mx-auto md:mx-0">
-  From vision to final frame, work with the most renowned AI Video
-  Directors to create scroll-stopping content.
-</p>
-
-         <button className="flex items-center justify-center gap-[4px] px-[30px] py-[12px] bg-[#D0E46A] text-black font-medium text-[14px] leading-[20px] rounded-[12px]">
-  <span> Find your AI Director</span>
- <img
-                      src="/Arrowleft2.svg"
-                      alt=""
-                      className="w-[14px] h-[14px]"
-                    />
-</button>
+          <button className="flex items-center justify-center gap-[4px] px-[30px] py-[12px] bg-[#D0E46A] text-black font-medium text-[14px] leading-[20px] rounded-[12px] mx-auto md:mx-0">
+            <span>Find your AI Director</span>
+            <img src="/Arrowleft2.svg" alt="" className="w-[14px] h-[14px]" />
+          </button>
         </div>
 
-        {/* RIGHT */}
-        <div className="flex-1 w-full">
-          {/* 🔥 MOBILE (SCROLL) */}
-          <div className="flex md:hidden gap-4 overflow-x-auto scrollbar-hide px-1">
-            {directors.map((item, i) => (
-              <div
+        {/* RIGHT - CAROUSEL */}
+        <div className="hidden md:flex relative justify-center items-center h-[420px] flex-1 overflow-hidden [perspective:1000px]">
+          {/* 🔥 side fade */}
+          <div className="pointer-events-none absolute left-0 top-0 h-full w-32 bg-gradient-to-r from-[#0B0F10] to-transparent z-40" />
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-32 bg-gradient-to-l from-[#0B0F10] to-transparent z-40" />
+
+          {directors.map((item, i) => {
+            const offset = i - active;
+
+            return (
+              <motion.div
                 key={i}
-                className="min-w-[200px] h-[280px] rounded-2xl overflow-hidden relative bg-black flex-shrink-0"
+                onClick={() => setActive(i)}
+                animate={{
+                  x: offset * 180, // 🔥 overlap spacing
+                  scale: offset === 0 ? 1.15 : 0.8,
+                  opacity: offset === 0 ? 1 : 0.45,
+                  filter: offset === 0 ? "blur(0px)" : "blur(3px)",
+                  rotateY: offset === 0 ? 0 : offset > 0 ? -15 : 15,
+                  zIndex: offset === 0 ? 30 : 10,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 120,
+                  damping: 18,
+                }}
+                className="absolute cursor-pointer"
               >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover"
-                />
+                <div className="group w-[220px] h-[360px] rounded-[28px] overflow-hidden relative bg-black border border-white/10 shadow-xl">
+                  {/* IMAGE */}
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover transition duration-700 group-hover:scale-110"
+                  />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent"></div>
+                  {/* GRADIENT */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
-                <div className="absolute bottom-3 left-3">
-                  <p className="text-white text-sm font-semibold">
-                    {item.name}
-                  </p>
-                  <p className="text-gray-300 text-xs">{item.role}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* 🎬 DESKTOP (CAROUSEL) */}
-          <div className="hidden md:flex relative justify-center items-center h-[420px]">
-            {directors.map((item, i) => {
-              const offset = i - active;
-
-              return (
-                <motion.div
-                  key={i}
-                  onClick={() => setActive(i)}
-                  animate={{
-                    x: offset * 180,
-                    scale: offset === 0 ? 1.15 : 0.85,
-                    opacity: offset === 0 ? 1 : 0.4,
-                    filter: offset === 0 ? "blur(0px)" : "blur(3px)",
-                    zIndex: offset === 0 ? 30 : 10,
-                  }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 120,
-                    damping: 20,
-                  }}
-                  className="absolute cursor-pointer"
-                >
-                  <div className="w-56 h-[360px] rounded-[28px] overflow-hidden relative bg-black group border border-white/10">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover transition duration-700 group-hover:scale-110"
-                    />
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-
-                    <div className="absolute bottom-4 left-4">
-                      <p className="text-white font-semibold">{item.name}</p>
-                      <p className="text-gray-300 text-sm">{item.role}</p>
-                    </div>
+                  {/* TEXT */}
+                  <div className="absolute bottom-4 left-4">
+                    <p className="text-white font-semibold">{item.name}</p>
+                    <p className="text-gray-300 text-sm">{item.role}</p>
                   </div>
-                </motion.div>
-              );
-            })}
-          </div>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

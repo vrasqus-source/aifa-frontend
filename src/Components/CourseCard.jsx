@@ -44,9 +44,9 @@ export default function CourseCard() {
         </div>{" "}
         {/* ✅ CLOSED TOP CARD */}
         {/* BOTTOM BAR */}
-        <div className="flex bg-[#414243] overflow-hidden rounded-b-[12px] border-t border-black/40 mt-[8px]">
+        <div className="flex gap-[8px] mt-[8px]">
           {/* ITEM */}
-          <div className="flex-1 px-[20px] py-[18px] flex flex-col gap-[6px] border-r border-black/40">
+          <div className="flex-1 bg-[#414243] rounded-[12px] px-[20px] py-[18px] flex flex-col gap-[6px]">
             <div className="flex items-center gap-[6px]">
               <img
                 src="/Tagicon.svg"
@@ -57,12 +57,11 @@ export default function CourseCard() {
                 Duration
               </p>
             </div>
-
             <p className="text-[#F0F0F0] text-[18px] font-semibold">3 HOURS</p>
           </div>
 
           {/* ITEM */}
-          <div className="flex-1 px-[20px] py-[18px] flex flex-col gap-[6px] border-r border-black/40 ">
+          <div className="flex-1 bg-[#414243] rounded-[12px] px-[20px] py-[18px] flex flex-col gap-[6px]">
             <div className="flex items-center gap-[6px]">
               <img
                 src="/Tagicon1.svg"
@@ -73,12 +72,11 @@ export default function CourseCard() {
                 Pricing
               </p>
             </div>
-
             <p className="text-[#F0F0F0] text-[18px] font-semibold">₹499.00</p>
           </div>
 
           {/* ITEM */}
-          <div className="flex-1 px-[20px] py-[18px] flex flex-col gap-[6px]">
+          <div className="flex-1 bg-[#414243] rounded-[12px] px-[20px] py-[18px] flex flex-col gap-[6px]">
             <div className="flex items-center gap-[6px]">
               <img
                 src="/Tagicon2.svg"
@@ -89,7 +87,6 @@ export default function CourseCard() {
                 Access
               </p>
             </div>
-
             <p className="text-[#F0F0F0] text-[18px] font-semibold">Lifetime</p>
           </div>
         </div>

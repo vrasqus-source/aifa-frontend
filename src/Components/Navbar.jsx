@@ -112,7 +112,7 @@ const navLinks = [
     ],
   },
   { name: "HIRE TALENT", link: "/hire-talent" },
-  { name: "CourseFullPage", link: "/bootcamp" },
+  // { name: "CourseFullPage", link: "/bootcamp" },
 
   { name: "JOBS", link: "/jobs" },
   {
@@ -137,8 +137,10 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
   const [openDropdown, setOpenDropdown] = useState(null);
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-black border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <header className="fixed top-0 w-full z-50 bg-[#0F1112] border-b border-white/10">
+      {/* <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between"> */}
+
+      <div className="w-full max-w-[1366px] mx-auto px-[93px] py-[20px] flex items-center justify-between">
         {/* LOGO */}
         <h1 className="text-xl font-bold flex items-center">
           <img src="/logos/Group1logo.svg" alt="logo" className="h-6" />
@@ -151,16 +153,16 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
               {/* MAIN ITEM */}
               <div className="flex items-center gap-1 cursor-pointer">
                 {item.link ? (
-                  <Link
-                    to={item.link}
-                    className="text-gray-300 text-xs font-semibold tracking-widest hover:text-white transition"
-                  >
-                    {item.name}
-                  </Link>
+                 <Link
+  to={item.link}
+  className="text-[#F0F0F0] font-montserrat text-[14px] leading-[16px] font-bold text-center hover:opacity-80 transition"
+>
+  {item.name}
+</Link>
                 ) : (
-                  <span className="text-gray-300 text-xs font-semibold tracking-widest hover:text-white transition">
-                    {item.name}
-                  </span>
+                  <span className="text-[#F0F0F0] font-montserrat text-[14px] leading-[16px] font-bold text-center hover:opacity-80 transition">
+  {item.name}
+</span>
                 )}
 
                 {item.dropdown && (
@@ -207,15 +209,12 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
         <div className="hidden md:flex items-center gap-2">
           <button
             onClick={onLoginClick}
-            className="px-3 py-1 text-xs text-black bg-white rounded hover:opacity-90 transition"
+            className="flex items-center justify-center gap-[8px] px-[16px] py-[8px] bg-[#F0F0F0] text-black text-[14px] leading-[20px] font-medium rounded-[4px]"
           >
             + login
           </button>
 
-          <button
-            onClick={onSignupClick}
-            className="px-3 py-1 text-xs text-white border border-white rounded hover:bg-white hover:text-black transition"
-          >
+          <button className="flex items-center justify-center gap-[4px] px-[16px] py-[8px] border border-[#F0F0F0] text-[#F0F0F0] text-[14px] leading-[20px] font-medium rounded-[4px]">
             JOIN
           </button>
         </div>

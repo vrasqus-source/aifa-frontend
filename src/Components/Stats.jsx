@@ -7,17 +7,17 @@ export default function Stats() {
     <section className="w-full bg-[#0B0F10] py-24">
       <div className="max-w-6xl mx-auto px-6 text-center">
         {/* HEADING */}
-        <h2 className="text-white text-3xl md:text-4xl font-medium leading-snug mb-16">
-          Trusted by media companies, creators,
-          <br />
-          and businesses around the globe
-        </h2>
+      <h2 className="text-[#F0F0F0] text-center font-montserrat text-[40px] leading-[48px] font-semibold mb-16">
+  Trusted by media companies, creators,
+  <br />
+  and businesses around the globe
+</h2>
 
         {/* STATS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
           {/* ITEM */}
           <div className="flex flex-col items-center">
-            <Play className="text-[#C7E36B] mb-4" size={34} />
+            <img src="/baseline-ondemand-video1.svg" alt="" />
 
             <h3 className="text-white text-4xl md:text-5xl font-semibold">
               100+ billion
@@ -30,7 +30,7 @@ export default function Stats() {
 
           {/* ITEM */}
           <div className="flex flex-col items-center">
-            <GraduationCap className="text-[#C7E36B] mb-4" size={34} />
+            <img src="/baseline-ondemand-video2.svg" alt="" />
 
             <h3 className="text-white text-4xl md:text-5xl font-semibold">
               7+ million
@@ -43,7 +43,7 @@ export default function Stats() {
 
           {/* ITEM */}
           <div className="flex flex-col items-center">
-            <Star className="text-[#C7E36B] mb-4" size={34} />
+            <img src="/baseline-ondemand-video3.svg" alt="" />
 
             <h3 className="text-white text-4xl md:text-5xl font-semibold">
               4+ billion
