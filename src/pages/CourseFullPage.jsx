@@ -168,49 +168,49 @@ export default function CourseAndBenefits() {
     {
       title: "PRODUCT AD FILM",
       desc: "Produce a high-quality commercial-style video for products or services.",
-       img: "/bootcamp1.jpg",
+      img: "/bootcamp1.jpg",
     },
     {
       title: "SOCIAL MEDIA REELS",
       desc: "Make scroll-stopping content optimized for Instagram, YouTube, and TikTok.",
-    img: "/bootcamp1.jpg",
+      img: "/bootcamp1.jpg",
     },
     {
       title: "CINEMATIC POSTERS",
       desc: "Design high-impact visuals for storytelling and marketing.",
-        img: "/bootcamp1.jpg",
+      img: "/bootcamp1.jpg",
     },
     {
       title: "PORTFOLIO-READY PROJECTS",
       desc: "Build a professional portfolio to showcase your work or get clients.",
-    img: "/bootcamp1.jpg",
+      img: "/bootcamp1.jpg",
     },
   ];
   return (
     <div className="bg-[#0B0F19]">
       {/* ================= COURSE SECTION ================= */}
       <section className="w-full flex justify-center items-center py-28">
-        <div className="w-[90%] max-w-6xl bg-gradient-to-r from-[#1A1F2E] to-[#0F172A] rounded-2xl p-10 flex flex-col md:flex-row justify-between gap-10 border border-white/10 shadow-xl">
+        <div className="w-[90%] max-w-6xl bg-[#282A2C] border border-[#767779] rounded-[22px] p-[50px] flex flex-col md:flex-row justify-between gap-[10px]">
           {/* LEFT */}
           <div className="flex-1">
-            <p className="text-[#A3E635] text-sm font-semibold tracking-wide mb-4">
+            <p className="text-[#D0E46A] text-[18px] leading-[28px] font-bold tracking-wide mb-4 font-[Montserrat]">
               A COURSE YOU’LL ACTUALLY FINISH
             </p>
 
-            <h1 className="text-white text-4xl md:text-5xl font-bold leading-tight mb-6">
+            <h1 className="text-[#F0F0F0] text-[40px] md:text-[64px] leading-[48px] md:leading-[70px] font-black font-[Montserrat] mb-6">
               Build AI-Powered <br />
               Films An AI <br />
               Fellowship for <br />
               Creators
             </h1>
 
-            <button className="bg-[#A3E635] text-black px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition">
+            <button className="flex items-center justify-center gap-[4px] w-[221px] px-[30px] py-[12px] bg-[#D0E46A] text-black rounded-[8px] font-semibold hover:opacity-90 transition">
               ENROLL NOW
             </button>
           </div>
 
           {/* RIGHT */}
-          <div className="flex-1 grid grid-cols-1 gap-4 text-gray-300 text-sm">
+          <div className="flex-1 flex flex-wrap justify-center gap-4">
             <Feature icon={<FaSignal />} text="Beginner" />
             <Feature icon={<FaClock />} text="22 Hours" />
             <Feature icon={<FaFileAlt />} text="20 Assignments" />
@@ -230,14 +230,13 @@ export default function CourseAndBenefits() {
       {/* ================= BENEFITS SECTION ================= */}
       <section className="w-full py-20 flex justify-center">
         <div className="w-[90%] max-w-6xl text-center">
-          <h2 className="text-white text-3xl md:text-4xl font-bold mb-4 leading-tight">
-            BENEFITS THAT SUPPORT <br /> YOU & YOUR LOVED ONES
+          <h2 className="text-[#F0F0F0] text-[40px] md:text-[64px] leading-[48px] md:leading-[70px] font-black font-[Montserrat] mb-4">
+            WHAT YOU WILL LEARN
           </h2>
 
-          <p className="text-gray-400 max-w-2xl mx-auto mb-12 text-sm md:text-base">
-            Understand how modern AI models power intelligent visual
-            storytelling. Work with prompts, visual context, and tool settings
-            to control cinematic output
+          <p className="text-[#DCDCDC] text-[16px] md:text-[18px] leading-[24px] md:leading-[28px] font-normal font-[Montserrat] text-center max-w-2xl mx-auto mb-12">
+            Master the complete process of creating high-quality, cinematic AI
+            videos from idea and prompting to final output.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -261,6 +260,7 @@ export default function CourseAndBenefits() {
           </div>
         </div>
       </section>
+
       <section className="w-full bg-[#070B14] py-24 flex justify-center">
         <div className="w-[90%] max-w-6xl">
           {/* HEADER */}

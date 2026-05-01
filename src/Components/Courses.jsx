@@ -143,48 +143,52 @@ export default function Courses() {
       <div className="max-w-7xl mx-auto px-6">
         {/* HEADER */}
         <div className="flex justify-between items-center mb-12">
-          <h2 className="text-white text-3xl md:text-4xl font-semibold">
-            Self Paced Courses
+          <h2
+            className="text-[#F0F0F0] font-montserrat font-black 
+  text-[28px] leading-[34px] 
+  sm:text-[34px] sm:leading-[40px] 
+  md:text-[40px] md:leading-[48px]"
+          >
+            SELF PACED COURSES
           </h2>
 
-         <div className="flex gap-[12px]">
+          <div className="flex gap-[12px]">
+            {/* LEFT BUTTON */}
+            <button
+              onClick={() => scroll("left")}
+              className="flex items-center justify-center bg-[#D0E46A] p-[12px] rounded-[8px] hover:opacity-90 transition"
+            >
+              <img
+                src="/Arrowleft1.svg"
+                alt="left"
+                className="w-[18px] h-[18px]"
+              />
+            </button>
 
-  {/* LEFT BUTTON */}
-  <button
-    onClick={() => scroll("left")}
-    className="flex items-center justify-center bg-[#D0E46A] p-[12px] rounded-[8px] hover:opacity-90 transition"
-  >
-    <img
-   src="/Arrowleft1.svg"
-      alt="left"
-      className="w-[18px] h-[18px]"
-    />
-  </button>
-
-  {/* RIGHT BUTTON */}
-  <button
-    onClick={() => scroll("right")}
-    className="flex items-center justify-center bg-[#D0E46A] p-[12px] rounded-[8px] hover:opacity-90 transition"
-  >
-    <img
-      src="/Arrowleft2.svg"
-      alt="right"
-      className="w-[18px] h-[18px]"
-    />
-  </button>
-
-</div>
-</div>
+            {/* RIGHT BUTTON */}
+            <button
+              onClick={() => scroll("right")}
+              className="flex items-center justify-center bg-[#D0E46A] p-[12px] rounded-[8px] hover:opacity-90 transition"
+            >
+              <img
+                src="/Arrowleft2.svg"
+                alt="right"
+                className="w-[18px] h-[18px]"
+              />
+            </button>
+          </div>
+        </div>
         {/* CAROUSEL */}
         <div
           ref={scrollRef}
-          className="flex gap-6 overflow-x-auto scrollbar-hide"
+          className="flex gap-6 overflow-x-auto scrollbar-hide py-4"
         >
           {[...courses].map((course, i) => (
             <motion.div
               key={i}
-              whileHover={{ y: -10 }}
-              className="min-w-[280px] bg-[#111516] border border-white/10 rounded-xl overflow-hidden group"
+              whileHover={{ y: -6 }}
+              transition={{ duration: 0.3 }}
+              className="min-w-[280px] bg-[#111516] border border-white/10 rounded-xl overflow-hidden group relative transition-all duration-300 hover:border-[#D0E46A]"
             >
               {/* IMAGE */}
               <div className="relative overflow-hidden">
@@ -205,19 +209,22 @@ export default function Courses() {
 
               {/* CONTENT */}
               <div className="p-5">
-                <h3 className="text-white text-base font-semibold mb-3">
+                <h3
+                  className="text-white font-montserrat font-bold 
+text-[16px] leading-[24px] mb-3"
+                >
                   {course.title}
                 </h3>
 
                 {/* PRICE */}
-                <div className="flex items-center gap-2 text-sm mb-5">
-                  <span className="text-[#C7E36B] font-semibold">95% off</span>
-                  <span className="line-through text-gray-400">₹799</span>
+                <div className="flex items-center gap-2 text-[14px] mb-5">
+                  <span className="text-[#D0E46A] font-bold">60% OFF</span>
+                  <span className="line-through text-gray-400">₹999</span>
                 </div>
 
                 {/* BUTTON */}
-                <button className="flex w-full items-center justify-center gap-[8px] bg-[#F0F0F0] text-[#0F1112] px-[16px] py-[8px] text-[14px] leading-[20px] font-medium font-montserrat rounded-[4px] transition">
-                  Buy {course.price}
+                <button className="flex w-full items-center justify-center bg-[#F0F0F0] text-[#0F1112] px-[16px] py-[10px] text-[14px] font-semibold font-montserrat rounded-[6px] hover:bg-white transition">
+                  BUY ₹399
                 </button>
               </div>
 
@@ -229,8 +236,16 @@ export default function Courses() {
 
         {/* BOTTOM BUTTON */}
         <div className="flex justify-center mt-14">
-          <button className="flex items-center justify-center gap-[4px] bg-[#D0E46A] text-[#0F1112] px-[30px] py-[12px] text-[18px] leading-[28px] font-bold font-montserrat rounded-[12px] transition">
-            Explore Courses
+          <button
+            className="flex items-center justify-center gap-[6px] 
+bg-[#D0E46A] text-[#0F1112] 
+px-[28px] py-[12px] 
+text-[16px] leading-[24px] 
+sm:text-[18px] sm:leading-[28px] 
+font-bold font-montserrat 
+rounded-[10px] hover:opacity-90 transition"
+          >
+            EXPLORE COURSES
           </button>
         </div>
       </div>

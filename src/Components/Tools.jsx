@@ -68,55 +68,74 @@ const tools = [
   "/Tools/newicon7.svg",
   "/Tools/newicon8.png",
   "/Tools/newicon9.png",
-  "/Tools/newicon7.svg",
-  "/Tools/newicon8.png",
-  "/Tools/newicon9.png",
 ];
 
 export default function Tools() {
   return (
-    <section className="w-full bg-[#0B0F10] py-10 relative overflow-hidden">
+    <section className="w-full bg-[#0B0F10] py-20 relative overflow-hidden">
       {/* SIDE FADE */}
-      <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-[#0B0F10] to-transparent z-10"></div>
-      <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-[#0B0F10] to-transparent z-10"></div>
+      <div className="absolute left-0 top-0 w-48 md:w-64 h-full bg-gradient-to-r from-[#0B0F10] to-transparent z-10" />
+      <div className="absolute right-0 top-0 w-48 md:w-64 h-full bg-gradient-to-l from-[#0B0F10] to-transparent z-10" />
 
       <div className="max-w-6xl mx-auto px-6 text-center relative z-20">
-        {/* TITLE */}
-        <motion.h2
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-[#F0F0F0] font-montserrat text-[40px] leading-[48px] font-semibold text-center"
-        >
-          Tools we will use
-        </motion.h2>
+        {/* HEADING */}
+       <motion.h2
+  initial={{ opacity: 0, y: 30 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6 }}
+  className="text-[#F0F0F0] text-center font-montserrat font-black
+  text-[26px] leading-[34px]
+  sm:text-[30px] sm:leading-[38px]
+  md:text-[32px] md:leading-[40px]"
+>
+  TOOLS WE WILL USE
+</motion.h2>
 
-        {/* GRID */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6 mt-6.5">
-          {tools.map((tool, i) => (
+        {/* ROWS */}
+        <div className="mt-14 space-y-10 overflow-hidden">
+          {[0, 1].map((row, rowIndex) => (
             <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              whileHover={{
-                y: -8,
-                scale: 1.05,
+              key={rowIndex}
+              className="flex gap-8"
+              animate={{
+                x: rowIndex % 2 === 0 ? ["0%", "-50%"] : ["-50%", "0%"],
               }}
-              className="relative group flex items-center justify-center h-24 md:h-28 rounded-2xl bg-[#2f2f2f] border border-white/5 backdrop-blur-lg overflow-hidden"
+              transition={{
+                duration: 24,
+                repeat: Infinity,
+                ease: "linear",
+              }}
             >
-              {/* ICON */}
-              <img
-                src={tool}
-                alt="tool"
-                className="h-10 md:h-12 object-contain opacity-70 group-hover:opacity-100 transition duration-300"
-              />
+              {[...tools, ...tools].map((tool, i) => {
+                const sizes = ["h-20 w-20", "h-24 w-24", "h-28 w-28"];
 
-              {/* GLOW EFFECT */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-white/10 blur-xl"></div>
-
-              {/* BORDER GLOW */}
-              <div className="absolute inset-0 rounded-2xl border border-white/10 group-hover:border-white/30 transition"></div>
+                return (
+                  <motion.div
+                    key={i}
+                    animate={{
+                      y: [0, -5, 0],
+                    }}
+                    transition={{
+                      duration: 5 + (i % 2),
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className={`flex items-center justify-center 
+                    ${sizes[i % sizes.length]} 
+                    bg-[#2A2D2E] rounded-2xl flex-shrink-0 
+                    hover:scale-105 transition`}
+                  >
+                    {/* FIXED ICON SIZE */}
+                    <div className="w-[50%] h-[50%] flex items-center justify-center">
+                      <img
+                        src={tool}
+                        alt="tool"
+                        className="max-w-full max-h-full object-contain opacity-80"
+                      />
+                    </div>
+                  </motion.div>
+                );
+              })}
             </motion.div>
           ))}
         </div>

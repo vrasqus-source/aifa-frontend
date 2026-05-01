@@ -116,11 +116,15 @@ export default function Hero() {
               FILMS
             </p>
 
-            <h1 className="mt-2 text-[#F0F0F0] font-montserrat text-[64px] leading-[70px] font-black max-w-[620px]">
-              CREATE <br />
-              HOLLYWOOD <br />
-              STYLE AI FILMS
-            </h1>
+           <h1 className="mt-2 text-[#F0F0F0] font-montserrat font-black 
+text-[40px] leading-[46px] 
+sm:text-[52px] sm:leading-[58px] 
+md:text-[64px] md:leading-[70px] 
+max-w-[620px]">
+  CREATE <br />
+  HOLLYWOOD <br />
+  STYLE AI FILMS
+</h1>
           </div>
 
           {/* BUTTON */}

@@ -76,7 +76,12 @@ export default function Companies() {
       {/* CONTAINER */}
       <div className="w-full max-w-[1366px] flex flex-col items-center justify-center py-[48px] px-[93px] gap-[26px]">
         {/* TITLE */}
-        <p className="text-[#E5E7EB] font-montserrat text-[18px] leading-[28px] font-semibold uppercase tracking-[0.02em]">
+        <p
+          className="text-white font-montserrat font-black 
+text-[20px] leading-[28px] 
+sm:text-[22px] sm:leading-[30px] 
+md:text-[24px] md:leading-[32px]"
+        >
           OUR LEARNERS WORKS AT
         </p>
 

@@ -19,15 +19,20 @@ export default function CourseCard() {
           <div className="w-[671px] flex flex-col justify-between items-start px-[24px] bg-[#414243]">
             {/* TEXT */}
             <div className="flex flex-col gap-[8px] py-[24px]">
-              <p className="text-[#F0F0F0] font-montserrat text-[18px] leading-[28px] font-bold mt-12">
+              <p className="text-[#F0F0F0] font-montserrat text-[18px] leading-[28px] font-bold tracking-wide mt-12">
                 BEGINNER
               </p>
 
-              <h2 className="w-full text-[#F0F0F0] font-montserrat text-[32px] leading-[40px] font-bold mt-4">
+              <h2
+                className="w-full text-[#F0F0F0] font-montserrat font-black 
+text-[26px] leading-[34px] 
+sm:text-[30px] sm:leading-[38px] 
+md:text-[32px] md:leading-[40px] mt-4"
+              >
                 AI FILMMAKING BOOTCAMP
               </h2>
 
-              <p className="text-[#F0F0F0] font-montserrat text-[16px] leading-[24px] font-medium capitalize max-w-[520px] mt-6">
+              <p className="text-[#F0F0F0] font-montserrat text-[16px] leading-[24px] font-medium max-w-[520px] mt-6">
                 Master AI-powered filmmaking from concept to final cut while
                 learning how to create stunning, high-quality films faster using
                 cutting-edge AI tools.
@@ -53,11 +58,11 @@ export default function CourseCard() {
                 alt="duration"
                 className="w-[14px] h-[14px]"
               />
-              <p className="text-[#9CA3AF] text-[12px] uppercase tracking-[0.08em]">
+              <p className="text-[#9CA3AF] font-montserrat text-[12px] font-semibold uppercase tracking-[0.08em]">
                 Duration
               </p>
             </div>
-            <p className="text-[#F0F0F0] text-[18px] font-semibold">3 HOURS</p>
+          <p className="text-[#F0F0F0] font-montserrat text-[18px] font-bold">3 HOURS</p>
           </div>
 
           {/* ITEM */}
@@ -68,11 +73,11 @@ export default function CourseCard() {
                 alt="pricing"
                 className="w-[14px] h-[14px]"
               />
-              <p className="text-[#9CA3AF] text-[12px] uppercase tracking-[0.08em]">
+              <p className="text-[#9CA3AF] font-montserrat text-[12px] font-semibold uppercase tracking-[0.08em]">
                 Pricing
               </p>
             </div>
-            <p className="text-[#F0F0F0] text-[18px] font-semibold">₹499.00</p>
+           <p className="text-[#F0F0F0] font-montserrat text-[18px] font-bold">₹499.00</p>
           </div>
 
           {/* ITEM */}
@@ -83,11 +88,11 @@ export default function CourseCard() {
                 alt="access"
                 className="w-[14px] h-[14px]"
               />
-              <p className="text-[#9CA3AF] text-[12px] uppercase tracking-[0.08em]">
+              <p className="text-[#9CA3AF] font-montserrat text-[12px] font-semibold uppercase tracking-[0.08em]">
                 Access
               </p>
             </div>
-            <p className="text-[#F0F0F0] text-[18px] font-semibold">Lifetime</p>
+           <p className="text-[#F0F0F0] font-montserrat text-[18px] font-bold">Lifetime</p>
           </div>
         </div>
       </div>

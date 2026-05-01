@@ -140,10 +140,17 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
     <header className="fixed top-0 w-full z-50 bg-[#0F1112] border-b border-white/10">
       {/* <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between"> */}
 
-      <div className="w-full max-w-[1366px] mx-auto px-[93px] py-[20px] flex items-center justify-between">
+      <div className="w-full max-w-[1366px] mx-auto px-4 sm:px-6 md:px-10 lg:px-[93px] py-[20px] flex items-center justify-between">
+
+        
         {/* LOGO */}
-        <h1 className="text-xl font-bold flex items-center">
+        <h1 className="text-xl font-bold flex items-center gap-2">
           <img src="/logos/Group1logo.svg" alt="logo" className="h-6" />
+
+          {/* BETA BADGE */}
+          <span className="text-[10px] px-2 py-[2px] rounded bg-white/10 text-white border border-white/20 tracking-wide">
+            BETA
+          </span>
         </h1>
 
         {/* DESKTOP MENU */}
@@ -153,16 +160,16 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
               {/* MAIN ITEM */}
               <div className="flex items-center gap-1 cursor-pointer">
                 {item.link ? (
-                 <Link
-  to={item.link}
-  className="text-[#F0F0F0] font-montserrat text-[14px] leading-[16px] font-bold text-center hover:opacity-80 transition"
->
-  {item.name}
-</Link>
+                  <Link
+                    to={item.link}
+                    className="text-[#F0F0F0] font-montserrat text-[14px] leading-[16px] font-bold text-center hover:text-white transition-colors duration-300"
+                  >
+                    {item.name}
+                  </Link>
                 ) : (
                   <span className="text-[#F0F0F0] font-montserrat text-[14px] leading-[16px] font-bold text-center hover:opacity-80 transition">
-  {item.name}
-</span>
+                    {item.name}
+                  </span>
                 )}
 
                 {item.dropdown && (
@@ -178,7 +185,7 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
 
               {/* DROPDOWN */}
               {item.dropdown && (
-               <div className="absolute left-0 top-full mt-3 w-[220px] bg-[#0F1112] border border-[#414243] rounded-[8px] overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                <div className="absolute left-0 top-full mt-3 w-[220px] bg-[#0F1112] border border-[#414243] rounded-[8px] overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                   {item.dropdown.map((sub, idx) => {
                     const isObject = typeof sub === "object";
 
@@ -186,7 +193,7 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
                       <Link
                         key={idx}
                         to={sub.path}
-                        className="flex items-center gap-[10px] px-[18px] py-[16px] text-[#F0F0F0] font-montserrat text-[16px] leading-[24px] font-semibold border-t border-[#414243] first:border-none hover:bg-white/10 transition"
+                        className="flex items-center gap-[10px] px-[18px] py-[16px] text-[#F0F0F0] font-montserrat text-[16px] leading-[24px] font-semibold border-t border-[#414243] first:border-none hover:bg-white/10 transition relative before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:bg-transparent hover:before:bg-white"
                       >
                         {sub.label}
                       </Link>
@@ -206,17 +213,19 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
         </nav>
 
         {/* RIGHT BUTTONS */}
-        <div className="hidden md:flex items-center gap-2">
-          <button
-            onClick={onLoginClick}
-            className="flex items-center justify-center gap-[8px] px-[16px] py-[8px] bg-[#F0F0F0] text-black text-[14px] leading-[20px] font-medium rounded-[4px]"
-          >
-            + login
-          </button>
+      <div className="hidden md:flex items-center gap-3">
+         <button
+  onClick={onLoginClick}
+  className="px-[16px] py-[8px] text-[14px] font-medium text-white border border-white/20 rounded-[6px] hover:bg-white/10 transition"
+>
+  Login
+</button>
 
-          <button className="flex items-center justify-center gap-[4px] px-[16px] py-[8px] border border-[#F0F0F0] text-[#F0F0F0] text-[14px] leading-[20px] font-medium rounded-[4px]">
-            JOIN
-          </button>
+         <button
+  className="px-[18px] py-[8px] text-[14px] font-semibold bg-white text-black rounded-[6px] hover:bg-gray-200 transition"
+>
+  Talk to Sales
+</button>
         </div>
 
         {/* MOBILE TOGGLE */}
