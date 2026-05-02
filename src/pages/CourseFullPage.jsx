@@ -383,7 +383,7 @@ export default function CourseAndBenefits() {
             {/* ✅ REACT IMAGE */}
             <div className="w-[320px]">
               <img
-                src="/bootcamp2.png" // 👉 put your image here
+                src="/testing2.png" // 👉 put your image here
                 alt="illustration"
                 className="w-full object-contain drop-shadow-xl"
               />
