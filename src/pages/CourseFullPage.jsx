@@ -93,41 +93,45 @@ export default function CourseAndBenefits() {
   };
   const steps = [
     {
-      title: "INITIAL HR CONTACT",
-      desc: "Creators and aspiring filmmakers who want to add AI skills to their creative toolkit",
+      title: "FILMMAKERS & VIDEO CREATORS",
+      desc: "Level up your storytelling with AI-powered video creation.",
     },
     {
-      title: "MEETING THE TEAM",
-      desc: "Designers, editors, and storytellers ready to evolve into full-stack AI filmmakers",
+      title: "AD & MARKETING PROFESSIONALS",
+      desc: "Create high-converting ads and brand content using AI tools.",
     },
     {
-      title: "INCLUSIVE AND ACCESSIBLE",
-      desc: "Students and professionals who want to learn modern AI tools and real-world production workflows",
+      title: "CONTENT CREATORS & INFLUENCERS",
+      desc: "Produce scroll-stopping reels and videos faster with AI.",
     },
     {
-      title: "INCLUSIVE AND ACCESSIBLE",
-      desc: "We're committed to making our recruitment process accessible to everyone. Should you require any accommodations, please let us know. We respect your privacy and will adapt the process to meet your needs, ensuring a fair and comfortable experience for all candidates.",
+      title: "DESIGNERS & CREATIVE PROFESSIONALS",
+      desc: "Expand your skillset with AI-driven visuals and workflows.",
+    },
+    {
+      title: "FREELANCERS & AGENCY OWNERS",
+      desc: "Offer AI video services and grow your income streams.",
     },
   ];
 
   const instructors = [
     {
       name: "RAVI TEJA",
-      img: "/images/ravi.png",
+      img: "/insta1.png",
       short:
         "Ravi Teja is an AI Filmmaker and creative technologist, and one of the lead instructors at AIFA.",
       long: "He specializes in helping creators transform ideas into cinematic visuals using AI—leveraging emerging tools not just for experimentation, but to build real-world, monetizable creative projects.",
     },
     {
       name: "SHERIN",
-      img: "/images/sherin.png",
+            img: "/insta2.png",
       short:
         "Ravi Teja is an AI Filmmaker and creative technologist, and one of the lead instructors at AIFA.",
       long: "He specializes in helping creators transform ideas into cinematic visuals using AI—leveraging emerging tools not just for experimentation, but to build real-world, monetizable creative projects.",
     },
     {
       name: "ARUN KUMAR",
-      img: "/images/arun.png",
+         img: "/insta3.png",
       short:
         "Ravi Teja is an AI Filmmaker and creative technologist, and one of the lead instructors at AIFA.",
       long: "He specializes in helping creators transform ideas into cinematic visuals using AI—leveraging emerging tools not just for experimentation, but to build real-world, monetizable creative projects.",
@@ -162,19 +166,19 @@ export default function CourseAndBenefits() {
       name: "Prerna Singh",
       role: "Ravi Teja is an AI Filmmaker.",
       text: "He specializes in helping creators transform ideas into cinematic visuals using AI—leveraging emerging tools not just for experimentation, but to build real-world, monetizable creative projects.",
-      img: "/images/user1.jpg",
+      img: "/test1.png",
     },
     {
       name: "David Robert",
       role: "Ravi Teja is an AI Filmmaker.",
       text: "He specializes in helping creators transform ideas into cinematic visuals using AI—leveraging emerging tools not just for experimentation, but to build real-world, monetizable creative projects.",
-      img: "/images/user1.jpg",
+      img: "/test1.png",
     },
     {
       name: "Tejasvi Kalbu",
       role: "Ravi Teja is an AI Filmmaker.",
       text: "He specializes in helping creators transform ideas into cinematic visuals using AI—leveraging emerging tools not just for experimentation, but to build real-world, monetizable creative projects.",
-      img: "/images/user1.jpg",
+      img: "/test1.png",
     },
   ];
   const data = [
@@ -396,17 +400,13 @@ export default function CourseAndBenefits() {
       <section className="w-full py-24 bg-[#070B14] flex justify-center">
         <div className="w-[90%] max-w-5xl">
           {/* HEADER */}
-          <p className="text-[#A3E635] text-sm font-semibold mb-3">
+          <p className="text-[#F0F0F0] text-[18px] leading-[28px] font-bold font-[Montserrat] mb-3">
             A PERFECTLY STRUCTURED COURSE
           </p>
 
-          <h2 className="text-white text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-[#F0F0F0] text-[40px] leading-[48px] font-black font-[Montserrat] mb-4">
             COURSE CONTENT
           </h2>
-
-          <p className="text-gray-400 text-sm mb-10">
-            22 Sessions . 44 Total Hours . 20 Assignments
-          </p>
 
           {/* ACCORDION */}
           <div className="flex flex-col gap-4">
@@ -420,7 +420,9 @@ export default function CourseAndBenefits() {
                   onClick={() => toggle(index)}
                   className="w-full flex justify-between items-center px-6 py-4 text-left text-white font-medium"
                 >
-                  <span>{item.title}</span>
+                  <span className="font-[Roboto] text-[21px] font-normal truncate max-w-[80%]">
+                    {item.title}
+                  </span>
                   {openIndex === index ? <FaChevronUp /> : <FaChevronDown />}
                 </button>
 
@@ -430,7 +432,7 @@ export default function CourseAndBenefits() {
                     openIndex === index
                       ? "max-h-40 pb-4 opacity-100"
                       : "max-h-0 opacity-0"
-                  } overflow-hidden text-gray-400 text-sm`}
+                  } overflow-hidden text-[#DCDCDC] text-[18px] leading-[28px] font-normal font-[Montserrat]`}
                 >
                   {item.desc}
                 </div>
@@ -444,19 +446,17 @@ export default function CourseAndBenefits() {
         <div className="w-[90%] max-w-6xl grid md:grid-cols-2 gap-16 items-center">
           {/* LEFT SIDE */}
           <div>
-            <p className="text-gray-400 text-sm mb-3 uppercase tracking-wide">
-              WHAT TO EXPECT
+            <p className="text-[#F0F0F0] text-[18px] leading-[28px] font-bold font-[Montserrat] mb-3">
+              WHO IT’S FOR?
             </p>
 
             <h2 className="text-white text-4xl md:text-5xl font-extrabold leading-tight mb-6">
               RECRUITMENT <br /> PROCESS
             </h2>
 
-            <p className="text-gray-400 text-sm md:text-base max-w-md">
-              Joining our team starts with a transparent and respectful
-              recruitment journey. Although our HR team is small, with just
-              Jessie – our dedicated People Operations Director, we make every
-              effort to respond to each applicant. Here’s what you can expect:
+            <p className="text-[#F0F0F0] text-[14px] leading-[20px] font-medium font-[Montserrat]">
+              Designed for creators, professionals, and beginners looking to
+              build with AI.
             </p>
           </div>
 
@@ -465,7 +465,7 @@ export default function CourseAndBenefits() {
             {steps.map((step, index) => (
               <div
                 key={index}
-                className="bg-gradient-to-r from-[#1A1F2E] to-[#0F172A]
+                className="bg-[#282A2C]
               border border-white/10
               rounded-2xl px-6 py-5
               text-white
@@ -473,11 +473,12 @@ export default function CourseAndBenefits() {
               hover:scale-[1.02]
               transition duration-300"
               >
-                <h3 className="font-bold text-sm md:text-base mb-1">
+                <h3 className="text-[#F0F0F0] text-[24px] leading-[32px] font-black font-[Montserrat] mb-1">
                   {step.title}
                 </h3>
-
-                <p className="text-gray-400 text-xs md:text-sm">{step.desc}</p>
+                <p className="text-[#F0F0F0] text-[12px] leading-[16px] font-medium font-[Montserrat]">
+                  {step.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -487,7 +488,7 @@ export default function CourseAndBenefits() {
       <section className="w-full py-24 bg-[#070B14] flex justify-center">
         <div className="w-[90%] max-w-6xl">
           {/* HEADING */}
-          <h2 className="text-white text-3xl md:text-4xl font-bold mb-12">
+          <h2 className="text-[#F0F0F0] text-[40px] leading-[48px] font-black font-[Montserrat] mb-12">
             GET TO KNOW OUR INSTRUCTORS
           </h2>
 
@@ -515,17 +516,25 @@ export default function CourseAndBenefits() {
                   </div>
 
                   {/* NAME */}
-                  <h3 className="text-white font-bold text-lg mb-2">
+                  <h3 className="text-[#F0F0F0] text-[24px] leading-[32px] font-black font-[Montserrat] mb-2">
                     {person.name}
                   </h3>
 
                   {/* SHORT DESC */}
-                  <p className="text-gray-400 text-sm">{person.short}</p>
+                  <p
+                    className="text-[#F0F0F0] text-[16px] leading-[24px] font-medium font-[Montserrat]"
+                    style={{
+                      fontKerning: "none",
+                      fontFeatureSettings: "'liga' 0",
+                    }}
+                  >
+                    {person.short}
+                  </p>
                 </div>
 
                 {/* BOTTOM SECTION */}
                 <div className="p-6">
-                  <p className="text-gray-400 text-sm leading-relaxed">
+                  <p className="text-[#F0F0F0] text-[14px] leading-[20px] font-medium font-[Montserrat]">
                     {person.long}
                   </p>
                 </div>
@@ -539,14 +548,13 @@ export default function CourseAndBenefits() {
         <div className="w-[90%] max-w-7xl">
           {/* HEADER */}
           <div className="text-center mb-16 relative">
-            <p className="text-gray-400 text-sm mb-3 tracking-wide">
+            <p className="text-[#F0F0F0]/70 text-[14px] uppercase tracking-[2px] font-semibold text-center mb-3">
               TESTIMONIALS
             </p>
 
-            <h2 className="text-white text-3xl md:text-5xl font-bold leading-tight">
+            <h2 className="text-[#F0F0F0] text-[28px] sm:text-[34px] md:text-[40px] leading-[34px] sm:leading-[40px] md:leading-[48px] font-black font-[Montserrat] text-center">
               HEAR WHAT OUR <br /> TRAINEES HAVE TO SAY
             </h2>
-
             {/* ARROW BUTTON */}
             <button className="absolute right-0 top-1/2 -translate-y-1/2 bg-[#A3E635] text-black p-4 rounded-xl hover:scale-105 transition">
               <FaArrowRight />
@@ -561,7 +569,7 @@ export default function CourseAndBenefits() {
                 className="bg-[#1A1F2E] border border-white/10 rounded-2xl p-6 flex flex-col justify-between hover:scale-[1.02] transition"
               >
                 {/* TEXT */}
-                <p className="text-gray-300 text-sm leading-relaxed mb-6">
+                <p className="text-[#F0F0F0] text-[14px] leading-[20px] font-medium font-[Montserrat] mb-6">
                   {item.text}
                 </p>
 
@@ -574,10 +582,18 @@ export default function CourseAndBenefits() {
                   />
 
                   <div>
-                    <h4 className="text-white font-semibold text-sm">
+                    <h4 className="text-[#F0F0F0] text-[20px] leading-[28px] font-bold font-[Montserrat]">
                       {item.name}
                     </h4>
-                    <p className="text-gray-400 text-xs">{item.role}</p>
+                    <p
+                      className="text-[#F0F0F0] text-[16px] leading-[24px] font-medium font-[Montserrat]"
+                      style={{
+                        fontKerning: "none",
+                        fontFeatureSettings: "'liga' 0",
+                      }}
+                    >
+                      {item.role}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -592,7 +608,7 @@ export default function CourseAndBenefits() {
             NEED MORE DETAILS?
           </p>
 
-          <h2 className="text-white text-3xl md:text-4xl font-bold mb-12">
+          <h2 className="text-[#F0F0F0] text-[28px] sm:text-[34px] md:text-[40px] leading-[34px] sm:leading-[40px] md:leading-[48px] font-black font-[Montserrat] text-center mb-12">
             FREQUENTLY-ASKED QUESTIONS
           </h2>
 
@@ -601,14 +617,17 @@ export default function CourseAndBenefits() {
             {faqs.map((item, index) => (
               <div
                 key={index}
-                className="border border-white/10 rounded-2xl bg-[#0F172A]/60 backdrop-blur-md overflow-hidden"
+                className="border border-white/10 rounded-2xl bg-[#0F1112] backdrop-blur-md overflow-hidden"
               >
                 {/* QUESTION */}
                 <button
                   onClick={() => toggle(index)}
-                  className="w-full flex justify-between items-center px-6 py-5 text-white font-medium"
+                  className="w-full flex justify-between items-center px-6 py-5 text-[#F0F0F0]"
                 >
-                  <span>{item.q}</span>
+                  <span className="text-[20px] leading-[28px] font-bold font-[Montserrat]">
+                    {item.q}
+                  </span>
+
                   {openIndex === index ? <FaMinus /> : <FaPlus />}
                 </button>
 
@@ -618,7 +637,7 @@ export default function CourseAndBenefits() {
                     openIndex === index
                       ? "max-h-40 pb-5 opacity-100"
                       : "max-h-0 opacity-0"
-                  } overflow-hidden text-gray-400 text-sm`}
+                  } overflow-hidden text-[#DCDCDC] text-[18px] leading-[28px] font-medium font-[Montserrat]`}
                 >
                   {item.a}
                 </div>
