@@ -245,7 +245,7 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
           >
             Talk to Sales
             <img
-              src="/Arrowleftnew.svg"
+              src="/Arrowleft2.svg"
               alt="arrow"
               className="w-[14px] h-[14px]"
             />
