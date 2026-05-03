@@ -443,7 +443,7 @@ export default function CourseAndBenefits() {
                   onClick={() => toggle(index)}
                   className="w-full flex justify-between items-center px-6 py-4 text-left text-white font-medium"
                 >
-                  <span className="font-[Roboto] text-[21px] font-normal truncate max-w-[80%]">
+                  <span className="font-[Montserrat] text-[21px] font-normal truncate max-w-[80%]">
                     {item.title}
                   </span>
                   {openIndex === index ? <FaChevronUp /> : <FaChevronDown />}
