@@ -86,12 +86,35 @@ export default function Footer() {
   return (
     <footer className="w-full bg-[#0F1112] flex justify-center">
       {/* MAIN CONTAINER */}
-      <div className="max-w-[1366px] w-full px-[93px] py-[48px] flex flex-col justify-center items-start gap-[16px]">
+      <div
+        className="
+    max-w-[1366px] w-full 
+    px-[16px] md:px-[93px] 
+    py-[32px] md:py-[48px] 
+    flex flex-col justify-center items-start gap-[16px]
+  "
+      >
         {/* TOP BAR */}
-        <div className="flex justify-between items-center w-full bg-[#2A2D31] rounded-[12px] px-[16px] py-[12px]">
+        <div
+          className="
+      flex flex-col md:flex-row 
+      justify-between items-center 
+      gap-[12px] md:gap-0
+      w-full bg-[#2A2D31] 
+      rounded-[12px] px-[16px] py-[12px]
+    "
+        >
           {/* LEFT */}
-          <div className="flex items-center gap-[16px] text-[#F0F0F0]">
-            <span className="text-[14px] font-medium">FOLLOW US</span>
+          <div
+            className="
+        flex flex-col sm:flex-row 
+        items-center gap-[12px] md:gap-[16px] 
+        text-[#F0F0F0] text-center md:text-left
+      "
+          >
+            <span className="text-[12px] md:text-[14px] font-medium">
+              FOLLOW US
+            </span>
 
             <div className="flex gap-[8px]">
               {socialIcons.map((icon, i) => (
@@ -113,19 +136,41 @@ export default function Footer() {
           </div>
 
           {/* RIGHT */}
-          <div className="flex items-center gap-[4px] border border-[#F0F0F0] px-[16px] py-[8px] rounded-[4px] text-[#F0F0F0] text-[14px]">
+          <div
+            className="
+        flex items-center gap-[4px] 
+        border border-[#F0F0F0] 
+        px-[14px] md:px-[16px] 
+        py-[6px] md:py-[8px] 
+        rounded-[4px] text-[#F0F0F0] 
+        text-[12px] md:text-[14px]
+      "
+          >
             INR
             <img src="/Vector 212.svg" alt="" className="w-[14px] h-[14px]" />
           </div>
         </div>
 
         {/* BOTTOM BAR */}
-        <div className="flex justify-between w-full text-[14px]">
+        <div
+          className="
+      flex flex-col md:flex-row 
+      justify-between items-center 
+      gap-[12px] md:gap-0
+      w-full text-[12px] md:text-[14px] text-center md:text-left
+    "
+        >
           {/* LEFT */}
           <p className="text-[#F0F0F0]">© AIFA AI Film Academy</p>
 
           {/* RIGHT */}
-          <div className="flex gap-[24px] text-[#9CA3AF]">
+          <div
+            className="
+        flex flex-wrap justify-center md:justify-start 
+        gap-[12px] md:gap-[24px] 
+        text-[#9CA3AF]
+      "
+          >
             <span className="hover:text-[#F0F0F0] cursor-pointer transition">
               PRIVACY POLICY
             </span>
