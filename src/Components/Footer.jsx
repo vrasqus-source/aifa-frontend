@@ -73,7 +73,6 @@
 //     </footer>
 //   );
 // }
-
 "use client";
 
 export default function Footer() {
@@ -86,10 +85,10 @@ export default function Footer() {
 
   return (
     <footer className="w-full bg-[#0F1112] flex justify-center">
-      {/* 🔥 MAIN CONTAINER (FIGMA EXACT) */}
-      <div className="w-full max-w-[1366px] px-[93px] py-[48px] flex flex-col gap-[16px]">
-        {/* 🔝 TOP BAR */}
-        <div className="flex justify-between items-center w-full px-[16px] py-[12px] bg-[#2A2D31] rounded-[12px]">
+      {/* MAIN CONTAINER */}
+      <div className="max-w-[1366px] w-full px-[93px] py-[48px] flex flex-col justify-center items-start gap-[16px]">
+        {/* TOP BAR */}
+        <div className="flex justify-between items-center w-full bg-[#2A2D31] rounded-[12px] px-[16px] py-[12px]">
           {/* LEFT */}
           <div className="flex items-center gap-[16px] text-[#F0F0F0]">
             <span className="text-[14px] font-medium">FOLLOW US</span>
@@ -120,12 +119,12 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* 🔽 BOTTOM BAR */}
-        <div className="flex justify-between items-center w-full text-[14px]">
+        {/* BOTTOM BAR */}
+        <div className="flex justify-between w-full text-[14px]">
           {/* LEFT */}
           <p className="text-[#F0F0F0]">© AIFA AI Film Academy</p>
 
-          {/* RIGHT LINKS */}
+          {/* RIGHT */}
           <div className="flex gap-[24px] text-[#9CA3AF]">
             <span className="hover:text-[#F0F0F0] cursor-pointer transition">
               PRIVACY POLICY
