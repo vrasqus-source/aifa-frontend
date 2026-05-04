@@ -72,31 +72,35 @@ const tools = [
 
 export default function Tools() {
   return (
-    <section className="w-full bg-[#0B0F10] py-20 relative overflow-hidden">
+    <section className="w-full bg-[#0F1112] flex justify-center py-[64px] relative overflow-hidden">
       {/* SIDE FADE */}
-      <div className="absolute left-0 top-0 w-48 md:w-64 h-full bg-gradient-to-r from-[#0B0F10] to-transparent z-10" />
-      <div className="absolute right-0 top-0 w-48 md:w-64 h-full bg-gradient-to-l from-[#0B0F10] to-transparent z-10" />
+      <div className="absolute left-0 top-0 h-full w-[80px] sm:w-[120px] md:w-[180px] bg-gradient-to-r from-[#0F1112] to-transparent z-10" />
+      <div className="absolute right-0 top-0 h-full w-[80px] sm:w-[120px] md:w-[180px] bg-gradient-to-l from-[#0F1112] to-transparent z-10" />
 
-      <div className="max-w-6xl mx-auto px-6 text-center relative z-20">
+      {/* INNER CONTAINER */}
+      <div className="w-full max-w-[1180px] flex flex-col items-center gap-[48px] px-[16px] sm:px-[24px] lg:px-0 relative z-20">
         {/* HEADING */}
-       <motion.h2
-  initial={{ opacity: 0, y: 30 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.6 }}
-  className="text-[#F0F0F0] text-center font-montserrat font-black
-  text-[26px] leading-[34px]
-  sm:text-[30px] sm:leading-[38px]
-  md:text-[32px] md:leading-[40px]"
->
-  TOOLS WE WILL USE
-</motion.h2>
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="
+            text-[#F0F0F0]
+            font-montserrat font-black text-center
+            text-[24px] leading-[32px]
+            sm:text-[28px] sm:leading-[36px]
+            md:text-[32px] md:leading-[40px]
+          "
+        >
+          TOOLS WE WILL USE
+        </motion.h2>
 
         {/* ROWS */}
-        <div className="mt-14 space-y-10 overflow-hidden">
+        <div className="w-full flex flex-col gap-[32px] overflow-hidden">
           {[0, 1].map((row, rowIndex) => (
             <motion.div
               key={rowIndex}
-              className="flex gap-8"
+              className="flex gap-[16px] sm:gap-[20px] md:gap-[24px]"
               animate={{
                 x: rowIndex % 2 === 0 ? ["0%", "-50%"] : ["-50%", "0%"],
               }}
@@ -107,25 +111,31 @@ export default function Tools() {
               }}
             >
               {[...tools, ...tools].map((tool, i) => {
-                const sizes = ["h-20 w-20", "h-24 w-24", "h-28 w-28"];
+                const sizes = [
+                  "h-[64px] w-[64px]",
+                  "h-[80px] w-[80px]",
+                  "h-[96px] w-[96px]",
+                ];
 
                 return (
                   <motion.div
                     key={i}
-                    animate={{
-                      y: [0, -5, 0],
-                    }}
+                    animate={{ y: [0, -6, 0] }}
                     transition={{
                       duration: 5 + (i % 2),
                       repeat: Infinity,
                       ease: "easeInOut",
                     }}
-                    className={`flex items-center justify-center 
-                    ${sizes[i % sizes.length]} 
-                    bg-[#2A2D2E] rounded-2xl flex-shrink-0 
-                    hover:scale-105 transition`}
+                    className={`
+                      flex items-center justify-center
+                      ${sizes[i % sizes.length]}
+                      bg-[#2A2D2E]
+                      rounded-[16px]
+                      flex-shrink-0
+                      hover:scale-105
+                      transition
+                    `}
                   >
-                    {/* FIXED ICON SIZE */}
                     <div className="w-[50%] h-[50%] flex items-center justify-center">
                       <img
                         src={tool}

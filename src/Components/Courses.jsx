@@ -98,7 +98,6 @@
 
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef } from "react";
 import { motion } from "framer-motion";
 
@@ -126,124 +125,124 @@ const courses = [
 export default function Courses() {
   const scrollRef = useRef(null);
 
-  const scroll = (direction) => {
+  const scroll = (dir) => {
     const el = scrollRef.current;
     if (!el) return;
-
-    const scrollAmount = 300;
-
     el.scrollBy({
-      left: direction === "left" ? -scrollAmount : scrollAmount,
+      left: dir === "left" ? -300 : 300,
       behavior: "smooth",
     });
   };
 
   return (
-    <section className="w-full bg-[#0B0F10] py-20">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="w-full bg-[#0F1112] flex justify-center py-[64px]">
+      <div className="w-full max-w-[1180px] flex flex-col gap-[48px] px-[16px] sm:px-[24px] lg:px-0">
         {/* HEADER */}
-        <div className="flex justify-between items-center mb-12">
-          <h2
-            className="text-[#F0F0F0] font-montserrat font-black 
-  text-[28px] leading-[34px] 
-  sm:text-[34px] sm:leading-[40px] 
-  md:text-[40px] md:leading-[48px]"
-          >
+        <div className="flex justify-between items-center">
+          <h2 className="text-[#F0F0F0] font-montserrat font-black text-[24px] sm:text-[32px] md:text-[40px]">
             SELF PACED COURSES
           </h2>
 
           <div className="flex gap-[12px]">
-            {/* LEFT BUTTON */}
             <button
               onClick={() => scroll("left")}
-              className="flex items-center justify-center bg-[#D0E46A] p-[12px] rounded-[8px] hover:opacity-90 transition"
+              className="bg-[#D0E46A] p-[12px] rounded-[8px]"
             >
-              <img
-                src="/Arrowleft1.svg"
-                alt="left"
-                className="w-[18px] h-[18px]"
-              />
+              <img src="/Arrowleft1.svg" className="w-[18px]" />
             </button>
-
-            {/* RIGHT BUTTON */}
             <button
               onClick={() => scroll("right")}
-              className="flex items-center justify-center bg-[#D0E46A] p-[12px] rounded-[8px] hover:opacity-90 transition"
+              className="bg-[#D0E46A] p-[12px] rounded-[8px]"
             >
-              <img
-                src="/Arrowleft2.svg"
-                alt="right"
-                className="w-[18px] h-[18px]"
-              />
+              <img src="/Arrowleft2.svg" className="w-[18px]" />
             </button>
           </div>
         </div>
+
         {/* CAROUSEL */}
         <div
           ref={scrollRef}
-          className="flex gap-6 overflow-x-auto scrollbar-hide py-4"
+          className="flex gap-[24px] overflow-x-auto scrollbar-hide"
         >
-          {[...courses].map((course, i) => (
+          {courses.map((course, i) => (
             <motion.div
               key={i}
-              whileHover={{ y: -6 }}
-              transition={{ duration: 0.3 }}
-              className="min-w-[280px] bg-[#111516] border border-white/10 rounded-xl overflow-hidden group relative transition-all duration-300 hover:border-[#D0E46A]"
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.25 }}
+              className="
+                min-w-[336px]
+                bg-[#111516]
+                border border-white/10
+                rounded-[12px]
+                overflow-hidden
+                group relative
+                hover:border-[#D0E46A]
+                transition-all duration-300
+              "
             >
               {/* IMAGE */}
               <div className="relative overflow-hidden">
                 <img
                   src={course.image}
                   alt={course.title}
-                  className="w-full h-[220px] object-cover transition duration-500 group-hover:scale-110"
+                  className="w-full h-[261px] object-cover transition duration-500 group-hover:scale-105"
                 />
 
                 {/* OVERLAY */}
-                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition"></div>
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition" />
 
                 {/* DURATION */}
-                <span className="absolute top-3 left-3 bg-black/70 text-white text-xs px-3 py-1 rounded-md">
+                <span className="absolute top-[12px] left-[12px] bg-black/70 text-white text-[12px] px-[8px] py-[4px] rounded-[6px]">
                   {course.duration}
                 </span>
               </div>
 
               {/* CONTENT */}
-              <div className="p-5">
-                <h3
-                  className="text-white font-montserrat font-bold 
-text-[16px] leading-[24px] mb-3"
-                >
+              <div className="flex flex-col gap-[8px] p-[24px]">
+                <h3 className="text-[#F0F0F0] font-montserrat font-bold text-[16px] leading-[24px]">
                   {course.title}
                 </h3>
 
-                {/* PRICE */}
-                <div className="flex items-center gap-2 text-[14px] mb-5">
+                <div className="flex items-center gap-[6px] text-[14px]">
                   <span className="text-[#D0E46A] font-bold">60% OFF</span>
-                  <span className="line-through text-gray-400">₹999</span>
+                  <span className="line-through text-[#9CA3AF]">₹999</span>
                 </div>
 
-                {/* BUTTON */}
-                <button className="flex w-full items-center justify-center bg-[#F0F0F0] text-[#0F1112] px-[16px] py-[10px] text-[14px] font-semibold font-montserrat rounded-[6px] hover:bg-white transition">
+                <button
+                  className="
+                  mt-[8px]
+                  w-full flex items-center justify-center
+                  bg-[#F0F0F0] text-[#0F1112]
+                  px-[16px] py-[10px]
+                  text-[14px]
+                  font-semibold font-montserrat
+                  rounded-[6px]
+                  hover:bg-white
+                  transition
+                "
+                >
                   BUY ₹399
                 </button>
               </div>
 
               {/* GLOW */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-white/10 blur-xl"></div>
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-white/10 blur-xl" />
             </motion.div>
           ))}
         </div>
 
         {/* BOTTOM BUTTON */}
-        <div className="flex justify-center mt-14">
+        <div className="flex justify-center">
           <button
-            className="flex items-center justify-center gap-[6px] 
-bg-[#D0E46A] text-[#0F1112] 
-px-[28px] py-[12px] 
-text-[16px] leading-[24px] 
-sm:text-[18px] sm:leading-[28px] 
-font-bold font-montserrat 
-rounded-[10px] hover:opacity-90 transition"
+            className="
+            bg-[#D0E46A] text-[#0F1112]
+            px-[28px] py-[12px]
+            text-[16px] sm:text-[18px]
+            font-bold font-montserrat
+            rounded-[10px]
+            hover:opacity-90
+            transition
+          "
           >
             EXPLORE COURSES
           </button>

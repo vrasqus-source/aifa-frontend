@@ -332,6 +332,177 @@
 //   );
 // }
 
+// "use client";
+
+// import { motion } from "framer-motion";
+
+// const bootcamps = [
+//   {
+//     title: "AI Lego Animation Workshop",
+//     image: "/bootcamp/bootcamp1.png",
+//     duration: "35 HOURS",
+//     price: "USD 999.00",
+//     mode: "ONLINE",
+//   },
+//   {
+//     title: "AI Superhero Cinematic Workshop",
+//     image: "/bootcamp/bootcamp2.jpg",
+//     duration: "35 HOURS",
+//     price: "USD 999.00",
+//     mode: "ONLINE",
+//   },
+//   {
+//     title: "AI Sci-Fi Movie Creator",
+//     image: "/bootcamp/bootcamp3.jpg",
+//     duration: "35 HOURS",
+//     price: "USD 999.00",
+//     mode: "ONLINE",
+//   },
+// ];
+// export default function Bootcamps() {
+//   return (
+//     <section className="w-full bg-[#0B0F10] py-[64px] flex justify-center">
+//       <div className="w-full max-w-[1180px] px-[16px] flex flex-col gap-[32px]">
+//         {/* HEADING */}
+//         <h1
+//           className="text-[#F0F0F0] font-montserrat font-black
+// text-[28px] leading-[34px]
+// sm:text-[34px] sm:leading-[40px]
+// md:text-[40px] md:leading-[48px]"
+//         >
+//           AI FILMMAKING WORKSHOPS
+//         </h1>
+//         <div className="w-full max-w-[1180px] px-[16px]">
+//           <div className="flex flex-col gap-[24px]">
+//             {bootcamps.map((item, i) => (
+//               <motion.div
+//                 key={i}
+//                 initial={{ opacity: 0, y: 60 }}
+//                 whileInView={{ opacity: 1, y: 0 }}
+//                 transition={{ duration: 0.5 }}
+//                 className="bg-[#0F1415] rounded-[20px] p-[8px]"
+//               >
+//                 {/* TOP SECTION */}
+//                 <div className="flex gap-[8px]">
+//                   {/* IMAGE */}
+//                   <img
+//                     src={item.image}
+//                     alt="bootcamp"
+//                     className="
+//     w-[266px]
+//     h-[180px]
+//     object-cover
+//     rounded-tl-[20px]
+//     col-[1/span_1]
+//     row-[1/span_1]
+//   "
+//                   />
+
+//                   {/* RIGHT CONTENT */}
+//                   <div className="flex-1 flex flex-col gap-[8px]">
+//                     {/* TITLE */}
+//                     <div className="bg-[#E5E5E5] rounded-[12px] h-[90px] px-[12px] py-[10px] flex flex-col justify-center w-full">
+//                       <h3
+//                         className="text-[#282A2C] font-montserrat font-bold
+// text-[24px] leading-[36px]
+// sm:text-[32px] sm:leading-[44px]
+// md:text-[40px] md:leading-[56px]"
+//                       >
+//                         {item.title}
+//                       </h3>
+//                     </div>
+
+//                     {/* INFO ROW */}
+//                     <div className="flex gap-[8px]">
+//                       {/* Duration */}
+//                       <div className="flex-1 bg-[#DCDCDC] rounded-[8px] p-[20px] flex flex-col items-start gap-[6px]">
+//                         <div className="flex items-center gap-[6px]">
+//                           <img
+//                             src="/Tagiconnew1.svg"
+//                             alt=""
+//                             className="w-[14px] h-[14px]  "
+//                           />
+//                           <p
+//                             className="text-[#414243] font-montserrat font-semibold
+// text-[14px] leading-[20px]"
+//                           >
+//                             Duration
+//                           </p>
+//                         </div>
+
+//                         <p className="text-[14px] font-bold text-[#282A2C]">
+//                           {item.duration}
+//                         </p>
+//                       </div>
+
+//                       {/* Pricing */}
+//                       <div className="flex-1 bg-[#DCDCDC] rounded-[8px] p-[20px] flex flex-col items-start gap-[6px]">
+//                         <div className="flex items-center gap-[6px]">
+//                           <img
+//                             src="/Tagiconnew2.svg"
+//                             alt="Pricing icon"
+//                             className="w-[14px] h-[14px]"
+//                           />
+//                           <p
+//                             className="text-[#414243] font-montserrat font-semibold
+// text-[14px] leading-[20px]"
+//                           >
+//                             Pricing
+//                           </p>
+//                         </div>
+
+//                         <p className="text-[14px] font-bold text-[#282A2C]">
+//                           {item.price}
+//                         </p>
+//                       </div>
+
+//                       {/* Mode */}
+//                       <div className="flex-1 bg-[#DCDCDC] rounded-[8px] p-[20px] flex flex-col items-start gap-[6px]">
+//                         <div className="flex items-center gap-[6px]">
+//                           <img
+//                             src="/Tagiconnew3.svg"
+//                             alt="mode icon"
+//                             className="w-[14px] h-[14px]"
+//                           />
+//                           <p
+//                             className="text-[#414243] font-montserrat font-semibold
+// text-[14px] leading-[20px]"
+//                           >
+//                             MODE
+//                           </p>
+//                         </div>
+
+//                         <p className="text-[14px] font-bold text-[#282A2C]">
+//                           {item.mode}
+//                         </p>
+//                       </div>
+
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 {/* BUTTON */}
+//                 {/* <button className="mt-[8px] w-full bg-[#D0E46A] text-[#1A1A1A] py-[12px] rounded-b-[25px] font-bold">
+//                 RESERVE SPOT <img src="/Arrowleft1.svg" alt="" />
+//               </button> */}
+
+//                 <button className="mt-[8px] w-full bg-[#D0E46A] text-[#1A1A1A] py-[12px] rounded-b-[25px] font-bold flex items-center justify-center gap-[6px]">
+//                   RESERVE SPOT
+//                   <img
+//                     src="/Arrowleft2.svg"
+//                     alt=""
+//                     className="w-[16px] h-[16px]"
+//                   />
+//                 </button>
+//               </motion.div>
+//             ))}
+//           </div>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
 "use client";
 
 import { motion } from "framer-motion";
@@ -359,144 +530,161 @@ const bootcamps = [
     mode: "ONLINE",
   },
 ];
+
 export default function Bootcamps() {
   return (
-    <section className="w-full bg-[#0B0F10] py-[64px] flex justify-center">
-      <div className="w-full max-w-[1180px] px-[16px] flex flex-col gap-[32px]">
+    <section className="w-full bg-[#0F1112] flex justify-center py-[64px]">
+      {/* INNER CONTAINER */}
+      <div className="w-full max-w-[1180px] flex flex-col gap-[48px] px-[16px] sm:px-[24px] lg:px-0">
         {/* HEADING */}
-        <h1
-          className="text-[#F0F0F0] font-montserrat font-black 
-text-[28px] leading-[34px] 
-sm:text-[34px] sm:leading-[40px] 
-md:text-[40px] md:leading-[48px]"
+        <h2
+          className="
+          text-[#F0F0F0] font-montserrat font-black
+          text-[24px] sm:text-[32px] md:text-[40px]
+        "
         >
           AI FILMMAKING WORKSHOPS
-        </h1>
-        <div className="w-full max-w-[1180px] px-[16px]">
-          <div className="flex flex-col gap-[24px]">
-            {bootcamps.map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 60 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="bg-[#0F1415] rounded-[20px] p-[8px]"
-              >
-                {/* TOP SECTION */}
-                <div className="flex gap-[8px]">
-                  {/* IMAGE */}
-                  <img
-                    src={item.image}
-                    alt="bootcamp"
+        </h2>
+
+        {/* LIST */}
+        <div className="flex flex-col gap-[10px]">
+          {bootcamps.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="bg-[#0F1415] rounded-[20px] overflow-hidden"
+            >
+              {/* TOP */}
+              <div className="flex flex-col lg:flex-row gap-[10px] p-[16px] lg:h-[260px]">
+                {/* IMAGE */}
+                <div className="w-full lg:w-[266px]">
+                  <div
                     className="
-    w-[266px]
-    h-[180px]
-    object-cover
+    w-full
+    h-[180px] sm:h-[200px] lg:h-[200px]
+    overflow-hidden
     rounded-tl-[20px]
-    col-[1/span_1]
-    row-[1/span_1]
+    lg:rounded-tr-none
+    lg:rounded-bl-none
   "
-                  />
-
-                  {/* RIGHT CONTENT */}
-                  <div className="flex-1 flex flex-col gap-[8px]">
-                    {/* TITLE */}
-                    <div className="bg-[#E5E5E5] rounded-[12px] h-[90px] px-[12px] py-[10px] flex flex-col justify-center w-full">
-                      <h3
-                        className="text-[#282A2C] font-montserrat font-bold 
-text-[24px] leading-[36px] 
-sm:text-[32px] sm:leading-[44px] 
-md:text-[40px] md:leading-[56px]"
-                      >
-                        {item.title}
-                      </h3>
-                    </div>
-
-                    {/* INFO ROW */}
-                    <div className="flex gap-[8px]">
-                      {/* Duration */}
-                      <div className="flex-1 bg-[#DCDCDC] rounded-[8px] p-[20px] flex flex-col items-start gap-[6px]">
-                        <div className="flex items-center gap-[6px]">
-                          <img
-                            src="/Tagiconnew1.svg"
-                            alt=""
-                            className="w-[14px] h-[14px]  "
-                          />
-                          <p
-                            className="text-[#414243] font-montserrat font-semibold 
-text-[14px] leading-[20px]"
-                          >
-                            Duration
-                          </p>
-                        </div>
-
-                        <p className="text-[14px] font-bold text-[#282A2C]">
-                          {item.duration}
-                        </p>
-                      </div>
-
-                      {/* Pricing */}
-                      <div className="flex-1 bg-[#DCDCDC] rounded-[8px] p-[20px] flex flex-col items-start gap-[6px]">
-                        <div className="flex items-center gap-[6px]">
-                          <img
-                            src="/Tagiconnew2.svg"
-                            alt="Pricing icon"
-                            className="w-[14px] h-[14px]"
-                          />
-                          <p
-                            className="text-[#414243] font-montserrat font-semibold 
-text-[14px] leading-[20px]"
-                          >
-                            Pricing
-                          </p>
-                        </div>
-
-                        <p className="text-[14px] font-bold text-[#282A2C]">
-                          {item.price}
-                        </p>
-                      </div>
-
-                      {/* Mode */}
-                      <div className="flex-1 bg-[#DCDCDC] rounded-[8px] p-[20px] flex flex-col items-start gap-[6px]">
-                        <div className="flex items-center gap-[6px]">
-                          <img
-                            src="/Tagiconnew3.svg"
-                            alt="mode icon"
-                            className="w-[14px] h-[14px]"
-                          />
-                          <p
-                            className="text-[#414243] font-montserrat font-semibold 
-text-[14px] leading-[20px]"
-                          >
-                            MODE
-                          </p>
-                        </div>
-
-                        <p className="text-[14px] font-bold text-[#282A2C]">
-                          {item.mode}
-                        </p>
-                      </div>
-
-                    </div>
+                  >
+                    <img
+                      src={item.image}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
 
-                {/* BUTTON */}
-                {/* <button className="mt-[8px] w-full bg-[#D0E46A] text-[#1A1A1A] py-[12px] rounded-b-[25px] font-bold">
-                RESERVE SPOT <img src="/Arrowleft1.svg" alt="" />
-              </button> */}
+                {/* RIGHT */}
+                <div className="flex-1 flex flex-col gap-[10px]">
+                  {/* TITLE */}
+                  <div
+                    className="bg-[#DCDCDC]
+  h-[105px]
+  px-[12px] py-[10px]
+  flex flex-col justify-center
+  gap-[10px]
+  rounded-tr-[20px]"
+                  >
+                    <h3
+                      className="
+  text-[#282A2C]
+  font-montserrat font-bold
+  text-[32px] leading-[40px]
+  sm:text-[40px] sm:leading-[48px]
+  md:text-[48px] md:leading-[56px]
+"
+                    >
+                      {item.title}
+                    </h3>
+                  </div>
 
-                <button className="mt-[8px] w-full bg-[#D0E46A] text-[#1A1A1A] py-[12px] rounded-b-[25px] font-bold flex items-center justify-center gap-[6px]">
-                  RESERVE SPOT
-                  <img
-                    src="/Arrowleft2.svg"
-                    alt=""
-                    className="w-[16px] h-[16px]"
-                  />
-                </button>
-              </motion.div>
-            ))}
-          </div>
+                  {/* INFO */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-[8px]">
+                    {/* Duration */}
+                    <div
+                      className="
+  bg-[#DCDCDC]
+  rounded-[8px]
+  p-[20px]
+  flex flex-col items-start
+  gap-[6px]
+"
+                    >
+                      <div className="flex items-center gap-[6px]">
+                        <img
+                          src="/Tagiconnew1.svg"
+                          className="w-[14px] h-[14px]"
+                        />
+                        <p className="text-[#414243] text-[12px] font-semibold font-montserrat">
+                          Duration
+                        </p>
+                      </div>
+
+                      <p className="text-[#282A2C] text-[14px] font-bold font-montserrat">
+                        {item.duration}
+                      </p>
+                    </div>
+                    {/* Pricing */}
+                    <div className=" bg-[#DCDCDC]
+  rounded-[8px]
+  p-[20px]
+  flex flex-col items-start
+  gap-[6px]
+">
+                      <div className="flex items-center gap-[6px]">
+                        <img src="/Tagiconnew2.svg" className="w-[14px]" />
+                        <p className="text-[#414243] text-[12px] font-semibold">
+                          Pricing
+                        </p>
+                      </div>
+                      <p className="text-[#282A2C] text-[14px] font-bold">
+                        {item.price}
+                      </p>
+                    </div>
+
+                    {/* Mode */}
+                    <div className=" bg-[#DCDCDC]
+  rounded-[8px]
+  p-[20px]
+  flex flex-col items-start
+  gap-[6px]
+">
+                      <div className="flex items-center gap-[6px]">
+                        <img src="/Tagiconnew3.svg" className="w-[14px]" />
+                        <p className="text-[#414243] text-[12px] font-semibold">
+                          Mode
+                        </p>
+                      </div>
+                      <p className="text-[#282A2C] text-[14px] font-bold">
+                        {item.mode}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* BUTTON */}
+              <button
+                className="
+    w-full
+    bg-[#D0E46A] text-[#1A1A1A]
+    px-[30px] py-[12px]
+    flex items-center justify-center gap-[4px]
+    font-bold font-montserrat text-[14px]
+    rounded-b-[25px]
+    hover:opacity-90 active:scale-[0.98]
+    transition-all duration-200
+  "
+              >
+                RESERVE SPOT
+                <img src="/Arrowleft2.svg" className="w-[16px] h-[16px]" />
+              </button>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
