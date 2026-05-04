@@ -71,21 +71,42 @@
 //     </section>
 //   );
 // }
-
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const slides = [
-  "/hero/hero1.jpg",
-  "/hero/hero2.jpg",
-  "/hero/hero3.jpg",
-  "/hero/hero4.jpg",
+  {
+    video: "/hero/web1.mp4",
+    tag: "FILMS",
+    thumb: "/hero/hero1.jpg",
+    title: "CREATE HOLLYWOOD STYLE AI FILMS",
+  },
+  {
+    video: "/hero/web2.mp4",
+    tag: "MENTORSHIP",
+    thumb: "/hero/hero2.jpg",
+    title: "TRAIN WITH INDUSTRY EXPERTS",
+  },
+  {
+    video: "/hero/web4.mp4",
+    tag: "PROJECTS",
+    thumb: "/hero/hero3.jpg",
+    title: "BUILD REAL PROJECTS",
+  },
+  {
+    video: "/hero/web5.mp4",
+    tag: "EARNINGS",
+    thumb: "/hero/hero4.jpg",
+    title: "EARN WITH YOUR SKILLS",
+  },
 ];
 
 export default function Hero() {
   const [active, setActive] = useState(0);
+  const videoRef = useRef(null);
 
+  // Auto slide
   useEffect(() => {
     const interval = setInterval(() => {
       setActive((prev) => (prev + 1) % slides.length);
@@ -93,60 +114,98 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, []);
 
+  // Restart video on change
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.load();
+      videoRef.current.play();
+    }
+  }, [active]);
+
   return (
-    <section className="w-full bg-black flex justify-center pt-24 pb-10">
-      {/* MAIN HERO */}
-      <div className="relative w-full max-w-[1280px] h-[588px] rounded-[24px] overflow-hidden">
-        {/* 🎥 IMAGE */}
-        <img
-          key={active}
-          src={slides[active]}
-          alt="hero"
-          className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
-        />
+    <section className="w-full bg-[#0F1112] flex justify-center py-[32px]">
+      <div className="w-full max-w-[1180px] flex flex-col gap-[24px] px-[16px] sm:px-[24px] lg:px-0">
+        {/* HERO */}
+        <div className="relative w-full h-[652px] rounded-[24px] overflow-hidden">
+          {/* VIDEO */}
+          <video
+            ref={videoRef}
+            className="absolute inset-0 w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+          >
+            <source src={slides[active].video} type="video/mp4" />
+          </video>
 
-        {/* 🌑 EXACT FIGMA OVERLAY */}
-        <div className="absolute inset-0 bg-black/20"></div>
+          {/* OVERLAY */}
+          <div className="absolute inset-0 bg-black/30"></div>
 
-        {/* 🎬 CONTENT (FIXED EXACT SPACING) */}
-        <div className="relative z-10 h-full flex flex-col justify-center items-start px-[102px] gap-[60px]">
-          {/* TEXT BLOCK */}
-          <div>
-            <p className="text-[#F0F0F0] font-montserrat text-[32px] leading-[40px] font-bold tracking-[0.02em] uppercase">
-              FILMS
-            </p>
+          {/* CONTENT */}
+          <div
+            className="relative z-10 h-full flex flex-col justify-center items-start 
+            px-[16px] sm:px-[32px] md:px-[60px] lg:px-[93px] 
+            gap-[40px] md:gap-[60px]"
+          >
+            {/* TEXT */}
+            <div>
+              <p className="text-[#F0F0F0] font-montserrat text-[20px] sm:text-[24px] md:text-[32px] font-bold uppercase">
+                {slides[active].tag}
+              </p>
 
-           <h1 className="mt-2 text-[#F0F0F0] font-montserrat font-black 
-text-[40px] leading-[46px] 
-sm:text-[52px] sm:leading-[58px] 
-md:text-[64px] md:leading-[70px] 
-max-w-[620px]">
-  CREATE <br />
-  HOLLYWOOD <br />
-  STYLE AI FILMS
-</h1>
+              <h1
+                className="
+                mt-2 text-[#F0F0F0] font-montserrat font-black
+                text-[28px] leading-[34px]
+                sm:text-[40px] sm:leading-[46px]
+                md:text-[52px] md:leading-[58px]
+                lg:text-[64px] lg:leading-[70px]
+                max-w-[620px]
+              "
+              >
+                {slides[active].title}
+              </h1>
+            </div>
+
+            {/* BUTTON */}
+            <button
+              className="
+              inline-flex items-center justify-center gap-[4px]
+              bg-[#D0E46A] text-[#0F1112]
+              px-[20px] py-[10px]
+              sm:px-[24px] sm:py-[12px]
+              text-[14px] sm:text-[16px] md:text-[18px]
+              leading-[24px] font-bold font-montserrat
+              rounded-[12px]
+              hover:opacity-90
+              transition-all duration-200
+            "
+            >
+              BOOK A FREE 30 MINS CONSULTATION
+            </button>
           </div>
 
-          {/* BUTTON */}
-          <button className="inline-flex items-center justify-center gap-[4px] bg-[#D0E46A] text-[#0F1112] px-[30px] py-[12px] text-[18px] leading-[28px] font-bold font-montserrat rounded-[12px] hover:opacity-90 transition-all duration-200">
-            BOOK A FREE 30 MINS CONSULTATION
-          </button>
-        </div>
-
-        {/* 🎞️ THUMBNAILS */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-          {slides.map((img, i) => (
-            <img
-              key={i}
-              src={img}
-              onClick={() => setActive(i)}
-              className={`w-[52px] h-[36px] object-cover rounded-[6px] cursor-pointer transition-all ${
-                active === i
-                  ? "border border-white scale-105"
-                  : "opacity-60 hover:opacity-100"
-              }`}
-            />
-          ))}
+          {/* THUMBNAILS (OPTIONAL IMAGE PREVIEW) */}
+          <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20">
+            {slides.map((slide, i) => (
+              <img
+                key={i}
+                src={slide.thumb}
+                onClick={() => setActive(i)}
+                className={`
+        w-[40px] h-[28px] sm:w-[52px] sm:h-[36px]
+        object-cover rounded-[6px] cursor-pointer
+        transition-all
+        ${
+          active === i
+            ? "border border-white scale-105"
+            : "opacity-60 hover:opacity-100"
+        }
+      `}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

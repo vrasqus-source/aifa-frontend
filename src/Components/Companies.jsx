@@ -32,7 +32,6 @@
 //     </section>
 //   );
 // }
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -72,49 +71,58 @@ export default function Companies() {
   }, [isPaused]);
 
   return (
-    <section className="w-full bg-[#0F1112] flex justify-center">
-      {/* CONTAINER */}
-      <div className="w-full max-w-[1366px] flex flex-col items-center justify-center py-[48px] px-[93px] gap-[26px]">
+    <section className="w-full bg-[#0F1112] flex justify-center py-[64px]">
+      {/* INNER CONTAINER (1180px EXACT) */}
+      <div className="w-full max-w-[1180px] flex flex-col items-center gap-[26px] px-[16px] sm:px-[24px] lg:px-0">
         {/* TITLE */}
         <p
-          className="text-white font-montserrat font-black 
-text-[20px] leading-[28px] 
-sm:text-[22px] sm:leading-[30px] 
-md:text-[24px] md:leading-[32px]"
+          className="
+          text-[#F0F0F0]
+          font-montserrat font-black text-center
+          text-[18px] leading-[26px]
+          sm:text-[20px] sm:leading-[28px]
+          md:text-[24px] md:leading-[32px]
+        "
         >
           OUR LEARNERS WORKS AT
         </p>
 
-        {/* SCROLLER WRAPPER */}
+        {/* SCROLLER */}
         <div
           className="relative w-full overflow-hidden"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
           {/* LEFT FADE */}
-          <div className="absolute left-0 top-0 h-full w-[80px] bg-gradient-to-r from-[#0F1112] to-transparent z-10"></div>
+          <div className="absolute left-0 top-0 h-full w-[60px] sm:w-[80px] bg-gradient-to-r from-[#0F1112] to-transparent z-10" />
 
           {/* RIGHT FADE */}
-          <div className="absolute right-0 top-0 h-full w-[80px] bg-gradient-to-l from-[#0F1112] to-transparent z-10"></div>
+          <div className="absolute right-0 top-0 h-full w-[60px] sm:w-[80px] bg-gradient-to-l from-[#0F1112] to-transparent z-10" />
 
-          {/* SCROLL TRACK */}
+          {/* TRACK */}
           <div
             ref={scrollRef}
-            className="flex items-center gap-[48px] overflow-x-scroll scrollbar-hide"
+            className="flex items-center gap-[32px] sm:gap-[40px] md:gap-[48px] overflow-x-scroll scrollbar-hide"
           >
             {[...logos, ...logos].map((logo, i) => (
               <div
                 key={i}
-                className="flex items-center justify-center min-w-[140px] group relative"
+                className="flex items-center justify-center min-w-[100px] sm:min-w-[120px] md:min-w-[140px] group relative"
               >
                 <img
                   src={logo}
                   alt="logo"
-                  className="h-[32px] object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                  className="
+                    h-[24px] sm:h-[28px] md:h-[32px]
+                    object-contain
+                    grayscale opacity-60
+                    group-hover:grayscale-0 group-hover:opacity-100
+                    transition-all duration-300
+                  "
                 />
 
-                {/* subtle glow */}
-                <div className="absolute opacity-0 group-hover:opacity-100 transition duration-500 blur-xl bg-white/10 w-[60px] h-[30px]"></div>
+                {/* glow */}
+                <div className="absolute opacity-0 group-hover:opacity-100 transition duration-500 blur-xl bg-white/10 w-[50px] h-[25px] sm:w-[60px] sm:h-[30px]" />
               </div>
             ))}
           </div>

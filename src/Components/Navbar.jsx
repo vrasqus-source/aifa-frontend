@@ -140,7 +140,19 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
     <header className="fixed top-0 w-full z-50 bg-[#0F1112] border-b border-white/10">
       {/* <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between"> */}
 
-      <div className="w-full max-w-[1366px] mx-auto px-4 sm:px-6 md:px-10 lg:px-[93px] py-[20px] flex items-center justify-between">
+      <div
+        className="
+  w-full 
+  flex 
+  items-center 
+  justify-between 
+  py-[20px] 
+  px-[16px] 
+  sm:px-[24px] 
+  md:px-[40px] 
+  lg:px-[93px]
+"
+      >
         {/* LOGO */}
         <h1 className="text-xl font-bold flex items-center gap-2">
           <img src="/logos/Group1logo.svg" alt="logo" className="h-6" />
@@ -214,11 +226,18 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
         <div className="hidden md:flex items-center gap-3">
           <button
             onClick={onLoginClick}
-            className="px-[16px] py-[8px]
-  text-[#F0F0F0] font-montserrat font-bold
-  text-[14px] leading-[16px]
-  border border-white/20 rounded-[6px]
-  transition hover:bg-white/10"
+            className="
+    px-[16px] py-[8px]
+    text-[#F0F0F0]
+    text-[14px] leading-[16px]
+    font-bold font-montserrat
+    text-center
+  
+    rounded-[6px]
+    transition-all duration-200 ease-in-out
+    hover:bg-white/10
+    active:scale-[0.97]
+  "
           >
             LOGIN
           </button>

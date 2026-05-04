@@ -140,7 +140,7 @@ export default function CoursesPage() {
   });
 
   return (
-    <section className="min-h-screen bg-[#0B0F10] py-20">
+    <section className="min-h-screen bg-[#0B0F10] py-28">
       <div className="max-w-7xl mx-auto px-6">
 
         {/* 🔥 SEARCH + SORT */}
@@ -156,7 +156,7 @@ export default function CoursesPage() {
               className="w-full bg-transparent border border-white/20 rounded-xl px-12 py-3 text-white placeholder-gray-500 outline-none focus:border-white"
             />
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-              🔍
+              <img src="/Searchicon.svg" alt="" />
             </span>
           </div>
 
@@ -167,7 +167,8 @@ export default function CoursesPage() {
               className="w-full flex justify-between items-center border border-white/20 px-4 py-3 rounded-xl text-white hover:bg-white/5"
             >
               Sort By: {selected}
-              <span className={`${open ? "rotate-180" : ""}`}>⌃</span>
+              <span className={`${open ? "rotate-180" : ""}`}> <img src="/Vectorup.svg" alt="" />
+              </span>
             </button>
 
             {open && (
