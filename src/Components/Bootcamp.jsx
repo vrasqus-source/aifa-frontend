@@ -535,7 +535,7 @@ export default function Bootcamps() {
   return (
     <section className="w-full bg-[#0F1112] flex justify-center py-[40px] sm:py-[64px]">
       {/* CONTAINER (FIGMA WIDTH + PADDING) */}
-      <div className="w-full max-w-[1180px] px-[16px] sm:px-[40px] lg:px-[93px] flex flex-col gap-[32px] sm:gap-[48px]">
+      <div className="w-full max-w-[1400px] xl:max-w-[1600px] px-[16px] sm:px-[40px] lg:px-[93px] flex flex-col gap-[32px] sm:gap-[48px]">
         {/* HEADING */}
         <h2 className="text-[#F0F0F0] font-montserrat font-black text-[22px] sm:text-[32px] md:text-[40px] text-center sm:text-left">
           AI FILMMAKING WORKSHOPS
