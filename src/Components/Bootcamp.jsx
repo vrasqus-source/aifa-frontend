@@ -534,7 +534,8 @@ const bootcamps = [
 export default function Bootcamps() {
   return (
     <section className="w-full bg-[#0F1112] flex justify-center py-[40px] sm:py-[64px]">
-      <div className="w-full max-w-[1180px] flex flex-col gap-[32px] sm:gap-[48px] px-[16px] sm:px-[24px] lg:px-0">
+      {/* CONTAINER (FIGMA WIDTH + PADDING) */}
+      <div className="w-full max-w-[1180px] px-[16px] sm:px-[40px] lg:px-[93px] flex flex-col gap-[32px] sm:gap-[48px]">
         {/* HEADING */}
         <h2 className="text-[#F0F0F0] font-montserrat font-black text-[22px] sm:text-[32px] md:text-[40px] text-center sm:text-left">
           AI FILMMAKING WORKSHOPS
@@ -548,91 +549,86 @@ export default function Bootcamps() {
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="bg-[#0F1415] rounded-[16px] sm:rounded-[20px] overflow-hidden"
+              className="bg-[#0F1415] rounded-[20px] overflow-hidden"
             >
-              {/* TOP SECTION (FIXED HERE) */}
-              <div className="flex flex-col lg:flex-row gap-[10px] px-[12px] pt-[12px] pb-0 sm:px-[16px] sm:pt-[16px] sm:pb-0 lg:h-[260px]">
+              {/* GRID STRUCTURE */}
+              <div className="grid grid-cols-1 lg:grid-cols-[266px_1fr] grid-rows-[auto_auto] gap-[8px] p-[12px] sm:p-[16px]">
                 {/* IMAGE */}
-                <div className="w-full lg:w-[266px]">
-                  <div className="w-full h-[160px] sm:h-[200px] lg:h-[200px] overflow-hidden rounded-tl-[16px] sm:rounded-tl-[20px]">
-                    <img
-                      src={item.image}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                <div className="w-full h-[180px] sm:h-[200px] lg:w-[266px] lg:h-[200px] overflow-hidden rounded-tl-[20px]">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
 
-                {/* RIGHT */}
-                <div className="flex-1 flex flex-col gap-[8px] sm:gap-[10px]">
+                {/* RIGHT CONTENT */}
+                <div className="flex flex-col gap-[8px]">
                   {/* TITLE */}
-                  <div className="bg-[#DCDCDC] min-h-[80px] sm:h-[105px] px-[10px] sm:px-[12px] py-[8px] sm:py-[10px] flex items-center rounded-tr-[16px] sm:rounded-tr-[20px]">
-                    <h3 className="text-[#282A2C] font-montserrat font-bold text-[18px] sm:text-[28px] md:text-[48px] leading-[26px] sm:leading-[34px] md:leading-[56px]">
+                  <div className="flex flex-col justify-center items-start h-[80px] sm:h-[105px] px-[12px] py-[10px] bg-[#DCDCDC] rounded-tr-[20px]">
+                    <h3 className="text-[#282A2C] font-montserrat font-bold text-[16px] sm:text-[24px] md:text-[36px] leading-tight">
                       {item.title}
                     </h3>
                   </div>
 
-                  {/* INFO */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-[6px] sm:gap-[8px]">
+                  {/* INFO BOXES */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-[8px]">
                     {/* Duration */}
-                    <div className="bg-[#DCDCDC] rounded-[6px] sm:rounded-[8px] p-[12px] sm:p-[20px] flex flex-col gap-[4px] sm:gap-[6px]">
-                      <div className="flex items-center gap-[6px]">
-                        <img
-                          src="/Tagiconnew1.svg"
-                          className="w-[12px] sm:w-[14px]"
-                        />
-                        <p className="text-[#414243] text-[10px] sm:text-[12px] font-semibold">
-                          Duration
-                        </p>
-                      </div>
-                      <p className="text-[#282A2C] text-[12px] sm:text-[14px] font-bold">
+                    <div className="flex flex-col p-[12px] sm:p-[20px] gap-[6px] bg-[#DCDCDC] rounded-[8px]">
+                      <p className="text-[10px] sm:text-[12px] font-semibold text-[#414243]">
+                        Duration
+                      </p>
+                      <p className="text-[12px] sm:text-[14px] font-bold text-[#282A2C]">
                         {item.duration}
                       </p>
                     </div>
 
                     {/* Pricing */}
-                    <div className="bg-[#DCDCDC] rounded-[6px] sm:rounded-[8px] p-[12px] sm:p-[20px] flex flex-col gap-[4px] sm:gap-[6px]">
-                      <div className="flex items-center gap-[6px]">
-                        <img
-                          src="/Tagiconnew2.svg"
-                          className="w-[12px] sm:w-[14px]"
-                        />
-                        <p className="text-[#414243] text-[10px] sm:text-[12px] font-semibold">
-                          Pricing
-                        </p>
-                      </div>
-                      <p className="text-[#282A2C] text-[12px] sm:text-[14px] font-bold">
+                    <div className="flex flex-col p-[12px] sm:p-[20px] gap-[6px] bg-[#DCDCDC] rounded-[8px]">
+                      <p className="text-[10px] sm:text-[12px] font-semibold text-[#414243]">
+                        Pricing
+                      </p>
+                      <p className="text-[12px] sm:text-[14px] font-bold text-[#282A2C]">
                         {item.price}
                       </p>
                     </div>
 
                     {/* Mode */}
-                    <div className="bg-[#DCDCDC] rounded-[6px] sm:rounded-[8px] p-[12px] sm:p-[20px] flex flex-col gap-[4px] sm:gap-[6px]">
-                      <div className="flex items-center gap-[6px]">
-                        <img
-                          src="/Tagiconnew3.svg"
-                          className="w-[12px] sm:w-[14px]"
-                        />
-                        <p className="text-[#414243] text-[10px] sm:text-[12px] font-semibold">
-                          Mode
-                        </p>
-                      </div>
-                      <p className="text-[#282A2C] text-[12px] sm:text-[14px] font-bold">
+                    <div className="flex flex-col p-[12px] sm:p-[20px] gap-[6px] bg-[#DCDCDC] rounded-[8px]">
+                      <p className="text-[10px] sm:text-[12px] font-semibold text-[#414243]">
+                        Mode
+                      </p>
+                      <p className="text-[12px] sm:text-[14px] font-bold text-[#282A2C]">
                         {item.mode}
                       </p>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* BUTTON (NO GAP NOW) */}
-              <button className="w-full bg-[#D0E46A] text-[#1A1A1A] px-[20px] sm:px-[30px] py-[12px] sm:py-[12px] flex items-center justify-center gap-[4px] font-bold font-montserrat text-[12px] sm:text-[14px] rounded-b-[20px] sm:rounded-b-[25px] hover:opacity-90 active:scale-[0.98] transition-all duration-200">
-                RESERVE SPOT
-                <img
-                  src="/Arrowleft2.svg"
-                  className="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px]"
-                />
-              </button>
+                {/* BUTTON */}
+                <button
+                  className="
+                    col-span-1 lg:col-span-2
+                    flex justify-center items-center
+                    px-[20px] sm:px-[30px]
+                    py-[12px]
+                    gap-[4px]
+                    bg-[#D0E46A]
+                    text-[#1A1A1A]
+                    font-bold font-montserrat
+                    text-[12px] sm:text-[14px]
+                    rounded-b-[25px]
+                    hover:opacity-90 active:scale-[0.98]
+                    transition
+                  "
+                >
+                  RESERVE SPOT
+                  <img
+                    src="/Arrowleft2.svg"
+                    className="w-[14px] h-[14px] sm:w-[16px] sm:h-[16px]"
+                  />
+                </button>
+              </div>
             </motion.div>
           ))}
         </div>
