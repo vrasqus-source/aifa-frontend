@@ -182,12 +182,12 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
                 )}
 
                 {item.dropdown && (
-  <img
-    src="/keyboard_arrow_up.svg"
-    alt="dropdown"
-    className="w-[16px] h-[16px]"
-  />
-)}
+                  <img
+                    src="/logos/keywordarrow.svg"
+                    alt="dropdown"
+                    className="w-[16px] h-[16px]"
+                  />
+                )}
               </div>
 
               {/* UNDERLINE */}
@@ -305,7 +305,7 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
           >
             TALK TO SALES
             <img
-              src="/Arrowleftnew.svg"
+              src="/logos/Arrowleftsales.svg"
               alt="arrow"
               className="w-[14px] h-[14px]"
             />
