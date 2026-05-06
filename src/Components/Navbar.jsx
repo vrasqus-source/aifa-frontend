@@ -157,15 +157,13 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
         <h1 className="text-xl font-bold flex items-center gap-2">
           <Link to="/">
             <img
-              src="/logos/Group1logo.svg"
+              src="/logos/aifabetalogo.svg"
               alt="logo"
               className="h-6 cursor-pointer"
             />
           </Link>
           {/* BETA BADGE */}
-          <span className="text-[10px] px-2 py-[2px] rounded bg-white/10 text-white border border-white/20 tracking-wide">
-            BETA
-          </span>
+         
         </h1>
 
         {/* DESKTOP MENU */}
