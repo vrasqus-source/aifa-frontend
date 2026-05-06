@@ -313,45 +313,91 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
         </div>
 
         {/* MOBILE TOGGLE */}
-        <div className="md:hidden text-white">
-          <button onClick={() => setOpen(!open)}>
-            {open ? <X size={24} /> : <Menu size={24} />}
+        <div className="md:hidden flex items-center">
+          <button
+            onClick={() => setOpen(!open)}
+            className="
+      w-[42px]
+      h-[42px]
+      flex
+      items-center
+      justify-center
+      rounded-[8px]
+      border
+      border-white/10
+      bg-white/5
+    "
+          >
+            {open ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
 
       {/* MOBILE MENU */}
       <div
-        className={`md:hidden bg-black transition-all duration-500 overflow-hidden ${
-          open ? "max-h-[500px]" : "max-h-0"
-        }`}
+        className={`
+    md:hidden
+    overflow-hidden
+    transition-all
+    duration-500
+    bg-[#0F1112]
+    border-t
+    border-white/10
+    ${open ? "max-h-[1000px]" : "max-h-0"}
+  `}
       >
-        <div className="flex flex-col px-6 py-4 gap-4">
+        <div className="px-[20px] py-[20px] flex flex-col gap-[14px]">
           {navLinks.map((item, i) => (
-            <div key={i} className="border-b border-gray-800 pb-2">
-              {/* HEADER */}
+            <div
+              key={i}
+              className="
+          rounded-[12px]
+          border
+          border-white/10
+          bg-white/[0.03]
+          overflow-hidden
+        "
+            >
               <div
-                onClick={() => setOpenDropdown(openDropdown === i ? null : i)}
-                className="flex justify-between items-center cursor-pointer"
+                onClick={() =>
+                  item.dropdown &&
+                  setOpenDropdown(openDropdown === i ? null : i)
+                }
+                className="
+            flex
+            items-center
+            justify-between
+            px-[16px]
+            py-[15px]
+            cursor-pointer
+          "
               >
                 {item.link ? (
                   <Link
                     to={item.link}
                     onClick={() => setOpen(false)}
-                    className="text-gray-200 text-sm"
+                    className="text-[#F0F0F0] text-[14px] font-semibold"
                   >
                     {item.name}
                   </Link>
                 ) : (
-                  <span className="text-gray-200 text-sm">{item.name}</span>
+                  <span className="text-[#F0F0F0] text-[14px] font-semibold">
+                    {item.name}
+                  </span>
                 )}
 
-                {item.dropdown && <ChevronDown size={14} />}
+                {item.dropdown && (
+                  <ChevronDown
+                    size={16}
+                    className={`transition-all duration-300 ${
+                      openDropdown === i ? "rotate-180" : ""
+                    }`}
+                  />
+                )}
               </div>
 
-              {/* DROPDOWN ITEMS */}
               {item.dropdown && openDropdown === i && (
-                <div className="mt-2 flex flex-col gap-2 pl-3">
+                <div className="px-[16px] pb-[16px] flex flex-col gap-[12px]">
                   {item.dropdown.map((sub, idx) => {
                     const isObject = typeof sub === "object";
 
@@ -360,14 +406,14 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
                         key={idx}
                         to={sub.path}
                         onClick={() => setOpen(false)}
-                        className="block text-gray-400 text-xs hover:text-white"
+                        className="text-[#BDBDBD] text-[13px] hover:text-white"
                       >
                         {sub.label}
                       </Link>
                     ) : (
                       <span
                         key={idx}
-                        className="block text-gray-400 text-xs hover:text-white cursor-pointer"
+                        className="text-[#BDBDBD] text-[13px] hover:text-white cursor-pointer"
                       >
                         {sub}
                       </span>
@@ -379,19 +425,36 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
           ))}
 
           {/* BUTTONS */}
-          <button
-            onClick={onLoginClick}
-            className="mt-4 py-2 bg-white text-black rounded"
-          >
-            + login
-          </button>
+          <div className="flex flex-col gap-[12px] pt-[8px]">
+            <button
+              onClick={onLoginClick}
+              className="
+          h-[48px]
+          rounded-[10px]
+          bg-[#F0F0F0]
+          text-[#0F1112]
+          text-[14px]
+          font-bold
+        "
+            >
+              LOGIN
+            </button>
 
-          <button
-            onClick={onSignupClick}
-            className="py-2 border border-white text-white rounded"
-          >
-            JOIN
-          </button>
+            <button
+              onClick={onSignupClick}
+              className="
+          h-[48px]
+          rounded-[10px]
+          border
+          border-[#F0F0F0]
+          text-[#F0F0F0]
+          text-[14px]
+          font-bold
+        "
+            >
+              JOIN
+            </button>
+          </div>
         </div>
       </div>
     </header>
