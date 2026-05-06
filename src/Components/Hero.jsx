@@ -591,23 +591,10 @@ export default function Hero() {
               hover:bg-white/20
             "
           >
-            Watch Showreel
-            <span
-              className="
-                flex
-                items-center
-                justify-center
-
-                w-[36px]
-                h-[36px]
-
-                rounded-full
-
-                bg-white/10
-              "
-            >
-              ▶
-            </span>
+             BOOK A FREE 30 MINS CONSULTATION
+           
+            
+          
           </button>
         </div>
       </div>
