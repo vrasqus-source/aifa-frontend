@@ -41,11 +41,14 @@ export default function Companies() {
   const logos = [
     "/logos/companylogo1.png",
     "/logos/companylogo2.png",
-    "/logos/companylogo3.png",
+    
     "/logos/companylogo4.png",
-    "/logos/companylogo5.jpg",
-    "/logos/companylogo6.png",
-    "/logos/companylogo6.png",
+    "/logos/companylogo5.png",
+    
+    "/logos/companylogo7.png",
+    "/logos/companylogo8.png",
+    "/logos/companylogo9.png",
+    "/logos/companylogo10.png",
   ];
 
   const scrollRef = useRef(null);
@@ -55,85 +58,131 @@ export default function Companies() {
     const el = scrollRef.current;
     if (!el) return;
 
-    let frame;
-    const speed = window.innerWidth < 640 ? 0.6 : 0.4; // ✅ faster on mobile
+    let animationFrame;
 
-    const scroll = () => {
+    // MORE SPEED
+    const speed = window.innerWidth < 640 ? 1.5 : 1.2;
+
+    const autoScroll = () => {
       if (!isPaused) {
         el.scrollLeft += speed;
+
+        // INFINITE LOOP
         if (el.scrollLeft >= el.scrollWidth / 2) {
           el.scrollLeft = 0;
         }
       }
-      frame = requestAnimationFrame(scroll);
+
+      animationFrame = requestAnimationFrame(autoScroll);
     };
 
-    frame = requestAnimationFrame(scroll);
-    return () => cancelAnimationFrame(frame);
+    animationFrame = requestAnimationFrame(autoScroll);
+
+    return () => cancelAnimationFrame(animationFrame);
   }, [isPaused]);
 
   return (
-    <section className="w-full bg-[#0F1112] flex justify-center py-[40px] sm:py-[64px]">
-      {/* INNER CONTAINER */}
-      <div className="w-full max-w-[1180px] flex flex-col items-center gap-[20px] sm:gap-[26px] px-[16px] sm:px-[24px] lg:px-0">
+    <section className="w-full bg-[#0F1112] flex justify-center py-[40px] sm:py-[64px] overflow-hidden">
+      {/* CONTAINER */}
+      <div className="w-full max-w-[1180px] flex flex-col items-center gap-[24px] px-[16px] sm:px-[24px] lg:px-0">
         {/* TITLE */}
-        <p
+        <h2
           className="
-          text-[#F0F0F0]
-          font-montserrat font-black text-center
-          text-[16px] leading-[24px]
-          sm:text-[20px] sm:leading-[28px]
-          md:text-[24px] md:leading-[32px]
-        "
+            text-[#F0F0F0]
+            text-center
+            font-montserrat
+            font-black
+            text-[18px]
+            leading-[26px]
+            sm:text-[22px]
+            sm:leading-[30px]
+            md:text-[24px]
+            md:leading-[32px]
+            uppercase
+          "
         >
           OUR LEARNERS WORKS AT
-        </p>
+        </h2>
 
-        {/* SCROLLER */}
+        {/* SCROLLER WRAPPER */}
         <div
           className="relative w-full overflow-hidden"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
           {/* LEFT FADE */}
-          <div className="absolute left-0 top-0 h-full w-[40px] sm:w-[60px] md:w-[80px] bg-gradient-to-r from-[#0F1112] to-transparent z-10" />
+          <div className="absolute left-0 top-0 z-10 h-full w-[50px] sm:w-[80px] bg-gradient-to-r from-[#0F1112] to-transparent pointer-events-none" />
 
           {/* RIGHT FADE */}
-          <div className="absolute right-0 top-0 h-full w-[40px] sm:w-[60px] md:w-[80px] bg-gradient-to-l from-[#0F1112] to-transparent z-10" />
+          <div className="absolute right-0 top-0 z-10 h-full w-[50px] sm:w-[80px] bg-gradient-to-l from-[#0F1112] to-transparent pointer-events-none" />
 
           {/* TRACK */}
           <div
             ref={scrollRef}
             className="
-              flex items-center 
-              gap-[20px] sm:gap-[40px] md:gap-[48px] 
-              overflow-x-auto scrollbar-hide
-              scroll-smooth
+              flex
+              items-center
+              gap-x-[40px]
+              overflow-x-auto
+              whitespace-nowrap
+              scrollbar-hide
+              py-[16px]
             "
           >
-            {[...logos, ...logos].map((logo, i) => (
+            {[...logos, ...logos].map((logo, index) => (
               <div
-                key={i}
+                key={index}
                 className="
-                  flex items-center justify-center 
-                  min-w-[80px] sm:min-w-[120px] md:min-w-[140px] 
-                  group relative
+                  flex
+                  items-center
+                  justify-center
+                  min-w-[100px]
+                  sm:min-w-[140px]
+                  md:min-w-[160px]
+                  relative
+                  group
+                  flex-shrink-0
                 "
               >
+                {/* LOGO */}
                 <img
                   src={logo}
-                  alt="logo"
+                  alt={`company-logo-${index}`}
                   className="
-                    h-[20px] sm:h-[28px] md:h-[32px]
-                    object-contain
-                    grayscale opacity-60
-                    group-hover:grayscale-0 group-hover:opacity-100
-                    transition-all duration-300
-                  "
+    h-[32px]
+    sm:h-[32px]
+    md:h-[40px]
+    object-contain
+
+    opacity-90
+    brightness-110
+
+    transition-all
+    duration-300
+
+    hover:scale-110
+    hover:opacity-100
+    hover:brightness-125
+
+    relative
+    z-10
+  "
                 />
 
-                {/* glow */}
-                <div className="absolute opacity-0 group-hover:opacity-100 transition duration-500 blur-xl bg-white/10 w-[40px] h-[20px] sm:w-[60px] sm:h-[30px]" />
+                {/* GLOW EFFECT */}
+                <div
+                  className="
+                    absolute
+                    w-[60px]
+                    h-[30px]
+                    bg-white/10
+                    blur-2xl
+                    opacity-0
+                    transition-all
+                    duration-500
+                    group-hover:opacity-100
+                  "
+                />
               </div>
             ))}
           </div>

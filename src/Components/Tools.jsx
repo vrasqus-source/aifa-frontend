@@ -54,8 +54,6 @@
 //   );
 // }
 
-
-
 "use client";
 
 import { motion } from "framer-motion";
@@ -74,15 +72,48 @@ const tools = [
 
 export default function Tools() {
   return (
-    <section className="w-full bg-[#0F1112] flex justify-center py-[40px] sm:py-[64px] relative overflow-hidden">
-      
+    <section
+      className="
+        w-full
+        bg-[#0F1112]
+        flex
+        justify-center
+        items-center
+        relative
+        overflow-hidden
+
+        px-[16px]
+        sm:px-[40px]
+        md:px-[60px]
+        lg:px-[93px]
+
+        py-[40px]
+        sm:py-[64px]
+      "
+    >
       {/* SIDE FADE */}
       <div className="absolute left-0 top-0 h-full w-[40px] sm:w-[80px] md:w-[180px] bg-gradient-to-r from-[#0F1112] to-transparent z-10" />
+
       <div className="absolute right-0 top-0 h-full w-[40px] sm:w-[80px] md:w-[180px] bg-gradient-to-l from-[#0F1112] to-transparent z-10" />
 
-      {/* INNER CONTAINER */}
-      <div className="w-full max-w-[1180px] flex flex-col items-center gap-[28px] sm:gap-[48px] px-[16px] sm:px-[24px] lg:px-0 relative z-20">
-        
+      {/* MAIN CONTAINER */}
+      <div
+        className="
+          w-full
+          max-w-[1180px]
+
+          flex
+          flex-col
+          justify-center
+          items-center
+
+          gap-[28px]
+          sm:gap-[48px]
+
+          relative
+          z-20
+        "
+      >
         {/* HEADING */}
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
@@ -90,70 +121,113 @@ export default function Tools() {
           transition={{ duration: 0.6 }}
           className="
             text-[#F0F0F0]
-            font-montserrat font-black text-center
-            text-[20px] leading-[28px]
-            sm:text-[28px] sm:leading-[36px]
-            md:text-[32px] md:leading-[40px]
+            text-center
+            font-montserrat
+            font-black
+
+            text-[20px]
+            leading-[28px]
+
+            sm:text-[28px]
+            sm:leading-[36px]
+
+            md:text-[32px]
+            md:leading-[40px]
           "
         >
           TOOLS WE WILL USE
         </motion.h2>
 
         {/* ROWS */}
+        {/* ROWS */}
         <div className="w-full flex flex-col gap-[20px] sm:gap-[32px] overflow-hidden">
-          
           {[0, 1].map((row, rowIndex) => (
             <motion.div
               key={rowIndex}
-              className="flex gap-[12px] sm:gap-[20px] md:gap-[24px]"
+              className="flex gap-[16px]"
               animate={{
                 x: rowIndex % 2 === 0 ? ["0%", "-50%"] : ["-50%", "0%"],
               }}
               transition={{
-                duration: window.innerWidth < 640 ? 18 : 24, // ✅ faster mobile
+                duration: window.innerWidth < 640 ? 16 : 22,
                 repeat: Infinity,
                 ease: "linear",
               }}
             >
-              {[...tools, ...tools].map((tool, i) => {
-                const sizes = [
-                  "h-[48px] w-[48px] sm:h-[64px] sm:w-[64px]",
-                  "h-[60px] w-[60px] sm:h-[80px] sm:w-[80px]",
-                  "h-[72px] w-[72px] sm:h-[96px] sm:w-[96px]",
-                ];
+              {[...tools, ...tools].map((tool, i) => (
+                <motion.div
+                  key={i}
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{
+                    duration: 4 + (i % 2),
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="
+            group
 
-                return (
-                  <motion.div
-                    key={i}
-                    animate={{ y: [0, -4, 0] }} // ✅ softer on mobile
-                    transition={{
-                      duration: 4 + (i % 2),
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                    className={`
-                      flex items-center justify-center
-                      ${sizes[i % sizes.length]}
-                      bg-[#2A2D2E]
-                      rounded-[12px] sm:rounded-[16px]
-                      flex-shrink-0
-                      hover:scale-105
-                      transition
-                    `}
-                  >
-                    <div className="w-[50%] h-[50%] flex items-center justify-center">
-                      <img
-                        src={tool}
-                        alt="tool"
-                        className="max-w-full max-h-full object-contain opacity-80"
-                      />
-                    </div>
-                  </motion.div>
-                );
-              })}
+            flex
+            w-[170px]
+            h-[140px]
+            p-[20px]
+
+            justify-center
+            items-center
+            gap-[10px]
+
+            rounded-[15px]
+
+            bg-[#303133]
+
+            flex-shrink-0
+            relative
+            overflow-hidden
+
+            transition-all
+            duration-300
+
+            hover:scale-[1.03]
+            hover:bg-[#3A3B3D]
+          "
+                >
+                  {/* HOVER GLOW */}
+                  <div
+                    className="
+              absolute
+              inset-0
+              bg-white/5
+              opacity-0
+              group-hover:opacity-100
+              transition-all
+              duration-500
+            "
+                  />
+
+                  {/* IMAGE */}
+                  <div className="w-[130px] h-[100px] flex items-center justify-center relative z-10">
+                    <img
+                      src={tool}
+                      alt="tool"
+                      className="
+                max-w-full
+                max-h-full
+                object-contain
+
+                opacity-95
+                brightness-110
+
+                transition-all
+                duration-300
+
+                group-hover:scale-110
+                group-hover:brightness-125
+              "
+                    />
+                  </div>
+                </motion.div>
+              ))}
             </motion.div>
           ))}
-
         </div>
       </div>
     </section>
