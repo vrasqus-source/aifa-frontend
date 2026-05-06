@@ -174,7 +174,7 @@ export default function Tools() {
           {[0, 1].map((row, rowIndex) => (
             <motion.div
               key={rowIndex}
-              className="flex gap-[16px] "
+              className="flex gap-[16px]"
               animate={{
                 x: rowIndex % 2 === 0 ? ["0%", "-50%"] : ["-50%", "0%"],
               }}
@@ -194,78 +194,102 @@ export default function Tools() {
                     ease: "easeInOut",
                   }}
                   className="
-                    group
+            group
 
-                    flex
-                    w-[170px]
-                    h-[140px]
-                    p-[20px]
+            flex
+            w-[170px]
+            h-[140px]
 
-                    justify-center
-                    items-center
-                    gap-[10px]
+            p-[20px]
 
-                    rounded-[15px]
+            justify-center
+            items-center
 
-                    bg-[#303133]
+            gap-[10px]
 
-                    flex-shrink-0
-                    relative
-                    overflow-hidden
+            rounded-[15px]
 
-                    transition-all
-                    duration-300
+            bg-[#303133]
 
-                    hover:scale-[1.03]
-                    hover:bg-[#3A3B3D]
-                  "
+            flex-shrink-0
+            relative
+            overflow-hidden
+
+            transition-all
+            duration-300
+
+            hover:bg-[#3A3B3D]
+            hover:scale-[1.03]
+          "
                 >
                   {/* CENTER LIGHT EFFECT */}
                   <div
                     className="
-                      absolute
-                      inset-0
+              absolute
+              inset-0
 
-                      bg-gradient-to-r
-                      from-transparent
-                      via-white/[0.04]
-                      to-transparent
-                    "
+              bg-gradient-to-r
+              from-transparent
+              via-white/[0.05]
+              to-transparent
+            "
                   />
 
                   {/* HOVER GLOW */}
                   <div
                     className="
-                      absolute
-                      inset-0
-                      bg-white/5
-                      opacity-0
-                      group-hover:opacity-100
-                      transition-all
-                      duration-500
-                    "
+              absolute
+              inset-0
+
+              bg-white/5
+
+              opacity-0
+              group-hover:opacity-100
+
+              transition-all
+              duration-500
+            "
                   />
 
-                  {/* IMAGE */}
-                  <div className="w-[130px] h-[100px] flex items-center justify-center relative z-10">
-                    <img
-                      src={tool}
-                      alt="tool"
-                      className="
-                        max-w-full
-                        max-h-full
-                        object-contain
+                  {/* IMAGE BOX */}
+                 <div
+  className="
+    w-[100px]
+    h-[100px]
 
-                        opacity-95
-                        brightness-110
+    flex
+    justify-center
+    items-center
 
-                        transition-all
-                        duration-300
+    flex-shrink-0
+    aspect-square
 
-                        group-hover:scale-110
-                        group-hover:brightness-125
-                      "
-                    />
+    relative
+    z-10
+  "
+>
+  <img
+    src={tool}
+    alt="tool"
+    className="
+      w-[100px]
+      h-[100px]
+
+      object-cover
+
+      mix-blend-luminosity
+
+      opacity-95
+      brightness-110
+
+      transition-all
+      duration-300
+
+      group-hover:scale-110
+      group-hover:brightness-125
+    "
+  />
+
                   </div>
                 </motion.div>
               ))}
