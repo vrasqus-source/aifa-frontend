@@ -511,22 +511,22 @@ const bootcamps = [
   {
     title: "AI Lego Animation Workshop",
     image: "/bootcamp/bootcamp1.png",
-    duration: "35 HOURS",
-    price: "USD 999.00",
+    duration: "3 HOURS",
+    price: " 199.00",
     mode: "ONLINE",
   },
   {
     title: "AI Superhero Cinematic Workshop",
     image: "/bootcamp/bootcamp2.jpg",
-    duration: "35 HOURS",
-    price: "USD 999.00",
+    duration: "3 HOURS",
+    price: "USD 199.00",
     mode: "ONLINE",
   },
   {
     title: "AI Sci-Fi Movie Creator",
     image: "/bootcamp/bootcamp3.jpg",
-    duration: "35 HOURS",
-    price: "USD 999.00",
+    duration: "3 HOURS",
+    price: "USD 199.00",
     mode: "ONLINE",
   },
 ];
@@ -560,8 +560,10 @@ lg:px-[60px] flex flex-col gap-[32px] sm:gap-[48px]"
               {/* GRID STRUCTURE */}
               <div className="grid grid-cols-1 lg:grid-cols-[266px_1fr] grid-rows-[auto_auto] gap-[8px] p-[12px] sm:p-[16px]">
                 {/* IMAGE */}
-                <div className="w-full h-[180px] sm:h-[200px] lg:w-[266px] lg:h-[200px] overflow-hidden rounded-[20px]
-">
+                <div
+                  className="w-full h-[180px] sm:h-[200px] lg:w-[266px] lg:h-[200px] overflow-hidden rounded-[20px]
+"
+                >
                   <img
                     src={item.image}
                     alt={item.title}
@@ -582,8 +584,25 @@ lg:px-[60px] flex flex-col gap-[32px] sm:gap-[48px]"
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-[8px]">
                     {/* Duration */}
                     <div className="flex flex-col p-[12px] sm:p-[20px] gap-[6px] bg-[#DCDCDC] rounded-[8px]">
-                      <p className="text-[10px] sm:text-[12px] font-semibold text-[#414243]">
-                        Duration
+                      <p
+                        className="
+    flex
+    items-center
+    gap-[4px]
+
+    text-[10px]
+    sm:text-[12px]
+
+    font-semibold
+    text-[#414243]
+  "
+                      >
+                        <img
+                          src="/Clockicon.svg"
+                          alt="clock"
+                          className="w-[12px] h-[12px] object-contain"
+                        />
+                        DURATION
                       </p>
                       <p className="text-[12px] sm:text-[14px] font-bold text-[#282A2C]">
                         {item.duration}
@@ -592,8 +611,25 @@ lg:px-[60px] flex flex-col gap-[32px] sm:gap-[48px]"
 
                     {/* Pricing */}
                     <div className="flex flex-col p-[12px] sm:p-[20px] gap-[6px] bg-[#DCDCDC] rounded-[8px]">
-                      <p className="text-[10px] sm:text-[12px] font-semibold text-[#414243]">
-                        Pricing
+                      <p
+                        className="
+    flex
+    items-center
+    gap-[4px]
+
+    text-[10px]
+    sm:text-[12px]
+
+    font-semibold
+    text-[#414243]
+  "
+                      >
+                        <img
+                          src="/moneyicon.svg"
+                          alt="money"
+                          className="w-[12px] h-[12px] object-contain"
+                        />
+                        PRICING
                       </p>
                       <p className="text-[12px] sm:text-[14px] font-bold text-[#282A2C]">
                         {item.price}
@@ -602,8 +638,25 @@ lg:px-[60px] flex flex-col gap-[32px] sm:gap-[48px]"
 
                     {/* Mode */}
                     <div className="flex flex-col p-[12px] sm:p-[20px] gap-[6px] bg-[#DCDCDC] rounded-[8px]">
-                      <p className="text-[10px] sm:text-[12px] font-semibold text-[#414243]">
-                        Mode
+                      <p
+                        className="
+    flex
+    items-center
+    gap-[4px]
+
+    text-[10px]
+    sm:text-[12px]
+
+    font-semibold
+    text-[#414243]
+  "
+                      >
+                        <img
+                          src="/laptopicon.svg"
+                          alt="laptop"
+                          className="w-[12px] h-[12px] object-contain"
+                        />
+                        MODE
                       </p>
                       <p className="text-[12px] sm:text-[14px] font-bold text-[#282A2C]">
                         {item.mode}

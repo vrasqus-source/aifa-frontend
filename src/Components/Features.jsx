@@ -75,15 +75,43 @@
 "use client";
 
 import { motion } from "framer-motion";
-
 const features = [
-  { image: "/video/video1.jpg", title: "Hire Top AI Talent" },
-  { image: "/video/video2.jpg", title: "Explore AI Job Opportunities" },
-  { image: "/video/video3.jpg", title: "Access Powerful AI Resources" },
-  { image: "/video/video4.jpg", title: "Join the Creator Community" },
-  { image: "/video/video5.jpg", title: "Get End-to-End AI Services" },
-  { image: "/video/video6.jpg", title: "Upgrade to Pro Membership" },
-];
+  {
+    image: "/video/video1.jpg",
+    title: "Hire Top AI Talent",
+    desc: "Work with skilled creators for your next project. Find professionals ready to bring your ideas to life.",
+  },
+
+  {
+    image: "/video/video2.jpg",
+    title: "Explore AI Job Opportunities",
+    desc: "Discover roles in AI filmmaking and creative tech. Apply to companies building the future of content.",
+  },
+
+  {
+    image: "/video/video3.jpg",
+    title: "Access Powerful AI Resources",
+    desc: "Learn faster with curated tools, prompts, and workflows.",
+  },
+
+  {
+    image: "/video/video4.jpg",
+    title: "Join the Creator Community",
+    desc: "Connect, collaborate, and grow with fellow creators. Be part of discussions, challenges, and live events.",
+  },
+
+  {
+    image: "/video/video5.jpg",
+    title: "Get End-to-End AI Services",
+    desc: "From concept to final cut, we handle everything. Create high-quality, impactful content with ease.",
+  },
+
+  {
+    image: "/video/video6.jpg",
+    title: "Upgrade to Pro Membership",
+    desc: "Unlock premium tools, content, and exclusive access. Get priority features and insider opportunities.",
+  },
+]
 
 export default function Features() {
   return (
@@ -124,18 +152,7 @@ export default function Features() {
               className="group relative"
             >
               {/* CARD */}
-              <div
-                className="
-                  bg-white/5 backdrop-blur-lg
-                  border border-white/10
-                  rounded-[16px] sm:rounded-[24px]
-                  overflow-hidden
-                  flex flex-col
-                  gap-[16px] sm:gap-[24px]
-                  h-full
-                  transition
-                "
-              >
+              <div>
                 {/* IMAGE */}
                 <div className="relative w-full overflow-hidden rounded-[20px] sm:rounded-[72px]">
                   <motion.img
@@ -172,27 +189,41 @@ export default function Features() {
                       leading-[18px] sm:leading-[20px]
                     "
                   >
-                    Ensure your video plays in the highest resolution, always
-                    ad-free. No competitor distributions or random suggestions
-                    here.
+                   {item.desc}
                   </p>
 
                   {/* BUTTON */}
-                  <motion.button
-                    whileTap={{ scale: 0.96 }}
-                    className="
-                      w-full
-                      flex items-center justify-center gap-[4px]
-                      px-[20px] sm:px-[30px]
-                      py-[10px] sm:py-[12px]
-                      bg-[#303133] text-[#F0F0F0]
-                      text-[12px] sm:text-[14px]
-                      font-medium font-montserrat
-                      rounded-[6px] sm:rounded-[8px]
-                      hover:bg-[#3A3B3C]
-                      transition
-                    "
-                  >
+                 <motion.button
+  whileTap={{ scale: 0.96 }}
+  className="
+    flex
+    w-[352px]
+
+    px-[30px]
+    py-[12px]
+
+    justify-center
+    items-center
+
+    gap-[4px]
+
+    self-stretch
+
+    rounded-[8px]
+
+    bg-[#303133]
+
+    text-[#F0F0F0]
+    text-[14px]
+    font-medium
+    font-montserrat
+
+    transition-all
+    duration-300
+
+    hover:bg-[#3A3B3C]
+  "
+>
                     LEARN MORE
                     <img
                       src="/Arrowleftnew.svg"

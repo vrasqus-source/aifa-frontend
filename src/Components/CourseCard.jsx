@@ -194,7 +194,7 @@ export default function CourseCard() {
         {/* BOTTOM BAR */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-[8px] sm:gap-[10px]">
           {/* ITEM */}
-          <div className="bg-[#414243] rounded-[10px] sm:rounded-[12px] px-[14px] sm:px-[20px] py-[12px] sm:py-[18px] flex flex-col gap-[6px]">
+          <div className="bg-[#434141] rounded-[10px] sm:rounded-[12px] px-[14px] sm:px-[20px] py-[12px] sm:py-[18px] flex flex-col gap-[6px]">
             <div className="flex items-center gap-[6px]">
               <img
                 src="/Tagicon.svg"

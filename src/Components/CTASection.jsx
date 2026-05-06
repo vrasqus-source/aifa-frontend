@@ -21,7 +21,7 @@ export default function CTASection() {
           {/* HEADING */}
           <h2
             className="
-              text-[#000000] font-montserrat font-black 
+              text-[#000000] font-montserrat font-bold
               text-[20px] leading-[26px] 
               sm:text-[36px] sm:leading-[42px] 
               md:text-[48px] md:leading-[56px] 
