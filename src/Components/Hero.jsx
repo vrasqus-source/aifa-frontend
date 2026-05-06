@@ -374,21 +374,25 @@ import { useState, useEffect, useRef } from "react";
 const slides = [
   {
     video: "/hero/web1.mp4",
+    thumb: "/hero/hero1.jpg",
     tag: "FILMS",
     title: "CREATE HOLLYWOOD STYLE AI FILMS",
   },
   {
     video: "/hero/web2.mp4",
+   thumb: "/hero/hero2.jpg",
     tag: "MENTORSHIP",
     title: "TRAIN WITH INDUSTRY EXPERTS",
   },
   {
     video: "/hero/web4.mp4",
+    thumb: "/hero/hero3.jpg",
     tag: "PROJECTS",
     title: "BUILD REAL PROJECTS",
   },
   {
     video: "/hero/web5.mp4",
+    thumb: "/hero/hero4.jpg",
     tag: "EARNINGS",
     title: "EARN WITH YOUR SKILLS",
   },
@@ -608,7 +612,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* RIGHT SIDE VIDEO THUMBNAILS */}
+      {/* RIGHT SIDE IMAGE THUMBNAILS */}
       <div
         className="
           absolute
@@ -651,7 +655,7 @@ export default function Hero() {
               }
             `}
           >
-            {/* VIDEO BOX */}
+            {/* THUMB IMAGE */}
             <div
               className="
                 relative
@@ -667,27 +671,25 @@ export default function Hero() {
                 overflow-hidden
               "
             >
-              <video
-                src={slide.video}
-                muted
-                autoPlay
-                loop
-                playsInline
+              <img
+                src={slide.thumb}
+                alt={slide.title}
                 className="
                   w-full
                   h-full
 
                   object-cover
 
-                  transition-transform
+                  transition-all
                   duration-[1200ms]
 
-                  group-hover:-translate-y-[12px]
+                  group-hover:scale-[1.08]
+                  group-hover:-translate-y-[6px]
                 "
               />
             </div>
 
-            {/* OVERLAY */}
+            {/* DARK OVERLAY */}
             <div
               className="
                 absolute
