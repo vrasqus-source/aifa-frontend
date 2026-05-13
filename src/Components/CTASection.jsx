@@ -4,7 +4,7 @@ export default function CTASection() {
   return (
     <section className="w-full bg-[#0F1112] flex justify-center overflow-x-hidden">
       {/* OUTER FRAME */}
-      <div className="w-full max-w-[1366px] px-[16px] sm:px-[40px] lg:px-[93px] py-[40px] sm:py-[64px] flex flex-col items-center gap-[10px]">
+      <div className="w-full max-w-[1400px] px-[16px] sm:px-[40px] lg:px-[93px] py-[40px] sm:py-[64px] flex flex-col items-center gap-[10px]">
         {/* INNER CARD */}
         <div className="w-full bg-[#A893CF] rounded-[20px] sm:rounded-[40px] py-[40px] sm:py-[64px] flex flex-col items-center text-center">
           {/* AVATAR */}

@@ -140,28 +140,31 @@ export default function Directors() {
   }, []);
 
   return (
-   <section className="w-full bg-[#0F1112] flex justify-center py-[64px] overflow-hidden">
-    <div className="
-  w-full max-w-[1180px]
+    <section className="w-full bg-[#0F1112] flex justify-center py-[64px] overflow-hidden">
+      <div
+        className="
+  w-full max-w-[1366px]
   flex flex-col md:flex-row
   justify-between items-center
   gap-[40px] md:gap-[64px]
   px-[16px] sm:px-[24px] lg:px-0
-">
+"
+      >
         {/* LEFT */}
         <div className="flex-1 text-center md:text-left">
-          <h2 className="text-[#F0F0F0] font-montserrat font-black 
+          <h2
+            className="text-[#F0F0F0] font-montserrat font-black 
           text-[36px] leading-[42px] 
           sm:text-[48px] sm:leading-[56px] 
           md:text-[64px] md:leading-[70px] 
-          mb-4 md:mb-6">
+          mb-4 md:mb-6"
+          >
             LEARN FROM THE INDUSTRY <br /> LEADERS
           </h2>
         </div>
 
         {/* RIGHT - CAROUSEL */}
         <div className="hidden md:flex relative justify-center items-center h-[420px] flex-1 overflow-hidden [perspective:1000px]">
-
           {/* SIDE FADE */}
           <div className="pointer-events-none absolute left-0 top-0 h-full w-32 bg-gradient-to-r from-[#0B0F10] to-transparent z-40" />
           <div className="pointer-events-none absolute right-0 top-0 h-full w-32 bg-gradient-to-l from-[#0B0F10] to-transparent z-40" />
@@ -188,7 +191,6 @@ export default function Directors() {
                 }}
                 className="absolute cursor-pointer"
               >
-
                 {/* CARD */}
                 <div
                   className={`group w-[218px] h-[352px] rounded-[32px] overflow-hidden relative 
@@ -200,7 +202,6 @@ export default function Directors() {
                   } 
                   transition`}
                 >
-
                   {/* IMAGE */}
                   <img
                     src={item.image}
@@ -213,22 +214,23 @@ export default function Directors() {
 
                   {/* TEXT */}
                   <div className="absolute bottom-6 w-full px-4 flex flex-col items-center text-center">
-
                     {/* NAME */}
-                    <p className="text-[#F0F0F0] font-montserrat font-bold 
-                    text-[16px] leading-[24px] uppercase tracking-[0.05em]">
+                    <p
+                      className="text-[#F0F0F0] font-montserrat font-bold 
+                    text-[16px] leading-[24px] uppercase tracking-[0.05em]"
+                    >
                       {item.name}
                     </p>
 
                     {/* ROLE */}
-                    <p className="text-[#9CA3AF] font-montserrat font-medium 
-                    text-[13px] leading-[20px]">
+                    <p
+                      className="text-[#9CA3AF] font-montserrat font-medium 
+                    text-[13px] leading-[20px]"
+                    >
                       {item.role}
                     </p>
-
                   </div>
                 </div>
-
               </motion.div>
             );
           })}

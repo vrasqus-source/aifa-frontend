@@ -41,10 +41,10 @@ export default function Companies() {
   const logos = [
     "/logos/companylogo1.png",
     "/logos/companylogo2.png",
-    
+
     "/logos/companylogo4.png",
     "/logos/companylogo5.png",
-    
+
     "/logos/companylogo7.png",
     "/logos/companylogo8.png",
     "/logos/companylogo9.png",
@@ -60,16 +60,16 @@ export default function Companies() {
 
     let animationFrame;
 
-    // MORE SPEED
-    const speed = window.innerWidth < 640 ? 1.5 : 1.2;
+    // SMOOTH SPEED
+    const speed = 1;
 
     const autoScroll = () => {
       if (!isPaused) {
         el.scrollLeft += speed;
 
-        // INFINITE LOOP
+        // SMOOTH INFINITE LOOP
         if (el.scrollLeft >= el.scrollWidth / 2) {
-          el.scrollLeft = 0;
+          el.scrollLeft -= el.scrollWidth / 2;
         }
       }
 
@@ -84,7 +84,7 @@ export default function Companies() {
   return (
     <section className="w-full bg-[#0F1112] flex justify-center py-[40px] sm:py-[64px] overflow-hidden">
       {/* CONTAINER */}
-      <div className="w-full max-w-[1180px] flex flex-col items-center gap-[24px] px-[16px] sm:px-[24px] lg:px-0">
+      <div className="w-full max-w-[1440px] flex flex-col items-center gap-[24px] px-[16px] sm:px-[24px] lg:px-0">
         {/* TITLE */}
         <h2
           className="
@@ -122,8 +122,8 @@ export default function Companies() {
             className="
               flex
               items-center
-              gap-x-[40px]
-              overflow-x-auto
+         gap-x-[28px] sm:gap-x-[40px]
+              overflow-x-hidden
               whitespace-nowrap
               scrollbar-hide
               py-[16px]
@@ -149,24 +149,24 @@ export default function Companies() {
                   src={logo}
                   alt={`company-logo-${index}`}
                   className="
-    h-[32px]
-    sm:h-[32px]
-    md:h-[40px]
-    object-contain
+                    h-[32px]
+                    sm:h-[32px]
+                    md:h-[40px]
+                    object-contain
 
-    opacity-90
-    brightness-110
+                    opacity-90
+                    brightness-110
 
-    transition-all
-    duration-300
+                    transition-all
+                    duration-300
 
-    hover:scale-110
-    hover:opacity-100
-    hover:brightness-125
+                    hover:scale-110
+                    hover:opacity-100
+                    hover:brightness-125
 
-    relative
-    z-10
-  "
+                    relative
+                    z-10
+                  "
                 />
 
                 {/* GLOW EFFECT */}

@@ -116,7 +116,7 @@ const features = [
 export default function Features() {
   return (
     <section className="w-full bg-[#0F1112] flex justify-center py-[40px] sm:py-[64px]">
-      <div className="w-full max-w-[1180px] flex flex-col gap-[32px] sm:gap-[64px] px-[16px] sm:px-[24px] lg:px-0">
+      <div className="w-full max-w-[1400px] flex flex-col gap-[32px] sm:gap-[64px] px-[16px] sm:px-[24px] lg:px-0">
         {/* TITLE */}
         <motion.h2
           initial={{ opacity: 0, y: 40 }}

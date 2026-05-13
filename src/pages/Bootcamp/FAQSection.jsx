@@ -27,119 +27,229 @@ const faqs = [
 ];
 
 export default function FAQSection() {
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState(0);
 
   const toggle = (i) => {
     setOpenIndex(openIndex === i ? null : i);
   };
 
   return (
-    <section className="w-full bg-[#070B14] flex justify-center">
-      {/* FIGMA CONTAINER */}
+    <section
+      className="
+        w-full
+        bg-[#0F1112]
+
+        flex
+        justify-center
+      "
+    >
+      {/* FIGMA EXACT CONTAINER */}
       <div
         className="
-        w-full max-w-[1180px]
+          w-full
+          max-w-[1366px]
 
-        px-[16px] sm:px-[40px] lg:px-[93px]
-        py-[40px] sm:py-[64px]
+          px-[93px]
+          py-[64px]
 
-        flex flex-col items-center
-        gap-[24px] sm:gap-[32px]
-      "
-      >
-        {/* TOP TEXT */}
-        <p className="text-[#9CA3AF] text-[12px] sm:text-[14px] uppercase tracking-wide">
-          NEED MORE DETAILS?
-        </p>
+          flex
+          flex-col
 
-        {/* HEADING */}
-        <h2
-          className="
-          text-[#F0F0F0]
-          font-black
+          items-start
 
-          text-[24px]
-          sm:text-[32px]
-          md:text-[40px]
+          gap-[30px]
 
-          leading-[30px]
-          sm:leading-[38px]
-          md:leading-[48px]
-
-          text-center
+          bg-[#0F1112]
         "
+      >
+        {/* INNER WRAPPER */}
+        <div
+          className="
+            w-full
+            max-w-[1180px]
+
+            flex
+            flex-col
+
+            gap-[40px]
+          "
         >
-          FREQUENTLY-ASKED QUESTIONS
-        </h2>
+          {/* TOP */}
+          <div
+            className="
+              flex
+              flex-col
 
-        {/* FAQ LIST */}
-        <div className="w-full flex flex-col gap-[10px] sm:gap-[16px] mt-[8px]">
-          {faqs.map((item, index) => (
-            <div
-              key={index}
-              className="border border-white/10 rounded-[16px] bg-[#0F1112] overflow-hidden"
+              items-center
+
+              gap-[14px]
+            "
+          >
+            {/* SMALL TEXT */}
+            <p
+              className="
+                text-[#D0E46A]
+
+                text-[16px]
+                font-bold
+
+                uppercase
+
+                tracking-[1px]
+
+                leading-[24px]
+              "
             >
-              {/* QUESTION */}
-              <button
-                onClick={() => toggle(index)}
-                className="
-                  w-full flex justify-between items-center
+              NEED MORE DETAILS?
+            </p>
 
-                  px-[16px] sm:px-[24px]
-                  py-[14px] sm:py-[18px]
+            {/* HEADING */}
+            <h2
+              className="
+                text-[#F0F0F0]
 
-                  text-left text-[#F0F0F0]
-                "
-              >
-                <span
-                  className="
-                  font-bold
+                text-center
 
-                  text-[14px]
-                  sm:text-[18px]
-                  md:text-[20px]
+                font-black
 
-                  leading-[20px]
-                  sm:leading-[26px]
-                  md:leading-[28px]
+                text-[64px]
+                leading-[72px]
 
-                  pr-4
-                "
-                >
-                  {item.q}
-                </span>
+                tracking-[-1.5px]
+              "
+            >
+              FREQUENTLY-ASKED
+              <br />
+              QUESTIONS
+            </h2>
+          </div>
 
-                <span className="text-[12px] sm:text-[14px]">
-                  {openIndex === index ? <FaMinus /> : <FaPlus />}
-                </span>
-              </button>
+          {/* FAQ LIST */}
+          <div
+            className="
+              w-full
 
-              {/* ANSWER */}
+              flex
+              flex-col
+
+              gap-[16px]
+            "
+          >
+            {faqs.map((item, index) => (
               <div
-                className={`
-                  px-[16px] sm:px-[24px]
-                  transition-all duration-300
+                key={index}
+                className="
+                  w-full
+
+                  rounded-[24px]
+
+                  border
+                  border-[#343638]
+
+                  bg-[#282A2C]
+
                   overflow-hidden
 
-                  ${
-                    openIndex === index
-                      ? "max-h-[300px] pb-[14px] sm:pb-[18px] opacity-100"
-                      : "max-h-0 opacity-0"
-                  }
-
-                  text-[#DCDCDC]
-
-                  text-[13px]
-                  sm:text-[16px]
-
-                  leading-[20px]
-                  sm:leading-[26px]
-                `}
+                  transition-all
+                  duration-300
+                "
               >
-                {item.a}
+                {/* QUESTION */}
+                <button
+                  onClick={() => toggle(index)}
+                  className="
+                    w-full
+
+                    flex
+                    items-center
+                    justify-between
+
+                    px-[24px]
+                    py-[22px]
+
+                    text-left
+                  "
+                >
+                  {/* QUESTION TEXT */}
+                  <span
+                    className="
+                      text-[#F0F0F0]
+
+                      font-black
+
+                      text-[24px]
+                      leading-[34px]
+
+                      tracking-[-0.5px]
+
+                      pr-[20px]
+                    "
+                  >
+                    {item.q}
+                  </span>
+
+                  {/* ICON */}
+                  <span
+                    className="
+                      flex
+                      items-center
+                      justify-center
+
+                      min-w-[44px]
+                      h-[44px]
+
+                      rounded-full
+
+                      bg-[#3A3D3F]
+
+                      text-[#F0F0F0]
+
+                      text-[14px]
+
+                      shrink-0
+                    "
+                  >
+                    {openIndex === index ? <FaMinus /> : <FaPlus />}
+                  </span>
+                </button>
+
+                {/* ANSWER */}
+                <div
+                  className={`
+                    transition-all
+                    duration-500
+                    overflow-hidden
+
+                    ${
+                      openIndex === index
+                        ? "max-h-[300px] opacity-100"
+                        : "max-h-0 opacity-0"
+                    }
+                  `}
+                >
+                  <div
+                    className="
+                      px-[24px]
+                      pb-[24px]
+                    "
+                  >
+                    <p
+                      className="
+                        max-w-[1000px]
+
+                        text-[#CFCFCF]
+
+                        text-[16px]
+                        leading-[28px]
+                      "
+                    >
+                      {item.a}
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -67,7 +67,7 @@ const tools = [
   "/Tools/newicon7.svg",
   "/Tools/newicon8.png",
   "/Tools/newicon9.png",
-    "/Tools/newicon9.png",
+  "/Tools/newicon9.png",
 ];
 
 export default function Tools() {
@@ -91,8 +91,6 @@ export default function Tools() {
         sm:py-[64px]
       "
     >
-      {/* LEFT BLACK SHADOW */}
-      {/* LEFT BLACK SHADOW */}
       {/* LEFT SHADOW */}
       <div
         className="
@@ -100,8 +98,8 @@ export default function Tools() {
     left-0
     top-0
     h-full
-    w-[220px]
-    sm:w-[300px]
+    w-[60px]
+sm:w-[120px]
     z-40
     pointer-events-none
   "
@@ -118,8 +116,8 @@ export default function Tools() {
     right-0
     top-0
     h-full
-    w-[220px]
-    sm:w-[300px]
+   w-[60px]
+sm:w-[120px]
     z-40
     pointer-events-none
   "
@@ -132,7 +130,7 @@ export default function Tools() {
       <div
         className="
           w-full
-          max-w-[1180px]
+          max-w-[1400px]
 
           flex
           flex-col
@@ -198,8 +196,11 @@ export default function Tools() {
             group
 
             flex
-            w-[170px]
-            h-[140px]
+           w-[140px]
+sm:w-[170px]
+
+h-[120px]
+sm:h-[140px]
 
             p-[20px]
 
@@ -253,8 +254,8 @@ export default function Tools() {
                   />
 
                   {/* IMAGE BOX */}
-                 <div
-  className="
+                  <div
+                    className="
     w-[100px]
     h-[100px]
 
@@ -268,11 +269,11 @@ export default function Tools() {
     relative
     z-10
   "
->
-  <img
-    src={tool}
-    alt="tool"
-    className="
+                  >
+                    <img
+                      src={tool}
+                      alt="tool"
+                      className="
       w-[100px]
       h-[100px]
 
@@ -289,8 +290,7 @@ export default function Tools() {
       group-hover:scale-110
       group-hover:brightness-125
     "
-  />
-
+                    />
                   </div>
                 </motion.div>
               ))}

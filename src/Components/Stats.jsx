@@ -3,7 +3,7 @@
 export default function Stats() {
   return (
     <section className="w-full bg-[#0B0F10] flex justify-center">
-      <div className="w-[1366px] px-[93px] py-[64px] flex flex-col items-center gap-[64px] text-center">
+      <div className="w-[1400px] px-[93px] py-[64px] flex flex-col items-center gap-[64px] text-center">
         {/* HEADING */}
         <h2
           className="text-[#F0F0F0] font-montserrat font-black 

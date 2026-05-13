@@ -25,119 +25,183 @@ const steps = [
 
 export default function WhoSection() {
   return (
-    <section className="w-full bg-[#070B14] flex justify-center">
-      {/* FIGMA CONTAINER */}
+    <section
+      className="
+        w-full
+        bg-[#0F1112]
+
+        flex
+        justify-center
+      "
+    >
+      {/* FIGMA EXACT CONTAINER */}
       <div
         className="
-        w-full max-w-[1180px]
+          w-full
+          max-w-[1366px]
 
-        px-[16px] sm:px-[40px] lg:px-[93px]
-        py-[40px] sm:py-[64px]
+          px-[93px]
+          py-[64px]
 
-        grid lg:grid-cols-2
-        gap-[32px] sm:gap-[48px]
-        items-center
-      "
+          flex
+          flex-col
+          items-start
+
+          gap-[10px]
+
+          bg-[#0F1112]
+        "
       >
-        {/* LEFT */}
-        <div>
-          <p
-            className="
-            text-[#F0F0F0]
-            font-bold
+        {/* INNER WRAPPER */}
+        <div
+          className="
+            w-full
+            max-w-[1180px]
 
-            text-[14px]
-            sm:text-[16px]
-            md:text-[18px]
+            grid
+            grid-cols-2
 
-            leading-[22px]
-            sm:leading-[26px]
-            md:leading-[28px]
+            items-center
 
-            mb-2 sm:mb-3
+            gap-[80px]
           "
-          >
-            WHO IT’S FOR?
-          </p>
-
-          <h2
+        >
+          {/* LEFT SIDE */}
+          <div
             className="
-            text-[#F0F0F0]
-            font-black
+              flex
+              flex-col
 
-            text-[28px]
-            sm:text-[40px]
-            md:text-[48px]
+              items-start
 
-            leading-[34px]
-            sm:leading-[44px]
-            md:leading-[52px]
-
-            mb-4 sm:mb-6
-          "
+              gap-[18px]
+            "
           >
-            RECRUITMENT <br /> PROCESS
-          </h2>
-
-          <p
-            className="
-            text-[#DCDCDC]
-            text-[13px] sm:text-[14px]
-            leading-[20px] sm:leading-[22px]
-            max-w-[420px]
-          "
-          >
-            Designed for creators, professionals, and beginners looking to build
-            with AI.
-          </p>
-        </div>
-
-        {/* RIGHT */}
-        <div className="flex flex-col gap-[12px] sm:gap-[16px]">
-          {steps.map((step, index) => (
-            <div
-              key={index}
+            {/* SMALL LABEL */}
+            <p
               className="
-                bg-[#282A2C]
-                border border-white/10
-                rounded-[16px]
+                text-[#D0E46A]
 
-                px-[16px] sm:px-[20px]
-                py-[14px] sm:py-[18px]
+                text-[18px]
+                font-bold
 
-                transition duration-300
-                hover:scale-[1.02]
+                uppercase
+                tracking-[1px]
+
+                leading-[28px]
               "
             >
-              <h3
-                className="
+              WHO IT’S FOR?
+            </p>
+
+            {/* MAIN HEADING */}
+            <h2
+              className="
                 text-[#F0F0F0]
+
                 font-black
 
-                text-[16px]
-                sm:text-[20px]
-                md:text-[22px]
+                text-[64px]
+                leading-[72px]
 
-                leading-[22px]
-                sm:leading-[28px]
-
-                mb-1
+                tracking-[-1.5px]
               "
-              >
-                {step.title}
-              </h3>
+            >
+              RECRUITMENT
+              <br />
+              PROCESS
+            </h2>
 
-              <p
+            {/* DESCRIPTION */}
+            <p
+              className="
+                max-w-[470px]
+
+                text-[#CFCFCF]
+
+                text-[18px]
+                leading-[30px]
+              "
+            >
+              Designed for creators, professionals, and beginners looking to
+              build with AI.
+            </p>
+          </div>
+
+          {/* RIGHT SIDE */}
+          <div
+            className="
+              w-full
+
+              flex
+              flex-col
+
+              gap-[16px]
+            "
+          >
+            {steps.map((step, index) => (
+              <div
+                key={index}
                 className="
-                text-[#DCDCDC]
-                text-[12px] sm:text-[13px]
-                leading-[18px] sm:leading-[20px]
-              "
+                  flex
+                  flex-col
+
+                  items-start
+
+                  gap-[10px]
+
+                  self-stretch
+
+                  p-[15px]
+
+                  rounded-[24px]
+
+                  bg-[#282A2C]
+
+                  border
+                  border-[#343638]
+
+                  transition-all
+                  duration-300
+
+                  hover:border-[#D0E46A]
+                  hover:translate-x-[6px]
+                "
               >
-                {step.desc}
-              </p>
-            </div>
-          ))}
+                {/* TITLE */}
+                <h3
+                  className="
+                    self-stretch
+
+                    text-[#F0F0F0]
+
+                    font-black
+
+                    text-[24px]
+                    leading-[32px]
+
+                    tracking-[-0.5px]
+                  "
+                >
+                  {step.title}
+                </h3>
+
+                {/* DESCRIPTION */}
+                <p
+                  className="
+                    self-stretch
+
+                    text-[#CFCFCF]
+
+                    text-[15px]
+                    leading-[24px]
+                  "
+                >
+                  {step.desc}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

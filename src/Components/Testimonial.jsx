@@ -41,7 +41,7 @@ export default function Testimonial() {
     <section className="w-full bg-[#0F1112] flex justify-center">
       <div
         className="
-        w-full max-w-[1366px] 
+        w-full max-w-[1400px] 
         px-[16px] sm:px-[24px] md:px-[93px] 
         py-[40px] sm:py-[64px] 
         flex flex-col md:flex-row 

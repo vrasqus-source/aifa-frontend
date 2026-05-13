@@ -146,8 +146,13 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
       items-center
       justify-between
 
-      px-[93px]
-      py-[20px]
+      px-[16px]
+py-[14px]
+
+sm:px-[20px]
+md:px-[40px]
+lg:px-[93px]
+lg:py-[20px]
     "
       >
         {/* LOGO */}
@@ -156,7 +161,7 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
             <img
               src="/logos/aifabetalogo.svg"
               alt="logo"
-              className="h-6 cursor-pointer"
+              className="h-[20px] sm:h-[22px] lg:h-6 cursor-pointer"
             />
           </Link>
           {/* BETA BADGE */}
@@ -317,8 +322,8 @@ export default function Navbar({ onLoginClick, onSignupClick }) {
           <button
             onClick={() => setOpen(!open)}
             className="
-      w-[42px]
-      h-[42px]
+      w-[40px]
+h-[40px]
       flex
       items-center
       justify-center

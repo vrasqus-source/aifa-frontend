@@ -133,7 +133,7 @@ export default function Courses() {
 
   return (
     <section className="w-full overflow-x-hidden bg-[#0F1112] flex justify-center py-[40px] sm:py-[64px]">
-      <div className="w-full max-w-[1180px] flex flex-col gap-[32px] sm:gap-[48px] px-[16px] sm:px-[24px] lg:px-0">
+      <div className="w-full max-w-[1400px] flex flex-col gap-[32px] sm:gap-[48px] px-[16px] sm:px-[24px] lg:px-0">
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-[16px]">
           <h2 className="text-[#F0F0F0] font-montserrat font-black text-[22px] sm:text-[32px] md:text-[40px] text-center sm:text-left">

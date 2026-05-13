@@ -5,77 +5,283 @@ import { FaArrowRight } from "react-icons/fa";
 const testimonials = [
   {
     name: "Prerna Singh",
-    role: "Ravi Teja is an AI Filmmaker.",
+    role: "AI Filmmaker & Creator",
     text: "He specializes in helping creators transform ideas into cinematic visuals using AI—leveraging emerging tools not just for experimentation, but to build real-world, monetizable creative projects.",
     img: "/test1.png",
   },
   {
     name: "David Robert",
-    role: "Ravi Teja is an AI Filmmaker.",
-    text: "He specializes in helping creators transform ideas into cinematic visuals using AI—leveraging emerging tools not just for experimentation, but to build real-world, monetizable creative projects.",
+    role: "Content Creator",
+    text: "The course structure was incredibly practical and easy to follow. I started creating professional AI ads within weeks and landed freelance projects shortly after.",
     img: "/test1.png",
   },
   {
     name: "Tejasvi Kalbu",
-    role: "Ravi Teja is an AI Filmmaker.",
-    text: "He specializes in helping creators transform ideas into cinematic visuals using AI—leveraging emerging tools not just for experimentation, but to build real-world, monetizable creative projects.",
+    role: "Visual Designer",
+    text: "What stood out most was the mentorship and workflow clarity. Every module felt premium and directly applicable to real-world creative work.",
     img: "/test1.png",
   },
 ];
 
 export default function TestimonialsSection() {
   return (
-    <section className="w-full bg-[#070B14] flex justify-center">
-      {/* CONTAINER */}
-      <div className="w-full max-w-[1180px] px-[16px] sm:px-[40px] lg:px-[93px] py-[40px] sm:py-[64px] flex flex-col gap-[32px] sm:gap-[48px]">
-        {/* HEADER */}
-        <div className="relative text-center">
-          <p className="text-[#F0F0F0]/70 text-[12px] sm:text-[14px] uppercase tracking-[2px] font-semibold mb-2">
-            TESTIMONIALS
-          </p>
+    <section
+      className="
+        w-full
+        bg-[#0F1112]
 
-          <h2 className="text-[#F0F0F0] font-black text-[24px] sm:text-[32px] md:text-[40px] leading-[30px] sm:leading-[38px] md:leading-[48px]">
-            HEAR WHAT OUR <br /> TRAINEES HAVE TO SAY
-          </h2>
+        flex
+        justify-center
+      "
+    >
+      {/* FIGMA EXACT CONTAINER */}
+      <div
+        className="
+          w-full
+          max-w-[1366px]
 
-          {/* DESKTOP BUTTON */}
-          <button className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 bg-[#A3E635] text-black p-[12px] rounded-[10px] hover:scale-[1.05] transition">
-            <FaArrowRight />
-          </button>
-        </div>
+          px-[93px]
+          py-[64px]
 
-        {/* CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[12px] sm:gap-[16px]">
-          {testimonials.map((item, index) => (
-            <div
-              key={index}
-              className="bg-[#1A1F2E] border border-white/10 rounded-[16px] p-[16px] sm:p-[20px] flex flex-col justify-between hover:scale-[1.02] transition"
+          flex
+          flex-col
+
+          justify-center
+          items-center
+
+          gap-[10px]
+        "
+      >
+        {/* INNER WRAPPER */}
+        <div
+          className="
+            w-full
+            max-w-[1180px]
+
+            flex
+            flex-col
+
+            gap-[48px]
+          "
+        >
+          {/* HEADER */}
+          <div
+            className="
+              relative
+
+              flex
+              flex-col
+
+              items-center
+
+              gap-[14px]
+            "
+          >
+            {/* SMALL TEXT */}
+            <p
+              className="
+                text-[#D0E46A]
+
+                text-[16px]
+                font-bold
+
+                uppercase
+
+                tracking-[1px]
+
+                leading-[24px]
+              "
             >
-              {/* TEXT */}
-              <p className="text-[#F0F0F0] text-[13px] sm:text-[14px] leading-[20px] sm:leading-[22px] mb-[16px]">
-                {item.text}
-              </p>
+              TESTIMONIALS
+            </p>
 
-              {/* USER */}
-              <div className="flex items-center gap-[10px] border-t border-white/10 pt-[12px]">
-                <img
-                  src={item.img}
-                  alt={item.name}
-                  className="w-[36px] h-[36px] sm:w-[40px] sm:h-[40px] rounded-full object-cover"
-                />
+            {/* HEADING */}
+            <h2
+              className="
+                text-[#F0F0F0]
 
-                <div>
-                  <h4 className="text-[#F0F0F0] font-bold text-[14px] sm:text-[16px]">
-                    {item.name}
-                  </h4>
+                text-center
 
-                  <p className="text-[#DCDCDC] text-[12px] sm:text-[14px]">
-                    {item.role}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
+                font-black
+
+                text-[64px]
+                leading-[72px]
+
+                tracking-[-1.5px]
+              "
+            >
+              HEAR WHAT OUR
+              <br />
+              TRAINEES SAY
+            </h2>
+
+            {/* BUTTON */}
+            <button
+              className="
+                absolute
+                right-0
+                top-1/2
+
+                -translate-y-1/2
+
+                flex
+                items-center
+                justify-center
+
+                w-[58px]
+                h-[58px]
+
+                rounded-full
+
+                bg-[#D0E46A]
+
+                text-black
+
+                transition-all
+                duration-300
+
+                hover:scale-[1.05]
+              "
+            >
+              <FaArrowRight className="text-[18px]" />
+            </button>
+          </div>
+
+          {/* TESTIMONIAL GRID */}
+         {/* TESTIMONIAL GRID */}
+<div
+  className="
+    grid
+    grid-cols-3
+
+    gap-[20px]
+  "
+>
+  {testimonials.map((item, index) => (
+    <div
+      key={index}
+      className="
+        flex
+        flex-col
+
+        rounded-[20px]
+
+        overflow-hidden
+
+        border
+        border-[#343638]
+
+        transition-all
+        duration-500
+
+        hover:border-[#D0E46A]
+        hover:translate-y-[-6px]
+      "
+    >
+      {/* TOP CONTENT BOX */}
+      <div
+        className="
+          flex
+          flex-col
+
+          items-start
+
+          gap-[10px]
+
+          self-stretch
+
+          p-[24px]
+
+          rounded-t-[20px]
+
+          bg-[#282A2C]
+
+          min-h-[220px]
+        "
+      >
+        {/* TEXT */}
+        <p
+          className="
+            text-[#E4E4E4]
+
+            text-[18px]
+            leading-[32px]
+
+            font-medium
+          "
+        >
+          “{item.text}”
+        </p>
+      </div>
+
+      {/* BOTTOM USER BOX */}
+      <div
+        className="
+          flex
+          items-center
+
+          gap-[14px]
+
+          px-[24px]
+          py-[20px]
+
+          bg-[#1E2022]
+
+          border-t
+          border-[#3A3D3F]
+        "
+      >
+        {/* IMAGE */}
+        <img
+          src={item.img}
+          alt={item.name}
+          className="
+            w-[60px]
+            h-[60px]
+
+            rounded-full
+
+            object-cover
+          "
+        />
+
+        {/* INFO */}
+        <div
+          className="
+            flex
+            flex-col
+
+            gap-[2px]
+          "
+        >
+          <h4
+            className="
+              text-[#F0F0F0]
+
+              font-black
+
+              text-[22px]
+              leading-[28px]
+            "
+          >
+            {item.name}
+          </h4>
+
+          <p
+            className="
+              text-[#B0B0B0]
+
+              text-[14px]
+              leading-[22px]
+            "
+          >
+            {item.role}
+          </p>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
         </div>
       </div>
     </section>

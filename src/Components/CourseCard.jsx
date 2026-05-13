@@ -106,7 +106,7 @@ export default function CourseCard() {
   return (
     <section className="w-full bg-[#0F1112] flex justify-center py-[40px] sm:py-[64px]">
       {/* CONTAINER */}
-      <div className="w-full max-w-[1366px] flex flex-col gap-[10px] px-[16px] sm:px-[24px] md:px-[40px] lg:px-0">
+      <div className="w-full max-w-[1400px] flex flex-col gap-[10px] px-[16px] sm:px-[24px] md:px-[40px] lg:px-0">
         {/* TOP CARD */}
         {/* TOP CARD */}
         <div
@@ -265,7 +265,7 @@ rounded-tr-[10px]
         duration-200
       "
             >
-              ENROLL BOOTCAMP 
+              ENROLL BOOTCAMP
             </button>
           </div>
         </div>
