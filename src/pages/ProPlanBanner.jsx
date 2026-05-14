@@ -2,25 +2,29 @@
 
 export default function ProPlanBanner() {
   return (
-    <section className="w-full bg-[#0B0F10] py-16 flex justify-center">
+    <section className="w-full bg-[#0B0F10] py-10 md:py-16 flex justify-center px-4">
       <div
         className="
           relative
           w-full
           max-w-6xl
-          rounded-[40px]
+          rounded-[24px] md:rounded-[40px]
           overflow-hidden
-          
-          /* FIGMA VALUES */
-          px-[93px]
-          py-[48px]
+
+          px-5
+          py-8
+
+          sm:px-8
+          sm:py-10
+
+          md:px-[93px]
+          md:py-[48px]
 
           flex
           flex-col
           justify-center
           items-center
           gap-[10px]
-          self-stretch
         "
       >
         {/* 🖼️ BACKGROUND FRAME IMAGE */}
@@ -37,45 +41,81 @@ export default function ProPlanBanner() {
         <div className="absolute inset-0 z-10 bg-[linear-gradient(120deg,rgba(255,255,255,0.2)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.2)_75%,transparent_75%,transparent)] bg-[length:250px_250px] opacity-40"></div>
 
         {/* CONTENT WRAPPER */}
-        <div className="relative z-20 w-full flex flex-col md:flex-row items-center justify-between gap-10">
+        <div
+          className="
+            relative
+            z-20
+            w-full
+
+            flex
+            flex-col-reverse
+            md:flex-row
+
+            items-center
+            justify-between
+
+            gap-8
+            md:gap-10
+          "
+        >
           {/* 📝 CONTENT */}
-          <div className="max-w-lg">
-            <p className="text-black text-sm font-semibold mb-3">
+          <div className="w-full max-w-lg text-center md:text-left">
+            <p
+              className="
+                text-black
+                font-[Montserrat]
+                text-[14px]
+                font-semibold
+                leading-[22px]
+                mb-3
+              "
+            >
               AIFA PRO Plan
             </p>
 
             <h2
               className="
-    text-[#0F1112]
-    font-[Montserrat]
-    text-[48px]
-    font-black
-    leading-[56px]
-    mb-4
-  "
+                text-[#0F1112]
+                font-[Montserrat]
+
+                text-[32px]
+                leading-[40px]
+
+                sm:text-[40px]
+                sm:leading-[48px]
+
+                md:text-[48px]
+                md:leading-[56px]
+
+                font-black
+                mb-4
+              "
             >
               ONE PAYMENT. <br /> LIFETIME ACCESS.
             </h2>
 
             <p
               className="
-    text-[#0F1112]
-    font-[Montserrat]
-    text-[18px]
-    font-medium
-    leading-[28px]
-    mb-6
-  "
+                text-[#0F1112]
+                font-[Montserrat]
+
+                text-[16px]
+                leading-[26px]
+
+                md:text-[18px]
+                md:leading-[28px]
+
+                font-medium
+                mb-6
+              "
             >
               Own every current and future AIFA course for{" "}
               <span
                 className="
-      font-[Montserrat]
-      text-[18px]
-      font-bold
-      leading-[28px]
-      text-[#0F1112]
-    "
+                  font-[Montserrat]
+                  font-bold
+                  text-[#0F1112]
+                "
               >
                 just ₹9,999
               </span>
@@ -84,29 +124,32 @@ export default function ProPlanBanner() {
             {/* BUTTON */}
             <button
               className="
-    flex
-    justify-center
-    items-center
-    gap-[8px]
-    
-    px-[16px]
-    py-[8px]
+                flex
+                justify-center
+                items-center
+                gap-[8px]
 
-    rounded-[4px]
+                px-[16px]
+                py-[8px]
 
-    bg-[#F0F0F0]
-    text-[#0F1112]
+                rounded-[4px]
 
-    font-[Montserrat]
-    text-[16px]
-    font-semibold
-    leading-[24px]
+                bg-[#F0F0F0]
+                text-[#0F1112]
 
-    [font-variant:all-small-caps]
+                font-[Montserrat]
+                text-[16px]
+                font-semibold
+                leading-[24px]
 
-    hover:opacity-90
-    transition
-  "
+                [font-variant:all-small-caps]
+
+                hover:opacity-90
+                transition
+
+                w-full
+                sm:w-fit
+              "
             >
               UNLOCK LIFETIME ACCESS
             </button>
@@ -117,7 +160,16 @@ export default function ProPlanBanner() {
             <img
               src="/courses/coursebanner.png"
               alt="illustration"
-              className="w-full max-w-xs md:max-w-sm object-contain"
+              className="
+                w-full
+                max-w-[220px]
+
+                sm:max-w-[280px]
+
+                md:max-w-sm
+
+                object-contain
+              "
             />
           </div>
         </div>
