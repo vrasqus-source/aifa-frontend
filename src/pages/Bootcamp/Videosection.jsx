@@ -34,6 +34,9 @@ export default function VideoSection({
           py-[64px]
 
           overflow-hidden
+
+          max-sm:px-[16px]
+          max-sm:py-[40px]
         "
       >
         {/* RADIAL GRADIENT BG */}
@@ -64,6 +67,8 @@ export default function VideoSection({
             border-[#2E3133]
 
             shadow-[0_20px_80px_rgba(0,0,0,0.45)]
+
+            max-sm:rounded-[14px]
           "
         >
           {/* IMAGE */}
@@ -76,6 +81,8 @@ export default function VideoSection({
               h-[601px]
 
               object-cover
+
+              max-sm:h-[240px]
             "
           />
 
@@ -110,8 +117,6 @@ export default function VideoSection({
                 w-[180px]
                 h-[70px]
 
-              
-
                 bg-[#D0E46A]
 
                 transition-all
@@ -121,6 +126,9 @@ export default function VideoSection({
                 active:scale-[0.96]
 
                 shadow-[0_0_40px_rgba(208,228,106,0.45)]
+
+                max-sm:w-[90px]
+                max-sm:h-[50px]
               "
             >
               <img
@@ -131,6 +139,10 @@ export default function VideoSection({
                   h-[28px]
 
                   ml-[6px]
+
+                  max-sm:w-[18px]
+                  max-sm:h-[18px]
+                  max-sm:ml-[3px]
                 "
               />
             </button>

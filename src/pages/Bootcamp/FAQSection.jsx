@@ -60,6 +60,9 @@ export default function FAQSection() {
           gap-[30px]
 
           bg-[#0F1112]
+
+          max-sm:px-[16px]
+          max-sm:py-[40px]
         "
       >
         {/* INNER WRAPPER */}
@@ -72,6 +75,8 @@ export default function FAQSection() {
             flex-col
 
             gap-[40px]
+
+            max-sm:gap-[28px]
           "
         >
           {/* TOP */}
@@ -83,6 +88,8 @@ export default function FAQSection() {
               items-center
 
               gap-[14px]
+
+              max-sm:gap-[10px]
             "
           >
             {/* SMALL TEXT */}
@@ -98,6 +105,9 @@ export default function FAQSection() {
                 tracking-[1px]
 
                 leading-[24px]
+
+                max-sm:text-[13px]
+                max-sm:leading-[20px]
               "
             >
               NEED MORE DETAILS?
@@ -116,6 +126,10 @@ export default function FAQSection() {
                 leading-[72px]
 
                 tracking-[-1.5px]
+
+                max-sm:text-[34px]
+                max-sm:leading-[42px]
+                max-sm:tracking-[-1px]
               "
             >
               FREQUENTLY-ASKED
@@ -133,6 +147,8 @@ export default function FAQSection() {
               flex-col
 
               gap-[16px]
+
+              max-sm:gap-[12px]
             "
           >
             {faqs.map((item, index) => (
@@ -152,6 +168,8 @@ export default function FAQSection() {
 
                   transition-all
                   duration-300
+
+                  max-sm:rounded-[18px]
                 "
               >
                 {/* QUESTION */}
@@ -168,6 +186,9 @@ export default function FAQSection() {
                     py-[22px]
 
                     text-left
+
+                    max-sm:px-[16px]
+                    max-sm:py-[16px]
                   "
                 >
                   {/* QUESTION TEXT */}
@@ -183,6 +204,10 @@ export default function FAQSection() {
                       tracking-[-0.5px]
 
                       pr-[20px]
+
+                      max-sm:text-[17px]
+                      max-sm:leading-[26px]
+                      max-sm:pr-[12px]
                     "
                   >
                     {item.q}
@@ -207,6 +232,10 @@ export default function FAQSection() {
                       text-[14px]
 
                       shrink-0
+
+                      max-sm:min-w-[36px]
+                      max-sm:h-[36px]
+                      max-sm:text-[12px]
                     "
                   >
                     {openIndex === index ? <FaMinus /> : <FaPlus />}
@@ -231,6 +260,9 @@ export default function FAQSection() {
                     className="
                       px-[24px]
                       pb-[24px]
+
+                      max-sm:px-[16px]
+                      max-sm:pb-[18px]
                     "
                   >
                     <p
@@ -241,6 +273,9 @@ export default function FAQSection() {
 
                         text-[16px]
                         leading-[28px]
+
+                        max-sm:text-[14px]
+                        max-sm:leading-[24px]
                       "
                     >
                       {item.a}

@@ -37,10 +37,24 @@ export default function TestimonialsSection() {
           lg:px-[80px]
 
           py-[80px]
+
+          max-sm:px-[16px]
+          max-sm:py-[40px]
         "
       >
         {/* HEADER */}
-        <div className="relative flex flex-col items-center mb-[60px]">
+        <div
+          className="
+            relative
+            flex
+            flex-col
+            items-center
+
+            mb-[60px]
+
+            max-sm:mb-[36px]
+          "
+        >
           {/* TOP LABEL */}
           <p
             className="
@@ -54,6 +68,8 @@ export default function TestimonialsSection() {
               font-bold
 
               mb-4
+
+              max-sm:mb-[10px]
             "
           >
             Testimonials
@@ -81,6 +97,10 @@ export default function TestimonialsSection() {
               sm:leading-[48px]
               md:leading-[60px]
               lg:leading-[72px]
+
+              max-sm:text-[34px]
+              max-sm:leading-[42px]
+              max-sm:tracking-[-1px]
             "
           >
             HEAR WHAT OUR
@@ -103,44 +123,47 @@ export default function TestimonialsSection() {
               blur-[100px]
 
               rounded-full
+
+              max-sm:w-[180px]
+              max-sm:h-[80px]
             "
           ></div>
 
           {/* BUTTON */}
-        <button
-  className="
-    absolute
-    right-0
-    top-1/2
+          <button
+            className="
+              absolute
+              right-0
+              top-1/2
 
-    -translate-y-1/2
+              -translate-y-1/2
 
-    hidden
-    lg:flex
+              hidden
+              lg:flex
 
-    items-center
-    justify-center
+              items-center
+              justify-center
 
-    px-[30px]
-    py-[12px]
+              px-[30px]
+              py-[12px]
 
-    gap-[8px]
+              gap-[8px]
 
-    rounded-[12px]
+              rounded-[12px]
 
-    bg-[#D0E46A]
+              bg-[#D0E46A]
 
-    text-black
+              text-black
 
-    transition-all
-    duration-300
+              transition-all
+              duration-300
 
-    hover:scale-[1.04]
-    hover:shadow-[0_0_30px_rgba(208,228,106,0.35)]
-  "
->
-  <FaArrowRight className="text-[18px]" />
-</button>
+              hover:scale-[1.04]
+              hover:shadow-[0_0_30px_rgba(208,228,106,0.35)]
+            "
+          >
+            <FaArrowRight className="text-[18px]" />
+          </button>
         </div>
 
         {/* GRID */}
@@ -152,6 +175,8 @@ export default function TestimonialsSection() {
             lg:grid-cols-3
 
             gap-6
+
+            max-sm:gap-[16px]
           "
         >
           {testimonials.map((item, index) => (
@@ -176,6 +201,8 @@ export default function TestimonialsSection() {
 
                 hover:border-[#D0E46A]
                 hover:-translate-y-2
+
+                max-sm:rounded-[20px]
               "
             >
               {/* CARD GLOW */}
@@ -197,7 +224,16 @@ export default function TestimonialsSection() {
               ></div>
 
               {/* CONTENT */}
-              <div className="relative p-[28px] min-h-[280px]">
+              <div
+                className="
+                  relative
+                  p-[28px]
+                  min-h-[280px]
+
+                  max-sm:p-[18px]
+                  max-sm:min-h-auto
+                "
+              >
                 <p
                   className="
                     text-[#E7E7E7]
@@ -208,6 +244,9 @@ export default function TestimonialsSection() {
                     leading-[32px]
 
                     font-medium
+
+                    max-sm:text-[14px]
+                    max-sm:leading-[24px]
                   "
                 >
                   “{item.text}”
@@ -231,6 +270,10 @@ export default function TestimonialsSection() {
                   border-[#2F3234]
 
                   bg-[#1A1C1D]
+
+                  max-sm:px-[18px]
+                  max-sm:py-[16px]
+                  max-sm:gap-[12px]
                 "
               >
                 <img
@@ -246,6 +289,9 @@ export default function TestimonialsSection() {
 
                     border
                     border-[#3A3D3F]
+
+                    max-sm:w-[52px]
+                    max-sm:h-[52px]
                   "
                 />
 
@@ -260,6 +306,9 @@ export default function TestimonialsSection() {
                       sm:text-[22px]
 
                       leading-[28px]
+
+                      max-sm:text-[18px]
+                      max-sm:leading-[24px]
                     "
                   >
                     {item.name}
@@ -272,6 +321,9 @@ export default function TestimonialsSection() {
                       text-[14px]
 
                       leading-[22px]
+
+                      max-sm:text-[12px]
+                      max-sm:leading-[18px]
                     "
                   >
                     {item.role}

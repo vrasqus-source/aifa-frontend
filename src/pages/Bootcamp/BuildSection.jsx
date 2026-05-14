@@ -52,6 +52,10 @@ export default function BuildSection() {
           flex-col
 
           gap-[64px]
+
+          max-sm:px-[16px]
+          max-sm:py-[40px]
+          max-sm:gap-[40px]
         "
       >
         {/* HEADER */}
@@ -62,6 +66,8 @@ export default function BuildSection() {
             items-center
 
             gap-[16px]
+
+            max-sm:gap-[12px]
           "
         >
           <h2
@@ -75,6 +81,10 @@ export default function BuildSection() {
               leading-[70px]
 
               tracking-[-1.5px]
+
+              max-sm:text-[34px]
+              max-sm:leading-[42px]
+              max-sm:tracking-[-1px]
             "
           >
             WHAT YOU WILL BUILD
@@ -90,6 +100,9 @@ export default function BuildSection() {
 
               text-[18px]
               leading-[30px]
+
+              max-sm:text-[15px]
+              max-sm:leading-[26px]
             "
           >
             Build real, portfolio-ready projects as you learn films, ads, and
@@ -104,6 +117,8 @@ export default function BuildSection() {
             flex-col
 
             gap-[72px]
+
+            max-sm:gap-[48px]
           "
         >
           {data.map((item, index) => (
@@ -115,6 +130,9 @@ export default function BuildSection() {
                 justify-between
 
                 gap-[80px]
+
+                max-sm:flex-col
+                max-sm:gap-[28px]
 
                 ${index % 2 !== 0 ? "flex-row-reverse" : "flex-row"}
               `}
@@ -130,6 +148,9 @@ export default function BuildSection() {
                   items-start
 
                   gap-[14px]
+
+                  max-sm:w-full
+                  max-sm:gap-[12px]
                 "
               >
                 {/* TAG */}
@@ -148,6 +169,9 @@ export default function BuildSection() {
 
                     border
                     border-[#D0E46A]/20
+
+                    max-sm:px-[14px]
+                    max-sm:py-[6px]
                   "
                 >
                   <p
@@ -158,6 +182,8 @@ export default function BuildSection() {
                       font-bold
 
                       tracking-[1px]
+
+                      max-sm:text-[12px]
                     "
                   >
                     BEGINNER
@@ -177,6 +203,10 @@ export default function BuildSection() {
                     tracking-[-1px]
 
                     max-w-[520px]
+
+                    max-sm:text-[30px]
+                    max-sm:leading-[38px]
+                    max-sm:max-w-full
                   "
                 >
                   {item.title}
@@ -191,6 +221,10 @@ export default function BuildSection() {
 
                     text-[18px]
                     leading-[30px]
+
+                    max-sm:text-[15px]
+                    max-sm:leading-[26px]
+                    max-sm:max-w-full
                   "
                 >
                   {item.desc}
@@ -204,6 +238,8 @@ export default function BuildSection() {
 
                   flex
                   justify-center
+
+                  max-sm:w-full
                 "
               >
                 <img
@@ -228,6 +264,9 @@ export default function BuildSection() {
                     duration-500
 
                     hover:scale-[1.02]
+
+                    max-sm:h-[220px]
+                    max-sm:rounded-[120px]
                   "
                 />
               </div>

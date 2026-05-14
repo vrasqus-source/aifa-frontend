@@ -36,6 +36,9 @@ export default function LearnSection() {
 
           px-[93px]
           py-[64px]
+
+          max-sm:px-[16px]
+          max-sm:py-[40px]
         "
       >
         {/* INNER */}
@@ -49,6 +52,8 @@ export default function LearnSection() {
             items-center
 
             gap-[20px]
+
+            max-sm:gap-[14px]
           "
         >
           {/* TITLE */}
@@ -63,6 +68,10 @@ export default function LearnSection() {
               leading-[70px]
 
               tracking-[-1.5px]
+
+              max-sm:text-[34px]
+              max-sm:leading-[42px]
+              max-sm:tracking-[-1px]
             "
           >
             WHAT YOU WILL LEARN
@@ -80,6 +89,9 @@ export default function LearnSection() {
               text-[18px]
               font-normal
               leading-[30px]
+
+              max-sm:text-[15px]
+              max-sm:leading-[26px]
             "
           >
             Master the complete process of creating high-quality, cinematic AI
@@ -97,6 +109,10 @@ export default function LearnSection() {
               grid-cols-3
 
               gap-[18px]
+
+              max-sm:grid-cols-1
+              max-sm:gap-[14px]
+              max-sm:mt-[12px]
             "
           >
             {benefits.map((item, index) => (
@@ -127,32 +143,40 @@ export default function LearnSection() {
 
                   hover:border-[#D0E46A]
                   hover:translate-y-[-4px]
+
+                  max-sm:w-full
+                  max-sm:min-h-[80px]
+                  max-sm:px-[18px]
+                  max-sm:py-[12px]
+                  max-sm:rounded-[18px]
                 "
               >
-         
-                
-
                 {/* TEXT */}
                 <p
                   className="
-    flex
-    flex-col
-    justify-center
+                    flex
+                    flex-col
+                    justify-center
 
-    w-[294px]
-    h-[96px]
+                    w-[294px]
+                    h-[96px]
 
-    shrink-0
+                    shrink-0
 
-    text-[#F0F0F0]
+                    text-[#F0F0F0]
 
-    font-['Montserrat']
+                    font-['Montserrat']
 
-    text-[24px]
-    font-black
+                    text-[24px]
+                    font-black
 
-    leading-[32px]
-  "
+                    leading-[32px]
+
+                    max-sm:w-full
+                    max-sm:h-auto
+                    max-sm:text-[18px]
+                    max-sm:leading-[26px]
+                  "
                 >
                   {item}
                 </p>

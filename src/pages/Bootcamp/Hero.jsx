@@ -18,6 +18,9 @@ function Feature({ icon, text }) {
           h-[18px]
           object-contain
           shrink-0
+
+          max-sm:w-[16px]
+          max-sm:h-[16px]
         "
       />
 
@@ -28,6 +31,9 @@ function Feature({ icon, text }) {
           font-medium
           leading-[24px]
           tracking-[0px]
+
+          max-sm:text-[14px]
+          max-sm:leading-[22px]
         "
       >
         {text}
@@ -62,6 +68,9 @@ export default function Hero() {
           py-[64px]
 
           bg-[#0F1112]
+
+          max-sm:px-[16px]
+          max-sm:py-[32px]
         "
       >
         {/* FIGMA INNER CONTAINER */}
@@ -82,6 +91,12 @@ export default function Hero() {
             py-[56px]
 
             gap-[80px]
+
+            max-sm:flex-col
+            max-sm:items-start
+            max-sm:px-[20px]
+            max-sm:py-[24px]
+            max-sm:gap-[40px]
           "
         >
           {/* LEFT CONTENT */}
@@ -92,6 +107,8 @@ export default function Hero() {
               items-start
 
               max-w-[620px]
+
+              max-sm:max-w-full
             "
           >
             <p
@@ -106,6 +123,10 @@ export default function Hero() {
                 leading-[20px]
 
                 mb-[18px]
+
+                max-sm:text-[12px]
+                max-sm:leading-[18px]
+                max-sm:mb-[14px]
               "
             >
               A COURSE YOU’LL ACTUALLY FINISH
@@ -122,6 +143,11 @@ export default function Hero() {
                 tracking-[-1.5px]
 
                 mb-[32px]
+
+                max-sm:text-[34px]
+                max-sm:leading-[42px]
+                max-sm:tracking-[-1px]
+                max-sm:mb-[24px]
               "
             >
               Build AI-Powered
@@ -153,6 +179,11 @@ export default function Hero() {
                 duration-300
 
                 hover:scale-[1.03]
+
+                max-sm:w-full
+                max-sm:text-[14px]
+                max-sm:px-[20px]
+                max-sm:py-[14px]
               "
             >
               ENROLL NOW
@@ -171,6 +202,9 @@ export default function Hero() {
               gap-[22px]
 
               min-w-[320px]
+
+              max-sm:min-w-full
+              max-sm:gap-[18px]
             "
           >
             <Feature icon="/bootcampicons/icon1.svg" text="Beginner" />
