@@ -9,6 +9,7 @@ import TestimonialsSection from "./Bootcamp/TestimonialsSection";
 import InstructorsSection from "./Bootcamp/InstructorsSection";
 import WhoSection from "./Bootcamp/WhoSection";
 import CourseContent from "./Bootcamp/CourseContent";
+import IncludedSection from "./Bootcamp/IncludedSection";
 
 export default function Bootcamppage() {
   return (
@@ -24,7 +25,7 @@ export default function Bootcamppage() {
 
       {/* WHAT YOU BUILD */}
       <BuildSection />
-
+<IncludedSection/>
 <CourseContent/>
       {/* WHO IT'S FOR */}
       <WhoSection />
