@@ -9,26 +9,34 @@ const courses = [
     mode: "ONLINE",
   },
   {
-    title: "AI Lego Animation Workshop",
+    title: "AI  Cinematic Workshop",
     image: "/courses/v2.png",
     duration: "3 Hours",
     price: "₹ 199",
     mode: "ONLINE",
   },
   {
-    title: "AI Lego Animation Workshop",
+    title: "AI Sci-Fi Movie Creator",
     image: "/courses/v3.png",
     duration: "3 Hours",
     price: "₹ 199",
     mode: "ONLINE",
   },
   {
-    title: "AI Lego Animation Workshop",
+    title: "AI Fantasy World Builder",
     image: "/courses/v4.png",
     duration: "3 Hours",
     price: "₹ 199",
     mode: "ONLINE",
   },
+  {
+    title: "AI Product Ad Filmmaking",
+    image: "/courses/v4.png",
+    duration: "3 Hours",
+    price: "₹ 199",
+    mode: "ONLINE",
+  },
+  
 ];
 
 export default function WorkshopsPage() {
@@ -69,29 +77,29 @@ export default function WorkshopsPage() {
               <div
                 key={i}
                 className="
-                  inline-grid
+        w-full
 
-                  grid-cols-1
-                  grid-rows-1
+        rounded-[24px]
+        overflow-hidden
 
-                  rounded-[20px]
-                  overflow-hidden
+        bg-[#0F1112]
 
-                  bg-[#0F1112]
-
-                  p-[4px]
-                "
+        border-[6px]
+        border-[#0F1112]
+      "
               >
+                {/* TOP SECTION */}
                 <div
                   className="
-                    flex
-                    flex-col
-                    md:flex-row
+          flex
+          flex-col
 
-                    gap-[4px]
+          md:flex-row
 
-                    w-full
-                  "
+          gap-[6px]
+
+          w-full
+        "
                 >
                   {/* IMAGE */}
                   <div
@@ -112,11 +120,13 @@ export default function WorkshopsPage() {
     col-start-1
     col-end-2
 
-    rounded-tl-[20px]
-
     overflow-hidden
 
+    rounded-tl-[20px]
+
     shrink-0
+
+    bg-[lightgray]
   "
                   >
                     <img
@@ -128,14 +138,21 @@ export default function WorkshopsPage() {
 
       object-cover
       object-center
-
-      bg-[lightgray]
     "
                     />
                   </div>
 
                   {/* RIGHT SIDE */}
-                  <div className="flex-1 flex flex-col gap-[4px]">
+                  <div
+                    className="
+    flex-1
+
+    flex
+    flex-col
+
+    gap-[6px]
+  "
+                  >
                     {/* TITLE */}
                     <div
                       className="
@@ -161,37 +178,39 @@ export default function WorkshopsPage() {
                     >
                       <h3
                         className="
-    flex
+        self-stretch
 
-    h-[90px]
+        text-[#2B2D30]
 
-    flex-col
-    justify-center
+        font-[Montserrat]
 
-    self-stretch
+        text-[26px]
+        leading-[34px]
 
-    text-[#282A2C]
+        md:text-[56px]
+        md:leading-[60px]
 
-    font-[Montserrat]
-
-    text-[32px]
-    leading-[40px]
-
-    md:text-[48px]
-    md:leading-[56px]
-
-    font-bold
-  "
+        font-black
+      "
                       >
                         {item.title}
                       </h3>
                     </div>
 
                     {/* INFO BOXES */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-[8px]">
-                      {/* DURATION */}
-                      <div
-                        className="
+                   <div
+  className="
+    grid
+    grid-cols-1
+
+    sm:grid-cols-3
+
+    gap-[8px]
+  "
+>
+  {/* DURATION */}
+  <div
+    className="
       flex
       flex-col
       items-start
@@ -207,40 +226,45 @@ export default function WorkshopsPage() {
 
       bg-[#DCDCDC]
     "
-                      >
-                        <p
-                          className="
-        text-[#767779]
+  >
+    <p
+      className="
+        text-[#6E7072]
 
         font-[Montserrat]
 
-        text-[11px]
-        font-medium
+        text-[10px]
+        leading-[14px]
+
+        font-semibold
 
         uppercase
       "
-                        >
-                          ⏱ Duration
-                        </p>
+    >
+      ⏱ Duration
+    </p>
 
-                        <p
-                          className="
-        text-[#282A2C]
+    <p
+      className="
+        text-[#2B2D30]
 
         font-[Montserrat]
 
         text-[16px]
-        font-semibold
-        leading-[24px]
-      "
-                        >
-                          {item.duration}
-                        </p>
-                      </div>
+        leading-[22px]
 
-                      {/* PRICING */}
-                      <div
-                        className="
+        font-bold
+
+        uppercase
+      "
+    >
+      {item.duration}
+    </p>
+  </div>
+
+  {/* PRICING */}
+  <div
+    className="
       flex
       flex-col
       items-start
@@ -256,40 +280,43 @@ export default function WorkshopsPage() {
 
       bg-[#DCDCDC]
     "
-                      >
-                        <p
-                          className="
-        text-[#767779]
+  >
+    <p
+      className="
+        text-[#6E7072]
 
         font-[Montserrat]
 
-        text-[11px]
-        font-medium
+        text-[10px]
+        leading-[14px]
+
+        font-semibold
 
         uppercase
       "
-                        >
-                          ⊞ Pricing
-                        </p>
+    >
+      ⊞ Pricing
+    </p>
 
-                        <p
-                          className="
-        text-[#282A2C]
+    <p
+      className="
+        text-[#2B2D30]
 
         font-[Montserrat]
 
         text-[16px]
-        font-semibold
-        leading-[24px]
-      "
-                        >
-                          {item.price}
-                        </p>
-                      </div>
+        leading-[22px]
 
-                      {/* MODE */}
-                      <div
-                        className="
+        font-bold
+      "
+    >
+      {item.price}
+    </p>
+  </div>
+
+  {/* MODE */}
+  <div
+    className="
       flex
       flex-col
       items-start
@@ -305,41 +332,48 @@ export default function WorkshopsPage() {
 
       bg-[#DCDCDC]
     "
-                      >
-                        <p
-                          className="
-        text-[#767779]
+  >
+    <p
+      className="
+        text-[#6E7072]
 
         font-[Montserrat]
 
-        text-[11px]
-        font-medium
+        text-[10px]
+        leading-[14px]
+
+        font-semibold
 
         uppercase
       "
-                        >
-                          ⌨ Mode
-                        </p>
+    >
+      ⌨ Mode
+    </p>
 
-                        <p
-                          className="
-        text-[#282A2C]
+    <p
+      className="
+        text-[#2B2D30]
 
         font-[Montserrat]
 
         text-[16px]
-        font-semibold
-        leading-[24px]
-      "
-                        >
-                          {item.mode}
-                        </p>
-                      </div>
-                    </div>
+        leading-[22px]
 
-                    {/* BUTTON */}
-                    <button
-                      className="
+        font-bold
+
+        uppercase
+      "
+    >
+      {item.mode}
+    </p>
+  </div>
+</div>
+                  </div>
+                </div>
+
+                {/* BUTTON */}
+               <button
+  className="
     flex
 
     row-start-2
@@ -370,121 +404,195 @@ export default function WorkshopsPage() {
     font-[Montserrat]
 
     text-[18px]
-    font-bold
     leading-[28px]
+
+    font-black
+
+    uppercase
 
     hover:opacity-90
     transition
   "
-                    >
-                      RESERVE SPOT →
-                    </button>
-                  </div>
-                </div>
+>
+  RESERVE SPOT
+  <span className="text-[22px]">→</span>
+</button>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 🔥 HELP SECTION */}
-      <section className="bg-[#0B0F10] py-16">
-        <div className="max-w-[1180px] mx-auto px-4">
+      <section
+        className="
+    flex
+    w-full
+    justify-center
+    items-center
+
+    bg-[#0F1112]
+
+    py-[32px]
+
+    md:py-[48px]
+  "
+      >
+        <div
+          className="
+      w-full
+      max-w-[1366px]
+
+      px-[16px]
+
+      sm:px-[24px]
+
+      md:px-[60px]
+
+      lg:px-[93px]
+
+      flex
+      flex-col
+      justify-center
+      items-center
+    "
+        >
           <div
             className="
-              bg-[#E39494]
+        w-full
+        max-w-[1180px]
 
-              rounded-[24px]
-              md:rounded-[40px]
+        bg-[#E39494]
 
-              py-12
-              px-6
+        rounded-[24px]
 
-              md:py-16
-              md:px-12
+        md:rounded-[40px]
 
-              text-center
-            "
+        px-[20px]
+        py-[40px]
+
+        sm:px-[32px]
+        sm:py-[48px]
+
+        md:px-[48px]
+        md:py-[64px]
+
+        text-center
+      "
           >
+            {/* LOGO */}
             <img
-              src="/team/support.jpg"
+              src="/logoimage.png"
               alt="support"
               className="
-                w-20
-                h-20
+          w-[72px]
+          h-[72px]
 
-                md:w-24
-                md:h-24
+          md:w-[96px]
+          md:h-[96px]
 
-                rounded-full
-                mx-auto
-                mb-6
+          rounded-full
+          object-cover
 
-                object-cover
-              "
+          mx-auto
+
+          mb-[20px]
+
+          md:mb-[24px]
+        "
             />
 
+            {/* HEADING */}
             <h2
               className="
-                text-black
+          text-[#000000]
+          text-center
 
-                font-[Montserrat]
+          font-[Montserrat]
 
-                text-[28px]
-                leading-[36px]
+          text-[32px]
+          leading-[40px]
 
-                md:text-[48px]
-                md:leading-[56px]
+          sm:text-[44px]
+          sm:leading-[52px]
 
-                font-black
+          md:text-[64px]
+          md:leading-[70px]
 
-                mb-4
-              "
+          font-[900]
+
+          mb-[16px]
+        "
             >
-              Not sure which workshop is right for you?
+              Not sure which workshop is <br className="hidden md:block" />
+              right for you?
             </h2>
 
+            {/* SUBTEXT */}
             <p
               className="
-                text-black
+          text-[#000000]
+          text-center
 
-                font-[Montserrat]
+          font-[Montserrat]
 
-                text-[16px]
-                leading-[24px]
+          text-[18px]
+          leading-[28px]
 
-                md:text-[18px]
-                md:leading-[28px]
+          sm:text-[24px]
+          sm:leading-[32px]
 
-                font-medium
+          md:text-[32px]
+          md:leading-[40px]
 
-                mb-8
-              "
+          font-bold
+
+          mb-[28px]
+
+          md:mb-[32px]
+        "
             >
               Get personalised guidance from our team
             </p>
 
+            {/* BUTTON */}
             <button
               className="
-                bg-[#C7E36B]
+          inline-flex
+          justify-center
+          items-center
 
-                text-black
+          gap-[8px]
 
-                px-8
-                py-4
+          px-[22px]
+          py-[12px]
 
-                rounded-[16px]
+          md:px-[30px]
+          md:py-[12px]
 
-                font-[Montserrat]
+          rounded-[12px]
 
-                text-[16px]
-                font-semibold
+          bg-[#D0E46A]
 
-                hover:opacity-90
-                transition
-              "
+          text-[#0F1112]
+
+          font-[Montserrat]
+
+          text-[15px]
+
+          md:text-[18px]
+
+          font-bold
+          leading-[28px]
+
+          uppercase
+
+          transition-all
+          duration-300
+
+          hover:opacity-90
+        "
             >
-              ← Chat on WhatsApp
+              <span>CHAT WITH US NOW</span>
             </button>
           </div>
         </div>
