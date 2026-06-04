@@ -136,6 +136,11 @@ import AiDeals from "./pages/AiDeals";
 import ServicesPage from "./pages/ServicesPage";
 import WorkshopsPage from "./pages/WorkshopsPage";
 import Bootcamppage from "./pages/Bootcamppage";
+import Forums from "./pages/Forums";
+import Events from "./pages/Events";
+import Clubs from "./pages/Clubs";
+import Challenges from "./pages/Challenges";
+import Awards from "./pages/Awards";
 
 export default function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -188,6 +193,11 @@ export default function App() {
           <Route path="/deals" element={<AiDeals />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/workshops" element={<WorkshopsPage />} />
+            <Route path="/forums" element={<Forums />} />
+  <Route path="/events" element={<Events />} />
+  <Route path="/clubs" element={<Clubs />} />
+  <Route path="/challenges" element={<Challenges />} />
+  <Route path="/awards" element={<Awards />} />
         </Routes>
       </main>
 

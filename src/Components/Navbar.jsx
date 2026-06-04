@@ -125,10 +125,16 @@ const navLinks = [
       { label: "AI DEALS", path: "/deals" },
     ],
   },
-  {
-    name: "COMMUNITY",
-    dropdown: ["FORUMS", "EVENTS", "CLUBS", "CHALLENGES", "AWARDS"],
-  },
+ {
+  name: "COMMUNITY",
+  dropdown: [
+    { label: "FORUMS", path: "/forums" },
+    { label: "EVENTS", path: "/events" },
+    { label: "CLUBS", path: "/clubs" },
+    { label: "CHALLENGES", path: "/challenges" },
+    { label: "AWARDS", path: "/awards" },
+  ],
+},
   { name: "SERVICES", link: "/services" },
 ];
 
