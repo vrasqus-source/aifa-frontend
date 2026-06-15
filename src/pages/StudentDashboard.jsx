@@ -53,7 +53,7 @@ const NAV = [
   { id: "workshops",    label: "Workshops",    icon: "workshop"  },
   { id: "video-courses",label: "Video Courses",icon: "video"     },
   { id: "certificates", label: "Certificates", icon: "cert"      },
-  { id: "jobs",         label: "Jobs",         icon: "jobs",         soon: true },
+  { id: "jobs",         label: "Jobs",         icon: "jobs"          },
   { id: "resources",    label: "Resources",    icon: "resources",    soon: true },
   { id: "community",    label: "Community",    icon: "community",    soon: true },
   { id: "hire-talent",  label: "Hire Talent",  icon: "hire",         soon: true },
@@ -217,8 +217,8 @@ export default function StudentDashboard() {
               {activePage === "bootcamp" && <BootcampSection token={token} />}
               {activePage === "workshops" && <WorkshopsSection token={token} />}
               {activePage === "video-courses" && <VideoCoursesSection profile={profile} />}
-              {activePage === "certificates" && <CertificatesSection />}
-              {activePage === "jobs" && <JobsSection />}
+              {activePage === "certificates" && <CertificatesSection token={token} profile={profile} />}
+              {activePage === "jobs" && <JobsSection token={token} />}
               {activePage === "resources" && <PlaceholderSection title="Resources" />}
               {activePage === "community" && <PlaceholderSection title="Community" />}
               {activePage === "hire-talent" && <PlaceholderSection title="Hire Talent" />}
@@ -958,79 +958,82 @@ function VideoCoursesSection({ profile }) {
 /* ════════════════════════════════════════════
    CERTIFICATES SECTION
 ════════════════════════════════════════════ */
-const CERTS = [
-  { type: "WORKSHOP", date: "Oct 24, 2023", title: "AI-Powered Cinematography & Lighting", desc: "Mastering generative light rigs and camera paths.", id: "AIFA-2023-08812" },
-  { type: "BOOTCAMP", date: "Oct 23, 2023", title: "Advanced AI Video Editing & VFX", desc: "Professional workflows for AI-assisted post-production.", id: "AIFA-2023-88741" },
-  { type: "COURSE", date: "Aug 05, 2023", title: "Prompt Engineering for Film Scripts", desc: "Generative storytelling and AI-driven structures.", id: "AIFA-2023-77610" },
-];
+function CertificatesSection({ token, profile }) {
+  const [certs, setCerts]   = useState([]);
+  const [loading, setLoading] = useState(true);
 
-function CertificatesSection() {
+  useEffect(() => {
+    fetch("/api/certificates/me", { headers:{ Authorization:`Bearer ${token}` } })
+      .then(r=>r.json()).then(d=>{ if(Array.isArray(d)) setCerts(d); setLoading(false); }).catch(()=>setLoading(false));
+  }, [token]);
+
+  const typeBadge = t => t==="bootcamp"?"bg-blue-500/20 text-blue-400":t==="workshop"?"bg-purple-500/20 text-purple-400":"bg-green-500/20 text-green-400";
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-white">My Certificates</h1>
-          <p className="text-gray-400 text-sm">Certificates earned from your courses</p>
-        </div>
-        <div className="flex gap-2">
-          <button className="flex items-center gap-1.5 text-xs border border-white/20 text-gray-400 px-3 py-1.5 rounded-lg hover:bg-white/5">
-            <Ic name="filter" size={14} />Filter by Type
-          </button>
-          <button className="flex items-center gap-1.5 text-xs border border-white/20 text-gray-400 px-3 py-1.5 rounded-lg hover:bg-white/5">
-            <Ic name="sort" size={14} />Sort: Latest
-          </button>
+          <p className="text-gray-400 text-sm">Certificates earned from your courses and programs</p>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[
-          { label: "Total Earned", value: 6 },
-          { label: "Courses Completed", value: 12 },
-          { label: "Ongoing Courses", value: 3 },
+          { label: "Certificates Earned", value: certs.length },
+          { label: "Course Certificates",   value: certs.filter(c=>c.itemType==="course").length },
+          { label: "Bootcamp Certificates", value: certs.filter(c=>c.itemType==="bootcamp").length },
         ].map(s => (
           <div key={s.label} className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-            <p className="text-2xl font-bold text-white">{s.value}</p>
+            <p className="text-2xl font-bold text-white">{loading ? "—" : s.value}</p>
             <p className="text-xs text-gray-400 mt-1">{s.label}</p>
           </div>
         ))}
       </div>
 
-      {/* Cert Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {CERTS.map((c, i) => (
-          <div key={i} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all">
-            <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] p-6 flex items-center justify-center h-[140px] relative">
-              <div className="text-center">
-                <div className="w-10 h-10 bg-[#C7E36B] rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <span className="text-black font-black text-sm">A</span>
-                </div>
-                <p className="text-[10px] text-gray-400 uppercase font-semibold">Certificate of Achievement</p>
-                <p className="text-[11px] text-white font-semibold mt-1">STUDENT NAME</p>
-              </div>
-            </div>
-            <div className="p-4">
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                c.type === "WORKSHOP" ? "bg-purple-500/20 text-purple-400" :
-                c.type === "BOOTCAMP" ? "bg-blue-500/20 text-blue-400" :
-                "bg-green-500/20 text-green-400"
-              }`}>{c.type}</span>
-              <p className="text-[10px] text-gray-500 mt-1">Earned on {c.date}</p>
-              <h3 className="text-sm font-semibold text-white mt-2 mb-1">{c.title}</h3>
-              <p className="text-[11px] text-gray-400 mb-3">{c.desc}</p>
-              <p className="text-[10px] text-gray-500 mb-3">CERTIFICATE ID: {c.id}</p>
-              <div className="flex gap-2">
-                <button className="flex-1 flex items-center justify-center gap-1 text-xs border border-white/20 text-gray-400 py-1.5 rounded-lg hover:bg-white/5 transition-all">
-                  <Ic name="share" size={12} />Share
-                </button>
-                <button className="flex-1 flex items-center justify-center gap-1 text-xs bg-[#C7E36B] text-black font-semibold py-1.5 rounded-lg hover:bg-lime-300 transition-all">
-                  <Ic name="eye" size={12} />View
-                </button>
-              </div>
-            </div>
+      {loading ? (
+        <p className="text-gray-500 text-sm animate-pulse text-center py-8">Loading certificates...</p>
+      ) : certs.length === 0 ? (
+        <div className="text-center py-16">
+          <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Ic name="cert" size={28} className="text-gray-600" />
           </div>
-        ))}
-      </div>
+          <p className="text-white font-semibold text-sm">No Certificates Yet</p>
+          <p className="text-gray-500 text-xs mt-1">Complete a course, workshop, or bootcamp to earn your first certificate.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {certs.map((c) => (
+            <div key={c._id} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all">
+              <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] p-6 flex items-center justify-center h-[140px]">
+                <div className="text-center">
+                  <div className="w-10 h-10 bg-[#C7E36B] rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <span className="text-black font-black text-sm">A</span>
+                  </div>
+                  <p className="text-[10px] text-gray-400 uppercase font-semibold">{c.title}</p>
+                  <p className="text-[11px] text-white font-semibold mt-1">{profile?.name || "Student"}</p>
+                </div>
+              </div>
+              <div className="p-4">
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${typeBadge(c.itemType)}`}>{c.itemType}</span>
+                <p className="text-[10px] text-gray-500 mt-1">Earned on {new Date(c.issuedAt).toLocaleDateString()}</p>
+                <h3 className="text-sm font-semibold text-white mt-2 mb-1">{c.courseTitle}</h3>
+                <p className="text-[10px] text-gray-500 mb-3 font-mono">CERT ID: {c.certificateId}</p>
+                <div className="flex gap-2">
+                  <button onClick={() => { navigator.share ? navigator.share({ title: c.courseTitle, text: `I earned a certificate from AIFA: ${c.courseTitle}` }) : navigator.clipboard.writeText(c.certificateId); }}
+                    className="flex-1 flex items-center justify-center gap-1 text-xs border border-white/20 text-gray-400 py-1.5 rounded-lg hover:bg-white/5 transition-all">
+                    <Ic name="share" size={12} />Share
+                  </button>
+                  <button className="flex-1 flex items-center justify-center gap-1 text-xs bg-[#C7E36B] text-black font-semibold py-1.5 rounded-lg hover:bg-lime-300 transition-all">
+                    <Ic name="download" size={12} />Download
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -1038,49 +1041,73 @@ function CertificatesSection() {
 /* ════════════════════════════════════════════
    JOBS SECTION
 ════════════════════════════════════════════ */
-const JOBS_DATA = [
-  { tag: "AI Film", title: "A 2 minute short AI film is needed", type: "PART-TIME", desc: "Create an AI-driven cinematic ad for a binary options trading platform, emphasizing clarity and strong user engagement.", budget: "$120 fixed", time: "1 hour ago" },
-  { tag: "AI Film", title: "Create a cinematic AI short film", type: "PART-TIME", desc: "Create an AI-driven cinematic short film with strong storytelling, clear visuals, and smooth scene transitions for a professional output.", budget: "$10 per hour", time: "1 hour ago" },
-  { tag: "AI Ads", title: "Build high-converting AI video ads", type: "FULL-TIME", desc: "Create an AI-driven cinematic ad focused on brand clarity, user engagement, and storytelling that improves conversions.", budget: "$3k to 5k per month", time: "1 hour ago" },
-  { tag: "AI Story", title: "Develop an AI-powered story concept", type: "CONTRACT", desc: "Create an AI-driven narrative with engaging characters, structured flow, and emotional depth that connects well with the audience.", budget: "$700 fixed", time: "1 hour ago" },
-  { tag: "AI Editing", title: "Edit cinematic videos using AI tools", type: "PART-TIME", desc: "Create an AI-driven cinematic edit with smooth transitions, proper pacing, and clean visuals that enhance overall video quality.", budget: "$120 fixed", time: "1 hour ago" },
-  { tag: "AI Voice", title: "Generate realistic AI voiceovers", type: "PART-TIME", desc: "Create an AI-driven voiceover with natural tone, clear delivery, and emotional balance that matches the visuals perfectly.", budget: "$700 fixed", time: "1 hour ago" },
-];
+const TAG_COLORS = { "AI Film": "bg-[#C7E36B] text-black", "AI Ads": "bg-orange-400 text-black", "AI Story": "bg-pink-400 text-black", "AI Editing": "bg-blue-400 text-black", "AI Voice": "bg-purple-400 text-white", "AI Avatar": "bg-teal-400 text-black", "AI Music": "bg-indigo-400 text-white" };
 
-const TAG_COLORS = { "AI Film": "bg-[#C7E36B] text-black", "AI Ads": "bg-orange-400 text-black", "AI Story": "bg-pink-400 text-black", "AI Editing": "bg-blue-400 text-black", "AI Voice": "bg-purple-400 text-white" };
+function JobsSection({ token }) {
+  const [jobs, setJobs]       = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [tagFilter, setTagFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("All");
 
-function JobsSection() {
-  const [category, setCategory] = useState("All");
-  const [budget, setBudget] = useState("All");
-  const [timeline, setTimeline] = useState("All");
+  useEffect(() => {
+    fetch("/api/jobs")
+      .then(r=>r.json()).then(d=>{ if(Array.isArray(d)) setJobs(d); setLoading(false); }).catch(()=>setLoading(false));
+  }, []);
+
+  const allTags  = ["All", ...new Set(jobs.map(j=>j.tag).filter(Boolean))];
+  const allTypes = ["All", ...new Set(jobs.map(j=>j.type).filter(Boolean))];
+
+  const filtered = jobs.filter(j => {
+    const matchTag  = tagFilter  === "All" || j.tag  === tagFilter;
+    const matchType = typeFilter === "All" || j.type === typeFilter;
+    return matchTag && matchType;
+  });
 
   return (
     <div className="p-6">
-      {/* Filters */}
-      <div className="flex gap-3 mb-6">
-        {[["Category", category, setCategory], ["Budget", budget, setBudget], ["Timeline", timeline, setTimeline]].map(([label, val, setter]) => (
-          <select key={label} className="bg-white/5 border border-white/10 text-gray-300 text-sm rounded-xl px-4 py-2 outline-none hover:border-white/20 transition-all">
-            <option>{label} ▼</option>
-          </select>
-        ))}
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-white">Jobs</h1>
+        <p className="text-gray-400 text-sm mt-1">{loading ? "Loading..." : `${jobs.length} opportunities available`}</p>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {JOBS_DATA.map((j, i) => (
-          <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:border-white/20 transition-all flex flex-col">
-            <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full w-fit mb-2 ${TAG_COLORS[j.tag] || "bg-gray-500 text-white"}`}>{j.tag}</span>
-            <h3 className="text-sm font-bold text-white mb-1">{j.title}</h3>
-            <p className="text-[11px] text-gray-500 uppercase font-semibold mb-2">{j.type}</p>
-            <p className="text-xs text-gray-400 flex-1 mb-3">{j.desc}</p>
-            <button className="text-xs text-[#C7E36B] hover:underline text-left mb-3">View Details</button>
-            <div className="flex items-center justify-between border-t border-white/10 pt-3">
-              <span className="text-xs bg-white/10 text-white px-2.5 py-1 rounded-full font-semibold">{j.budget}</span>
-              <span className="text-[11px] bg-white/10 text-gray-400 px-2.5 py-1 rounded-full">{j.time}</span>
-            </div>
-          </div>
-        ))}
+      {/* Filters */}
+      <div className="flex gap-3 mb-6 flex-wrap">
+        <select value={tagFilter} onChange={e=>setTagFilter(e.target.value)} className="bg-white/5 border border-white/10 text-gray-300 text-sm rounded-xl px-4 py-2 outline-none hover:border-white/20 transition-all">
+          {allTags.map(t => <option key={t} value={t}>{t === "All" ? "All Categories" : t}</option>)}
+        </select>
+        <select value={typeFilter} onChange={e=>setTypeFilter(e.target.value)} className="bg-white/5 border border-white/10 text-gray-300 text-sm rounded-xl px-4 py-2 outline-none hover:border-white/20 transition-all">
+          {allTypes.map(t => <option key={t} value={t}>{t === "All" ? "All Types" : t}</option>)}
+        </select>
       </div>
+
+      {loading ? (
+        <p className="text-gray-500 text-sm animate-pulse text-center py-8">Loading jobs...</p>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-16">
+          <p className="text-white font-semibold text-sm">No Jobs Found</p>
+          <p className="text-gray-500 text-xs mt-1">Try changing your filters or check back later.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((j) => (
+            <div key={j._id} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:border-white/20 transition-all flex flex-col">
+              <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full w-fit mb-2 ${TAG_COLORS[j.tag] || "bg-gray-500/30 text-white"}`}>{j.tag}</span>
+              <h3 className="text-sm font-bold text-white mb-1">{j.title}</h3>
+              <p className="text-[11px] text-gray-500 uppercase font-semibold mb-2">{j.type}</p>
+              <p className="text-xs text-gray-400 flex-1 mb-3">{j.description}</p>
+              {j.skills?.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {j.skills.slice(0,3).map(s => <span key={s} className="text-[10px] bg-white/10 text-gray-400 px-2 py-0.5 rounded-full">{s}</span>)}
+                </div>
+              )}
+              <div className="flex items-center justify-between border-t border-white/10 pt-3">
+                {j.budget && <span className="text-xs bg-white/10 text-white px-2.5 py-1 rounded-full font-semibold">{j.budget}</span>}
+                {j.timeline && <span className="text-[11px] bg-white/10 text-gray-400 px-2.5 py-1 rounded-full">{j.timeline}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

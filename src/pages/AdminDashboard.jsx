@@ -47,8 +47,8 @@ const NAV_ITEMS = [
   { id: "workshops",          label: "Workshops",      icon: "workshop"  },
   { id: "video-courses",      label: "Video Courses",  icon: "video"     },
   { id: "resources",          label: "Resources",      icon: "resources" },
-  { id: "certificates",       label: "Certificates",   icon: "cert",          soon: true },
-  { id: "jobs",               label: "Jobs",           icon: "jobs",          soon: true },
+  { id: "certificates",       label: "Certificates",   icon: "cert"     },
+  { id: "jobs",               label: "Jobs",           icon: "jobs"     },
   { id: "community",          label: "Community",      icon: "community",     soon: true },
   { id: "service-request",    label: "Service Request",icon: "service",       soon: true },
   { id: "sales-consultation", label: "Sales Consult.", icon: "sales",         soon: true },
@@ -108,14 +108,14 @@ export default function AdminDashboard() {
             );
           })}
         </nav>
-        <div className="border-t border-white/5 px-3 py-3 flex items-center gap-2">
+        <button onClick={() => setActivePage("profile")} className="border-t border-white/5 px-3 py-3 flex items-center gap-2 hover:bg-white/5 transition-all w-full text-left">
           <div className="w-7 h-7 rounded-full bg-[#C7E36B] flex items-center justify-center text-black text-xs font-bold shrink-0">{name[0]}</div>
           <div className="min-w-0 flex-1">
             <p className="text-[10px] text-white font-semibold truncate">{name}</p>
             <p className="text-[9px] text-gray-500">Super Admin</p>
           </div>
-          <button onClick={handleLogout} title="Logout" className="text-gray-500 hover:text-red-400 shrink-0"><I name="logout" size={12} /></button>
-        </div>
+          <button onClick={e => { e.stopPropagation(); handleLogout(); }} title="Logout" className="text-gray-500 hover:text-red-400 shrink-0"><I name="logout" size={12} /></button>
+        </button>
       </aside>
 
       {/* MAIN AREA */}
@@ -144,8 +144,11 @@ export default function AdminDashboard() {
           {activePage === "users"           && <UsersAdmin token={token} />}
           {activePage === "payments"        && <PaymentsAdmin token={token} />}
           {activePage === "enrolments"      && <EnrolmentsAdmin token={token} />}
-          {activePage === "analytics"       && <AnalyticsAdmin />}
-          {["certificates","jobs","community","service-request","sales-consultation","hire-talent","membership"].includes(activePage) && (
+          {activePage === "analytics"       && <AnalyticsAdmin token={token} />}
+          {activePage === "certificates"    && <CertificatesAdmin token={token} />}
+          {activePage === "jobs"            && <JobsAdmin token={token} />}
+          {activePage === "profile"         && <AdminProfile token={token} profile={profile} onUpdated={setProfile} />}
+          {["community","service-request","sales-consultation","hire-talent","membership"].includes(activePage) && (
             <Placeholder title={[...NAV_ITEMS,...MGMT_ITEMS].find(n=>n.id===activePage)?.label} />
           )}
         </main>
@@ -786,92 +789,138 @@ function VideoCoursesAdmin({ token }) {
 }
 
 /* ── RESOURCES ADMIN ── */
-const DEALS_DATA = [
-  { logo:"🤖", name:"Chat GPT",   desc:"AI-powered cinematic video editor",   discount:"20% OFF",    tag:"MARKETING" },
-  { logo:"✨", name:"Gemini Pro", desc:"Studio-quality AI voice cloning",      discount:"$50 CREDIT", tag:"DESIGN"    },
-  { logo:"🎬", name:"Pika",       desc:"Multi-channel AI support agent",       discount:"15% OFF",    tag:"DEVELOPER" },
-  { logo:"🔥", name:"Higgsfield", desc:"AI-driven workflow automation",        discount:"$100 OFF",   tag:"MARKETING" },
-  { logo:"🌟", name:"Midjourney", desc:"SEO-optimized AI content engine",      discount:"30% OFF",    tag:"VOICE"     },
-  { logo:"🎵", name:"Suno AI",    desc:"AI music generation platform",         discount:"25% OFF",    tag:"AUTOMATION"},
+const RES_TABS = [
+  { key: "prompt",   label: "Prompt Library" },
+  { key: "workflow", label: "Workflows"       },
+  { key: "project",  label: "Projects"        },
+  { key: "tip",      label: "Learning Tips"   },
+  { key: "deal",     label: "AI Deals"        },
 ];
 
 function ResourcesAdmin({ token }) {
-  const [catTab, setCatTab] = useState("All Benefits");
-  const [subView, setSubView] = useState("deals");
+  const [tab, setTab]           = useState("prompt");
+  const [resources, setResources] = useState([]);
+  const [loading, setLoading]   = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [saving, setSaving]     = useState(false);
+  const [msg, setMsg]           = useState("");
+  const [form, setForm] = useState({ type:"prompt", title:"", description:"", content:"", category:"", isFeatured:false, allowCopy:true, discount:"", link:"", logo:"" });
+
+  const load = (type) => {
+    setLoading(true); setResources([]);
+    fetch(`/api/resources?type=${type}`)
+      .then(r=>r.json()).then(d=>{ if(Array.isArray(d)) setResources(d); setLoading(false); }).catch(()=>setLoading(false));
+  };
+
+  useEffect(() => { load(tab); setShowForm(false); }, [tab]);
+
+  const handleSave = async () => {
+    setSaving(true); setMsg("");
+    try {
+      const res = await fetch("/api/resources", {
+        method: "POST",
+        headers: { "Content-Type":"application/json", Authorization:`Bearer ${token}` },
+        body: JSON.stringify({ ...form, type: tab }),
+      });
+      const data = await res.json();
+      if (res.ok) { setMsg("Saved!"); setShowForm(false); load(tab); }
+      else setMsg(data.message || "Failed.");
+    } catch { setMsg("Network error."); }
+    setSaving(false);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this resource?")) return;
+    await fetch(`/api/resources/${id}`, { method:"DELETE", headers:{ Authorization:`Bearer ${token}` } });
+    setResources(rs => rs.filter(r => r._id !== id));
+  };
+
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-2">
-        <div><h1 className="text-xl font-bold text-white">AI Deals</h1><p className="text-xs text-gray-400">Manage promotional cards and exclusive offers for AI tools.</p></div>
-        <button onClick={()=>setSubView(subView==="add"?"deals":"add")} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5">
-          <I name="plus" size={14}/>{subView==="add"?"← Back to Deals":"+ Add Resource"}
+      <div className="flex items-center justify-between mb-4">
+        <div><h1 className="text-xl font-bold text-white">Resources</h1><p className="text-xs text-gray-400">Manage all learning resources by category</p></div>
+        <button onClick={()=>setShowForm(!showForm)} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5">
+          <I name="plus" size={14}/>{showForm ? "← Back" : "+ Add Resource"}
         </button>
       </div>
-      {subView==="deals" && (
-        <>
-          <div className="flex gap-2 mb-5 flex-wrap mt-4">
-            {["All Benefits","video","design","marketing","voice","Automation"].map(t=>(
-              <button key={t} onClick={()=>setCatTab(t)} className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all ${catTab===t?"bg-[#C7E36B] text-black":"bg-white/5 text-gray-400 border border-white/10 hover:text-white"}`}>{t}</button>
-            ))}
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            {DEALS_DATA.map((d,i)=>(
-              <div key={i} className="bg-white rounded-xl overflow-hidden shadow-sm">
-                <div className="h-[70px] bg-gray-50 flex items-center justify-center text-4xl">{d.logo}</div>
-                <div className="p-4">
-                  <span className="text-[10px] bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded">{d.tag}</span>
-                  <h3 className="text-base font-bold text-gray-900 mt-2">{d.name}</h3>
-                  <p className="text-xs text-gray-500">{d.desc}</p>
-                  <p className="text-xl font-black text-gray-900 mt-2">{d.discount}</p>
-                  <p className="text-[10px] text-[#C7E36B] font-semibold">VIA AIFA</p>
-                  <button className="w-full bg-[#C7E36B] text-black text-sm font-bold py-2 rounded-lg mt-3 hover:bg-lime-300">Get Deal</button>
-                  <p className="text-[10px] text-gray-400 text-center mt-1">Redirects to official site</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-      {subView==="add" && (
-        <div className="flex gap-6 mt-4">
-          <div className="flex-1 max-w-lg space-y-4">
-            <div>
-              <p className="text-xs text-white font-semibold mb-2">1. SELECT RESOURCE TYPE</p>
-              <div className="flex gap-2">
-                {[["T","Prompt"],["▶","Shortform"],["◻","Prompt"],["▷","File"],["⊠","Deal"]].map(([icon,label])=>(
-                  <button key={label} className="flex flex-col items-center bg-white/5 border border-white/10 rounded-xl p-3 hover:border-[#C7E36B]/50 min-w-[60px]">
-                    <span className="text-[#C7E36B] text-sm font-bold mb-1">{icon}</span>
-                    <span className="text-[10px] text-gray-400">{label}</span>
-                  </button>
-                ))}
-              </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 mb-5 border-b border-white/10">
+        {RES_TABS.map(t => (
+          <button key={t.key} onClick={()=>setTab(t.key)} className={`px-4 py-2 text-sm font-medium border-b-2 transition-all -mb-px ${tab===t.key?"border-[#C7E36B] text-[#C7E36B]":"border-transparent text-gray-400 hover:text-white"}`}>{t.label}</button>
+        ))}
+      </div>
+
+      {/* Add form */}
+      {showForm && (
+        <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-5 space-y-3 max-w-2xl">
+          <h3 className="text-sm font-semibold text-white">New {RES_TABS.find(t=>t.key===tab)?.label} Item</h3>
+          {msg && <p className={`text-xs ${msg==="Saved!"?"text-green-400":"text-red-400"}`}>{msg}</p>}
+          <Fld label="Title" value={form.title} onChange={v=>setForm({...form,title:v})} placeholder="Resource title..." />
+          <Fld label="Description" value={form.description} onChange={v=>setForm({...form,description:v})} textarea placeholder="Short description..." />
+          {(tab==="prompt"||tab==="workflow"||tab==="tip") && (
+            <Fld label="Content" value={form.content} onChange={v=>setForm({...form,content:v})} textarea placeholder="Full content or prompt text..." />
+          )}
+          {tab==="deal" && (
+            <div className="grid grid-cols-3 gap-3">
+              <Fld label="Logo/Emoji" value={form.logo} onChange={v=>setForm({...form,logo:v})} placeholder="🤖" />
+              <Fld label="Discount" value={form.discount} onChange={v=>setForm({...form,discount:v})} placeholder="20% OFF" />
+              <Fld label="Link" value={form.link} onChange={v=>setForm({...form,link:v})} placeholder="https://..." />
             </div>
-            <Sect icon="resources" title="Basic Information">
-              <Fld label="Resource Title" value="" onChange={()=>{}} placeholder="Enter resource title..."/>
-              <div className="grid grid-cols-2 gap-3"><Fld label="Category" value="" onChange={()=>{}} placeholder="Select Category"/><Fld label="Sub-category" value="" onChange={()=>{}} placeholder="Select Sub-category"/></div>
-              <Fld label="Short Description" value="" onChange={()=>{}} placeholder="Briefly describe what this resource is about..." textarea/>
-              <div className="border-2 border-dashed border-white/20 rounded-xl p-4 text-center cursor-pointer hover:border-[#C7E36B]/50">
-                <I name="upload" size={18} className="mx-auto text-gray-500 mb-1"/><p className="text-[10px] text-gray-400">Click to upload or drag and drop</p>
-              </div>
-            </Sect>
-            <Sect icon="edit" title="Prompt Details">
-              <Fld label="Prompt Text" value="" onChange={()=>{}} textarea placeholder="Write or paste your prompt here..."/>
-              <div className="flex items-center gap-2"><span className="text-xs text-gray-400">Allow Copy</span><Tog value={true} onChange={()=>{}}/></div>
-            </Sect>
-            <div className="flex gap-2">
-              <button className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg">Save as Draft</button>
-              <button className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg">Publish Resource</button>
-            </div>
+          )}
+          <Fld label="Category" value={form.category} onChange={v=>setForm({...form,category:v})} placeholder="e.g. Photography" />
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2"><span className="text-xs text-gray-400">Featured</span><Tog value={form.isFeatured} onChange={v=>setForm({...form,isFeatured:v})}/></div>
+            {(tab==="prompt"||tab==="tip") && <div className="flex items-center gap-2"><span className="text-xs text-gray-400">Allow Copy</span><Tog value={form.allowCopy} onChange={v=>setForm({...form,allowCopy:v})}/></div>}
           </div>
-          <div className="w-[210px] shrink-0">
-            <p className="text-[10px] text-green-400 font-semibold mb-2">● LIVE PREVIEW</p>
-            <div className="bg-[#1A1A2E] rounded-xl p-4">
-              <span className="text-[10px] bg-[#C7E36B] text-black font-bold px-2 py-0.5 rounded">FEATURED</span>
-              <p className="text-sm font-bold text-white mt-2">Cinematic Lighting Prompts v2</p>
-              <p className="text-[11px] text-gray-400 mt-1">Master high-end cinematography lighting with these carefully curated Midjourney prompts</p>
-              <button className="w-full bg-[#C7E36B] text-black text-xs font-bold py-1.5 rounded-lg mt-3">View Details ›</button>
-            </div>
+          <div className="flex gap-2 pt-2">
+            <button onClick={()=>setShowForm(false)} className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg">Cancel</button>
+            <button onClick={handleSave} disabled={saving} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg disabled:opacity-60">{saving?"Saving...":"Publish"}</button>
           </div>
         </div>
+      )}
+
+      {/* Resource list */}
+      {loading ? <p className="text-gray-500 text-sm animate-pulse">Loading...</p> : (
+        <>
+          {resources.length === 0 && !showForm && (
+            <div className="text-center py-12"><p className="text-gray-500 text-sm">No {RES_TABS.find(t=>t.key===tab)?.label} resources yet</p><button onClick={()=>setShowForm(true)} className="mt-3 text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg">Add First</button></div>
+          )}
+          {tab === "deal" ? (
+            <div className="grid grid-cols-3 gap-4">
+              {resources.map((r) => (
+                <div key={r._id} className="bg-white rounded-xl overflow-hidden shadow-sm relative group">
+                  <div className="h-[70px] bg-gray-50 flex items-center justify-center text-4xl">{r.logo || "🔧"}</div>
+                  <div className="p-4">
+                    <h3 className="text-base font-bold text-gray-900">{r.title}</h3>
+                    <p className="text-xs text-gray-500">{r.description}</p>
+                    <p className="text-xl font-black text-gray-900 mt-2">{r.discount}</p>
+                    <p className="text-[10px] text-[#C7E36B] font-semibold">VIA AIFA</p>
+                    <button className="w-full bg-[#C7E36B] text-black text-sm font-bold py-2 rounded-lg mt-3 hover:bg-lime-300">Get Deal</button>
+                  </div>
+                  <button onClick={()=>handleDelete(r._id)} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-red-500/80 text-white rounded-full w-6 h-6 flex items-center justify-center transition-all"><I name="trash" size={12}/></button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {resources.map((r) => (
+                <div key={r._id} className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-start justify-between hover:border-white/20 transition-all">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      {r.isFeatured && <span className="text-[9px] bg-[#C7E36B]/20 text-[#C7E36B] font-bold px-1.5 py-0.5 rounded">FEATURED</span>}
+                      {r.category && <span className="text-[9px] bg-white/10 text-gray-400 px-1.5 py-0.5 rounded">{r.category}</span>}
+                    </div>
+                    <h3 className="text-sm font-semibold text-white">{r.title}</h3>
+                    <p className="text-xs text-gray-400 mt-1 line-clamp-1">{r.description}</p>
+                    {r.content && <p className="text-[10px] text-gray-600 mt-1 line-clamp-1 font-mono">{r.content}</p>}
+                  </div>
+                  <button onClick={()=>handleDelete(r._id)} className="text-gray-600 hover:text-red-400 ml-4 shrink-0 transition-all"><I name="trash" size={13}/></button>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -997,42 +1046,180 @@ function PaymentsAdmin({ token }) {
 }
 
 function EnrolmentsAdmin({ token }) {
-  const [stats, setStats] = useState(null);
+  const [enrollments, setEnrollments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("All");
+
   useEffect(() => {
-    fetch("/api/admin/stats", { headers:{ Authorization:`Bearer ${token}` } })
-      .then(r=>r.json()).then(d=>{ if(!d.message) setStats(d); }).catch(()=>{});
+    fetch("/api/admin/enrollments", { headers:{ Authorization:`Bearer ${token}` } })
+      .then(r=>r.json()).then(d=>{ if(Array.isArray(d)) setEnrollments(d); setLoading(false); }).catch(()=>setLoading(false));
   }, [token]);
+
+  const filtered = enrollments.filter(e => {
+    const matchSearch = (e.user?.name||"").toLowerCase().includes(search.toLowerCase()) || (e.item||"").toLowerCase().includes(search.toLowerCase());
+    const matchType = typeFilter === "All" || e.type === typeFilter;
+    return matchSearch && matchType;
+  });
+
+  const typeBadge = t => t==="bootcamp"?"bg-blue-500/20 text-blue-400":t==="workshop"?"bg-purple-500/20 text-purple-400":"bg-green-500/20 text-green-400";
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-bold text-white mb-5">Enrolments</h1>
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        {[
-          ["Total Enrolments", stats?.enrollments ?? "—", "users"],
-          ["Active Courses",   stats?.courses     ?? "—", "video"],
-          ["Total Users",      stats?.users       ?? "—", "community"],
-        ].map(([l,v,ic])=>(
+      <div className="flex items-center justify-between mb-5">
+        <div><h1 className="text-xl font-bold text-white">Enrolments</h1><p className="text-xs text-gray-400">All student enrollments · {enrollments.length} total</p></div>
+      </div>
+      <div className="grid grid-cols-3 gap-4 mb-5">
+        {[["Total Enrolments", enrollments.length, "enrolments"],["Course Enrolments", enrollments.filter(e=>e.type==="course").length,"video"],["Bootcamp Enrolments",enrollments.filter(e=>e.type==="bootcamp").length,"bootcamp"]].map(([l,v,ic])=>(
           <div key={l} className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-[#C7E36B]/10 flex items-center justify-center shrink-0"><I name={ic} size={20} className="text-[#C7E36B]"/></div>
             <div><p className="text-2xl font-bold text-white">{v}</p><p className="text-xs text-gray-400">{l}</p></div>
           </div>
         ))}
       </div>
-      <Placeholder title="Detailed Enrolments Table — coming soon"/>
+      <div className="flex gap-3 mb-4">
+        <div className="relative flex-1 max-w-xs">
+          <input type="text" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search by student or program..." className="w-full bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-sm text-white placeholder-gray-500 outline-none"/>
+          <I name="search" size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500"/>
+        </div>
+        <select value={typeFilter} onChange={e=>setTypeFilter(e.target.value)} className="bg-white/5 border border-white/10 text-gray-400 text-sm rounded-lg px-3 py-2 outline-none">
+          <option value="All">All Types</option>
+          <option value="course">Course</option>
+          <option value="workshop">Workshop</option>
+          <option value="bootcamp">Bootcamp</option>
+        </select>
+      </div>
+      <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+        <table className="w-full">
+          <thead><tr className="text-[11px] text-gray-500 font-semibold uppercase bg-white/5">
+            {["Student","Program","Type","Enrolled On","Amount"].map(h=><th key={h} className="text-left px-4 py-3">{h}</th>)}
+          </tr></thead>
+          <tbody className="divide-y divide-white/5">
+            {loading ? <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-500 text-sm animate-pulse">Loading...</td></tr>
+              : filtered.length === 0 ? <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-500 text-sm">No enrollments found</td></tr>
+              : filtered.map((e,i) => (
+              <tr key={i} className="hover:bg-white/5 transition-all">
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-[#C7E36B] text-black font-bold text-[11px] flex items-center justify-center">{(e.user?.name||"U")[0]}</div>
+                    <div><p className="text-xs font-semibold text-white">{e.user?.name||"—"}</p><p className="text-[10px] text-gray-500">{e.user?.email||""}</p></div>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-sm text-gray-300 max-w-[200px] truncate">{e.item||"—"}</td>
+                <td className="px-4 py-3"><span className={`text-[10px] font-bold capitalize px-2 py-1 rounded-full ${typeBadge(e.type)}`}>{e.type}</span></td>
+                <td className="px-4 py-3 text-sm text-gray-400">{new Date(e.enrolledAt).toLocaleDateString()}</td>
+                <td className="px-4 py-3 text-sm font-bold text-white">{e.price ? `₹${e.price}` : "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs text-gray-500 mt-3">Showing {filtered.length} of {enrollments.length} enrollments</p>
     </div>
   );
 }
 
-function AnalyticsAdmin() {
+function AnalyticsAdmin({ token }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/admin/analytics", { headers:{ Authorization:`Bearer ${token}` } })
+      .then(r=>r.json()).then(d=>{ if(!d.message) setData(d); setLoading(false); }).catch(()=>setLoading(false));
+  }, [token]);
+
+  const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  const monthlyRows = data?.monthlyData || [];
+  const maxCount = Math.max(1, ...monthlyRows.map(m=>m.count));
+  const topCourses = data?.topCourses || [];
+  const maxCourseCount = Math.max(1, ...topCourses.map(c=>c.count));
+
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold text-white mb-5">Analytics</h1>
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        {[["Page Views","24,831"],["Avg. Session","8m 42s"],["Conversion Rate","3.2%"],["Revenue/User","₹139"]].map(([k,v])=>(
-          <div key={k} className="bg-white/5 border border-white/10 rounded-xl p-4 text-center"><p className="text-xl font-bold text-[#C7E36B]">{v}</p><p className="text-xs text-gray-400 mt-1">{k}</p></div>
+    <div className="p-6 space-y-6">
+      <div><h1 className="text-xl font-bold text-white">Analytics</h1><p className="text-xs text-gray-400">Platform performance and enrollment trends</p></div>
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          ["Total Revenue",     data ? `₹${(data.totalRevenue||0).toLocaleString()}` : "—", "text-[#C7E36B]"],
+          ["Total Enrollments", data?.totalEnrollments ?? "—",                               "text-blue-400"],
+          ["Courses",           (data?.byType||[]).find(t=>t._id==="course")?.count ?? "—",  "text-green-400"],
+          ["Bootcamps",         (data?.byType||[]).find(t=>t._id==="bootcamp")?.count ?? "—","text-orange-400"],
+        ].map(([k,v,c])=>(
+          <div key={k} className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+            <p className={`text-xl font-bold ${c}`}>{loading?"—":v}</p>
+            <p className="text-xs text-gray-400 mt-1">{k}</p>
+          </div>
         ))}
       </div>
-      <Placeholder title="Charts & Graphs — coming soon"/>
+
+      <div className="grid grid-cols-2 gap-6">
+        {/* Enrollments by month bar chart */}
+        <div className="bg-white/5 border border-white/10 rounded-xl p-5">
+          <h3 className="text-sm font-semibold text-white mb-4">Enrollments (Last 6 Months)</h3>
+          {loading ? <p className="text-gray-500 text-sm animate-pulse">Loading...</p>
+            : monthlyRows.length === 0
+            ? <p className="text-gray-500 text-sm text-center py-8">No enrollment data yet</p>
+            : (
+            <div className="flex items-end gap-2 h-36">
+              {monthlyRows.map((m,i) => {
+                const pct = Math.max(4, Math.round((m.count / maxCount) * 100));
+                const mn = MONTHS[(m._id.month-1)] || m._id.month;
+                return (
+                  <div key={i} className="flex flex-col items-center flex-1 gap-1">
+                    <span className="text-[9px] text-gray-500">{m.count}</span>
+                    <div className="w-full bg-[#C7E36B] rounded-t-sm" style={{height:`${pct}%`}} />
+                    <span className="text-[9px] text-gray-500">{mn}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Top courses */}
+        <div className="bg-white/5 border border-white/10 rounded-xl p-5">
+          <h3 className="text-sm font-semibold text-white mb-4">Top Courses by Enrollment</h3>
+          {loading ? <p className="text-gray-500 text-sm animate-pulse">Loading...</p>
+            : topCourses.length === 0
+            ? <p className="text-gray-500 text-sm text-center py-8">No course data yet</p>
+            : (
+            <div className="space-y-3">
+              {topCourses.map((c,i) => {
+                const pct = Math.max(4, Math.round((c.count / maxCourseCount) * 100));
+                return (
+                  <div key={i}>
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-xs text-gray-300 truncate max-w-[200px]">{c._id}</p>
+                      <span className="text-[10px] text-[#C7E36B] font-bold ml-2">{c.count}</span>
+                    </div>
+                    <div className="w-full bg-white/10 rounded-full h-1.5">
+                      <div className="bg-[#C7E36B] h-1.5 rounded-full" style={{width:`${pct}%`}} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Revenue by type */}
+      {data?.byType && data.byType.length > 0 && (
+        <div className="bg-white/5 border border-white/10 rounded-xl p-5">
+          <h3 className="text-sm font-semibold text-white mb-4">Enrollments by Product Type</h3>
+          <div className="flex gap-6">
+            {data.byType.map((t,i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className={`w-3 h-3 rounded-full ${t._id==="bootcamp"?"bg-blue-400":t._id==="workshop"?"bg-purple-400":"bg-green-400"}`}/>
+                <span className="text-sm text-gray-300 capitalize">{t._id}</span>
+                <span className="text-sm font-bold text-white">{t.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1075,6 +1262,299 @@ function Placeholder({ title }) {
   return (
     <div className="flex items-center justify-center h-48 text-gray-500">
       <div className="text-center"><p className="text-3xl mb-2">🚧</p><p className="font-semibold text-white text-sm">{title}</p><p className="text-xs mt-1">Coming soon</p></div>
+    </div>
+  );
+}
+
+/* ── ADMIN PROFILE ── */
+function AdminProfile({ token, profile, onUpdated }) {
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(profile?.name || "");
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [current, setCurrent] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [pwdMsg, setPwdMsg] = useState("");
+  const [pwdSaving, setPwdSaving] = useState(false);
+
+  const memberId = `AIFA-ADMIN-${String(profile?._id || "00001").slice(-5).toUpperCase()}`;
+
+  const handleSave = async () => {
+    setSaving(true); setMsg("");
+    const res = await fetch("/api/users/me", { method:"PUT", headers:{"Content-Type":"application/json",Authorization:`Bearer ${token}`}, body:JSON.stringify({ name }) });
+    const data = await res.json();
+    if (res.ok) { onUpdated(data); localStorage.setItem("aifa_user", JSON.stringify({ name:data.name, _id:data._id, role:data.role })); setMsg("Saved!"); setEditing(false); }
+    else setMsg(data.message || "Failed.");
+    setSaving(false);
+  };
+
+  const handlePwd = async () => {
+    if (!current || !newPwd || !confirm) { setPwdMsg("Fill all fields."); return; }
+    if (newPwd !== confirm) { setPwdMsg("Passwords don't match."); return; }
+    if (newPwd.length < 6) { setPwdMsg("Min 6 characters."); return; }
+    setPwdSaving(true); setPwdMsg("");
+    const res = await fetch("/api/users/me/password", { method:"PUT", headers:{"Content-Type":"application/json",Authorization:`Bearer ${token}`}, body:JSON.stringify({ currentPassword:current, newPassword:newPwd }) });
+    const data = await res.json();
+    setPwdMsg(res.ok ? "Password updated!" : data.message || "Failed.");
+    if (res.ok) { setCurrent(""); setNewPwd(""); setConfirm(""); }
+    setPwdSaving(false);
+  };
+
+  return (
+    <div className="p-6 max-w-2xl space-y-5">
+      <h1 className="text-xl font-bold text-white">Admin Profile</h1>
+
+      {/* Identity card */}
+      <div className="bg-white/5 border border-white/10 rounded-xl p-5">
+        <div className="flex items-center gap-4 mb-5">
+          <div className="w-14 h-14 rounded-full bg-[#C7E36B] flex items-center justify-center text-black text-xl font-bold">{(profile?.name||"A")[0]}</div>
+          <div>
+            <p className="text-sm font-bold text-white">{profile?.name}</p>
+            <p className="text-xs text-gray-400">{profile?.email}</p>
+            <span className="text-[10px] bg-[#C7E36B]/20 text-[#C7E36B] font-bold px-2 py-0.5 rounded-full mt-1 inline-block">Super Admin</span>
+          </div>
+        </div>
+        <div className="flex gap-6 mb-4 text-xs text-gray-400">
+          <div><p className="text-[9px] text-gray-600 font-semibold uppercase mb-0.5">Member ID</p><p className="text-white font-semibold">{memberId}</p></div>
+          <div><p className="text-[9px] text-gray-600 font-semibold uppercase mb-0.5">Member Since</p><p className="text-white font-semibold">{new Date(profile?.createdAt||Date.now()).toLocaleDateString("en-US",{year:"numeric",month:"long"})}</p></div>
+          <div><p className="text-[9px] text-gray-600 font-semibold uppercase mb-0.5">Status</p><span className="flex items-center gap-1 text-green-400 font-semibold"><span className="w-1.5 h-1.5 rounded-full bg-green-400"/>Active</span></div>
+        </div>
+        {editing ? (
+          <div className="space-y-3">
+            <Fld label="DISPLAY NAME" value={name} onChange={setName} />
+            {msg && <p className={`text-xs ${msg==="Saved!"?"text-green-400":"text-red-400"}`}>{msg}</p>}
+            <div className="flex gap-2">
+              <button onClick={()=>setEditing(false)} className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg">Cancel</button>
+              <button onClick={handleSave} disabled={saving} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg disabled:opacity-60">{saving?"Saving...":"Save"}</button>
+            </div>
+          </div>
+        ) : (
+          <button onClick={()=>{ setName(profile?.name||""); setEditing(true); }} className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg hover:bg-white/5 flex items-center gap-1.5"><I name="edit" size={12}/>Edit Name</button>
+        )}
+      </div>
+
+      {/* Change password */}
+      <div className="bg-white/5 border border-white/10 rounded-xl p-5">
+        <h3 className="text-sm font-semibold text-white mb-4">Change Password</h3>
+        <div className="space-y-3 max-w-sm">
+          <Fld label="CURRENT PASSWORD" value={current} onChange={setCurrent} placeholder="••••••••" />
+          <Fld label="NEW PASSWORD" value={newPwd} onChange={setNewPwd} placeholder="••••••••" />
+          <Fld label="CONFIRM NEW PASSWORD" value={confirm} onChange={setConfirm} placeholder="••••••••" />
+          {pwdMsg && <p className={`text-xs ${pwdMsg.includes("updated")?"text-green-400":"text-red-400"}`}>{pwdMsg}</p>}
+          <button onClick={handlePwd} disabled={pwdSaving} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg disabled:opacity-60">{pwdSaving?"Updating...":"Update Password"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── CERTIFICATES ADMIN ── */
+function CertificatesAdmin({ token }) {
+  const [certs, setCerts]       = useState([]);
+  const [users, setUsers]       = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [saving, setSaving]     = useState(false);
+  const [msg, setMsg]           = useState("");
+  const [form, setForm] = useState({ userId:"", title:"Certificate of Achievement", courseTitle:"", itemType:"course" });
+
+  useEffect(() => {
+    const h = { Authorization:`Bearer ${token}` };
+    fetch("/api/certificates", { headers:h }).then(r=>r.json()).then(d=>{ if(Array.isArray(d)) setCerts(d); setLoading(false); }).catch(()=>setLoading(false));
+    fetch("/api/users",        { headers:h }).then(r=>r.json()).then(d=>{ if(Array.isArray(d)) setUsers(d.filter(u=>u.role!=="admin")); }).catch(()=>{});
+  }, [token]);
+
+  const handleIssue = async () => {
+    if (!form.userId || !form.courseTitle) { setMsg("Select student and enter course title."); return; }
+    setSaving(true); setMsg("");
+    const res = await fetch("/api/certificates", { method:"POST", headers:{"Content-Type":"application/json",Authorization:`Bearer ${token}`}, body:JSON.stringify(form) });
+    const data = await res.json();
+    if (res.ok) { setCerts(c=>[data,...c]); setShowForm(false); setMsg(""); setForm({ userId:"", title:"Certificate of Achievement", courseTitle:"", itemType:"course" }); }
+    else setMsg(data.message || "Failed.");
+    setSaving(false);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Revoke this certificate?")) return;
+    await fetch(`/api/certificates/${id}`, { method:"DELETE", headers:{ Authorization:`Bearer ${token}` } });
+    setCerts(cs => cs.filter(c => c._id !== id));
+  };
+
+  const typeBadge = t => t==="bootcamp"?"bg-blue-500/20 text-blue-400":t==="workshop"?"bg-purple-500/20 text-purple-400":"bg-green-500/20 text-green-400";
+
+  return (
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-5">
+        <div><h1 className="text-xl font-bold text-white">Certificates</h1><p className="text-xs text-gray-400">Issue and manage student certificates · {certs.length} issued</p></div>
+        <button onClick={()=>setShowForm(!showForm)} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5">
+          <I name="plus" size={14}/>{showForm?"← Back":"+ Issue Certificate"}
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-5 max-w-lg space-y-3">
+          <h3 className="text-sm font-semibold text-white">Issue New Certificate</h3>
+          {msg && <p className="text-xs text-red-400">{msg}</p>}
+          <div>
+            <p className="text-[10px] text-gray-400 mb-1 font-semibold">STUDENT</p>
+            <select value={form.userId} onChange={e=>setForm({...form,userId:e.target.value})} className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#C7E36B]/50">
+              <option value="">Select student...</option>
+              {users.map(u=><option key={u._id} value={u._id}>{u.name} ({u.email})</option>)}
+            </select>
+          </div>
+          <Fld label="CERTIFICATE TITLE" value={form.title} onChange={v=>setForm({...form,title:v})} />
+          <Fld label="COURSE / PROGRAM TITLE" value={form.courseTitle} onChange={v=>setForm({...form,courseTitle:v})} placeholder="e.g. AI Filmmaking Bootcamp" />
+          <div>
+            <p className="text-[10px] text-gray-400 mb-1 font-semibold">TYPE</p>
+            <select value={form.itemType} onChange={e=>setForm({...form,itemType:e.target.value})} className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#C7E36B]/50">
+              <option value="course">Course</option>
+              <option value="workshop">Workshop</option>
+              <option value="bootcamp">Bootcamp</option>
+            </select>
+          </div>
+          <div className="flex gap-2 pt-1">
+            <button onClick={()=>setShowForm(false)} className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg">Cancel</button>
+            <button onClick={handleIssue} disabled={saving} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg disabled:opacity-60">{saving?"Issuing...":"Issue Certificate"}</button>
+          </div>
+        </div>
+      )}
+
+      {loading ? <p className="text-gray-500 text-sm animate-pulse">Loading...</p> : (
+        <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+          <table className="w-full">
+            <thead><tr className="text-[11px] text-gray-500 font-semibold uppercase bg-white/5">
+              {["Student","Course / Program","Type","Certificate ID","Issued",""].map(h=><th key={h} className="text-left px-4 py-3">{h}</th>)}
+            </tr></thead>
+            <tbody className="divide-y divide-white/5">
+              {certs.length === 0
+                ? <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-500 text-sm">No certificates issued yet</td></tr>
+                : certs.map((c) => (
+                <tr key={c._id} className="hover:bg-white/5 transition-all">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-[#C7E36B] text-black font-bold text-[11px] flex items-center justify-center">{(c.user?.name||"U")[0]}</div>
+                      <div><p className="text-xs font-semibold text-white">{c.user?.name||"—"}</p><p className="text-[10px] text-gray-500">{c.user?.email}</p></div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-300">{c.courseTitle}</td>
+                  <td className="px-4 py-3"><span className={`text-[10px] font-bold capitalize px-2 py-1 rounded-full ${typeBadge(c.itemType)}`}>{c.itemType}</span></td>
+                  <td className="px-4 py-3 text-[11px] text-gray-400 font-mono">{c.certificateId}</td>
+                  <td className="px-4 py-3 text-sm text-gray-400">{new Date(c.createdAt).toLocaleDateString()}</td>
+                  <td className="px-4 py-3"><button onClick={()=>handleDelete(c._id)} className="text-gray-600 hover:text-red-400 transition-all"><I name="trash" size={13}/></button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── JOBS ADMIN ── */
+const JOB_TAGS = ["AI Film","AI Ads","AI Story","AI Editing","AI Voice","AI Avatar","AI Music","General"];
+const JOB_TYPES = ["PART-TIME","FULL-TIME","CONTRACT","FREELANCE"];
+
+function JobsAdmin({ token }) {
+  const [jobs, setJobs]         = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [saving, setSaving]     = useState(false);
+  const [msg, setMsg]           = useState("");
+  const [form, setForm] = useState({ title:"", type:"PART-TIME", tag:"AI Film", description:"", budget:"", timeline:"", skills:"" });
+
+  const load = () => {
+    setLoading(true);
+    fetch("/api/jobs").then(r=>r.json()).then(d=>{ if(Array.isArray(d)) setJobs(d); setLoading(false); }).catch(()=>setLoading(false));
+  };
+  useEffect(load, []);
+
+  const handleSave = async () => {
+    if (!form.title) { setMsg("Title is required."); return; }
+    setSaving(true); setMsg("");
+    const body = { ...form, skills: form.skills.split(",").map(s=>s.trim()).filter(Boolean) };
+    const res = await fetch("/api/jobs", { method:"POST", headers:{"Content-Type":"application/json",Authorization:`Bearer ${token}`}, body:JSON.stringify(body) });
+    const data = await res.json();
+    if (res.ok) { setJobs(js=>[data,...js]); setShowForm(false); setForm({ title:"", type:"PART-TIME", tag:"AI Film", description:"", budget:"", timeline:"", skills:"" }); }
+    else setMsg(data.message || "Failed.");
+    setSaving(false);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this job?")) return;
+    await fetch(`/api/jobs/${id}`, { method:"DELETE", headers:{ Authorization:`Bearer ${token}` } });
+    setJobs(js => js.filter(j => j._id !== id));
+  };
+
+  const TAG_COLORS = { "AI Film":"bg-[#C7E36B]/20 text-[#C7E36B]","AI Ads":"bg-orange-500/20 text-orange-400","AI Story":"bg-pink-500/20 text-pink-400","AI Editing":"bg-blue-500/20 text-blue-400","AI Voice":"bg-purple-500/20 text-purple-400" };
+
+  return (
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-5">
+        <div><h1 className="text-xl font-bold text-white">Jobs</h1><p className="text-xs text-gray-400">Manage job listings · {jobs.length} active</p></div>
+        <button onClick={()=>setShowForm(!showForm)} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5">
+          <I name="plus" size={14}/>{showForm?"← Back":"+ Post New Job"}
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-5 max-w-lg space-y-3">
+          <h3 className="text-sm font-semibold text-white">Post New Job</h3>
+          {msg && <p className="text-xs text-red-400">{msg}</p>}
+          <Fld label="JOB TITLE" value={form.title} onChange={v=>setForm({...form,title:v})} placeholder="e.g. Create a cinematic AI short film" />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-[10px] text-gray-400 font-semibold mb-1">TYPE</p>
+              <select value={form.type} onChange={e=>setForm({...form,type:e.target.value})} className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#C7E36B]/50">
+                {JOB_TYPES.map(t=><option key={t}>{t}</option>)}
+              </select>
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-400 font-semibold mb-1">TAG</p>
+              <select value={form.tag} onChange={e=>setForm({...form,tag:e.target.value})} className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#C7E36B]/50">
+                {JOB_TAGS.map(t=><option key={t}>{t}</option>)}
+              </select>
+            </div>
+          </div>
+          <Fld label="DESCRIPTION" value={form.description} onChange={v=>setForm({...form,description:v})} textarea placeholder="Job description..." />
+          <div className="grid grid-cols-2 gap-3">
+            <Fld label="BUDGET" value={form.budget} onChange={v=>setForm({...form,budget:v})} placeholder="e.g. ₹10,000 fixed" />
+            <Fld label="TIMELINE" value={form.timeline} onChange={v=>setForm({...form,timeline:v})} placeholder="e.g. 3 days" />
+          </div>
+          <Fld label="SKILLS (comma-separated)" value={form.skills} onChange={v=>setForm({...form,skills:v})} placeholder="Runway, Midjourney, Pika" />
+          <div className="flex gap-2 pt-1">
+            <button onClick={()=>setShowForm(false)} className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg">Cancel</button>
+            <button onClick={handleSave} disabled={saving} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg disabled:opacity-60">{saving?"Posting...":"Post Job"}</button>
+          </div>
+        </div>
+      )}
+
+      {loading ? <p className="text-gray-500 text-sm animate-pulse">Loading...</p> : (
+        jobs.length === 0 ? (
+          <div className="text-center py-12"><p className="text-gray-500 text-sm">No jobs posted yet</p><button onClick={()=>setShowForm(true)} className="mt-3 text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg">Post First Job</button></div>
+        ) : (
+          <div className="space-y-3">
+            {jobs.map((j) => (
+              <div key={j._id} className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between hover:border-white/20 transition-all">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${TAG_COLORS[j.tag]||"bg-white/10 text-gray-400"}`}>{j.tag}</span>
+                    <span className="text-[10px] text-gray-500 font-semibold">{j.type}</span>
+                  </div>
+                  <h3 className="text-sm font-semibold text-white">{j.title}</h3>
+                  <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{j.description}</p>
+                  <div className="flex items-center gap-4 mt-1">
+                    {j.budget && <span className="text-[10px] text-gray-500">{j.budget}</span>}
+                    {j.timeline && <span className="text-[10px] text-gray-500">{j.timeline}</span>}
+                  </div>
+                </div>
+                <button onClick={()=>handleDelete(j._id)} className="text-gray-600 hover:text-red-400 ml-4 shrink-0 transition-all"><I name="trash" size={14}/></button>
+              </div>
+            ))}
+          </div>
+        )
+      )}
     </div>
   );
 }
