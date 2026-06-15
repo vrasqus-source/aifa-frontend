@@ -1,64 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import ProPlanBanner from "./ProPlanBanner";
 
-/* ---------------- COURSES DATA ---------------- */
-const courses = [
-  {
-    title: "AI Reels & Shorts Masterclass",
-    desc: "Master AI-powered tools to write engaging and impactful scripts.",
-    image: "/courses/v1.png",
-    duration: "1h 10m",
-  },
-  {
-    title: "AI Social Media Design Course",
-    desc: "Transform still images into dynamic visuals using AI tools.",
-    image: "/courses/v2.png",
-    duration: "1h 10m",
-  },
-  {
-    title: "AI Thumbnail Creation Masterclass",
-    desc: "Create realistic AI avatars with advanced editing techniques.",
-    image: "/courses/v3.png",
-    duration: "1h 10m",
-  },
-  {
-    title: "AI Video Editing Masterclass",
-    desc: "Design stunning virtual fashion models using AI technology.",
-    image: "/courses/v4.png",
-    duration: "2h 00m",
-  },
-  {
-    title: "AI Content Creation Bootcamp",
-    desc: "Restore and enhance colors in photos with AI precision.",
-    image: "/courses/v5.png",
-    duration: "1h 30m",
-  },
-  {
-    title: "AI Cinematic Storytelling",
-    desc: "Enhance facial details and clarity using powerful AI tools.",
-    image: "/courses/v6.png",
-    duration: "2h 15m",
-  },
-  {
-    title: "AI Scriptwriting Masterclass",
-    desc: "Build intelligent workflows and automate tasks using AI tools.",
-    image: "/courses/v7.png",
-    duration: "1h 45m",
-  },
-  {
-    title: "AI Visual Effects Course",
-    desc: "Create stunning AI-generated videos with cinematic precision.",
-    image: "/courses/v8.png",
-    duration: "2h 30m",
-  },
-  {
-    title: "AI Sound Design Masterclass",
-    desc: "Generate immersive backgrounds and scenes using AI tools.",
-    image: "/courses/v9.png",
-    duration: "1h 20m",
-  },
+const parseDurationMinutes = (d) => {
+  const m = d.match(/(\d+)h\s*(\d+)m/);
+  if (m) return parseInt(m[1]) * 60 + parseInt(m[2]);
+  const h = d.match(/(\d+)h/);
+  if (h) return parseInt(h[1]) * 60;
+  return 0;
+};
+
+/* ---------------- MOCK FALLBACK ---------------- */
+const MOCK_COURSES = [
+  { _id: "m1", title: "AI Reels & Shorts Masterclass", description: "Master AI-powered tools to write engaging and impactful scripts.", image: "/courses/v1.png", duration: "1h 10m", price: 399, originalPrice: 799 },
+  { _id: "m2", title: "AI Social Media Design Course", description: "Transform still images into dynamic visuals using AI tools.", image: "/courses/v2.png", duration: "1h 10m", price: 299, originalPrice: 799 },
+  { _id: "m3", title: "AI Thumbnail Creation Masterclass", description: "Create realistic AI avatars with advanced editing techniques.", image: "/courses/v3.png", duration: "1h 10m", price: 349, originalPrice: 799 },
+  { _id: "m4", title: "AI Video Editing Masterclass", description: "Design stunning virtual fashion models using AI technology.", image: "/courses/v4.png", duration: "2h 00m", price: 499, originalPrice: 999 },
+  { _id: "m5", title: "AI Content Creation Bootcamp", description: "Restore and enhance colors in photos with AI precision.", image: "/courses/v5.png", duration: "1h 30m", price: 399, originalPrice: 799 },
+  { _id: "m6", title: "AI Cinematic Storytelling", description: "Enhance facial details and clarity using powerful AI tools.", image: "/courses/v6.png", duration: "2h 15m", price: 599, originalPrice: 999 },
+  { _id: "m7", title: "AI Scriptwriting Masterclass", description: "Build intelligent workflows and automate tasks using AI tools.", image: "/courses/v7.png", duration: "1h 45m", price: 449, originalPrice: 899 },
+  { _id: "m8", title: "AI Visual Effects Course", description: "Create stunning AI-generated videos with cinematic precision.", image: "/courses/v8.png", duration: "2h 30m", price: 649, originalPrice: 1299 },
+  { _id: "m9", title: "AI Sound Design Masterclass", description: "Generate immersive backgrounds and scenes using AI tools.", image: "/courses/v9.png", duration: "1h 20m", price: 349, originalPrice: 699 },
 ];
 
 /* ---------------- MAIN PAGE ---------------- */
@@ -66,8 +30,49 @@ export default function CoursesPage() {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState("Newest");
+  const [courses, setCourses] = useState(MOCK_COURSES);
+  const [enrolling, setEnrolling] = useState(null);
+  const navigate = useNavigate();
+  const isLoggedIn = !!localStorage.getItem("aifa_token");
 
-  const options = ["Newest", "Price: Low to High", "Duration"];
+  useEffect(() => {
+    fetch("/api/courses")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data) && data.length > 0) setCourses(data); })
+      .catch(() => {});
+  }, []);
+
+  const handleBuy = async (course) => {
+    if (!isLoggedIn) {
+      alert("Please login or sign up to purchase a course.");
+      return;
+    }
+    if (!course._id || course._id.startsWith("m")) {
+      alert("Payment gateway coming soon!");
+      return;
+    }
+    setEnrolling(course._id);
+    try {
+      const token = localStorage.getItem("aifa_token");
+      const res = await fetch(`/api/courses/${course._id}/enroll`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Enrolled successfully! Go to your dashboard to watch.");
+        navigate("/dashboard");
+      } else {
+        alert(data.message || "Enrollment failed.");
+      }
+    } catch {
+      alert("Network error. Please try again.");
+    } finally {
+      setEnrolling(null);
+    }
+  };
+
+  const options = ["Newest", "Price: Low to High", "Price: High to Low", "Duration"];
 
   /* FILTER */
   const filteredCourses = courses.filter((c) =>
@@ -76,9 +81,9 @@ export default function CoursesPage() {
 
   /* SORT */
   const sortedCourses = [...filteredCourses].sort((a, b) => {
-    if (selected === "Duration") {
-      return a.duration.localeCompare(b.duration);
-    }
+    if (selected === "Duration") return parseDurationMinutes(a.duration) - parseDurationMinutes(b.duration);
+    if (selected === "Price: Low to High") return a.price - b.price;
+    if (selected === "Price: High to Low") return b.price - a.price;
     return 0;
   });
 
@@ -439,74 +444,25 @@ export default function CoursesPage() {
                       {course.desc}
                     </p>
                     {/* PRICE */}
-                   <div
-  className="
-    flex
-    items-center
-    gap-[8px]
-    self-stretch
-    mt-auto
-  "
->
-  <span
-    className="
-      text-[#C7E36B]
-
-      font-[Montserrat]
-      text-[14px]
-      font-semibold
-      leading-[22px]
-    "
-  >
-    95% off
-  </span>
-
-  <span
-    className="
-      line-through
-
-      text-[#6F6F6F]
-
-      font-[Montserrat]
-      text-[14px]
-      font-normal
-      leading-[22px]
-    "
-  >
-    ₹799
-  </span>
-</div>
+                    <div className="flex items-center gap-[8px] self-stretch mt-auto">
+                      {course.originalPrice && course.originalPrice > course.price && (
+                        <span className="text-[#C7E36B] font-[Montserrat] text-[14px] font-semibold leading-[22px]">
+                          {Math.round((1 - course.price / course.originalPrice) * 100)}% off
+                        </span>
+                      )}
+                      {course.originalPrice && course.originalPrice > course.price && (
+                        <span className="line-through text-[#6F6F6F] font-[Montserrat] text-[14px] font-normal leading-[22px]">
+                          ₹{course.originalPrice}
+                        </span>
+                      )}
+                    </div>
                     {/* BUTTON */}
                     <button
-                      className="
-    flex
-    justify-center
-    items-center
-
-    gap-[8px]
-
-    self-stretch
-
-    px-[16px]
-    py-[8px]
-
-    rounded-[4px]
-
-    bg-[#F0F0F0]
-
-    text-black
-
-    text-[14px]
-    font-semibold
-    leading-[24px]
-
-    transition-all
-    duration-300
-
-    hover:bg-white
-  "
+                      onClick={() => handleBuy(course)}
+                      disabled={enrolling === course._id}
+                      className="flex justify-center items-center gap-[8px] self-stretch px-[16px] py-[8px] rounded-[4px] bg-[#F0F0F0] text-black text-[14px] font-semibold leading-[24px] transition-all duration-300 hover:bg-white disabled:opacity-60"
                     >
-                      BUY ₹399.00
+                      {enrolling === course._id ? "Enrolling..." : `BUY ₹${course.price}.00`}
                     </button>
                   </div>
                 </div>

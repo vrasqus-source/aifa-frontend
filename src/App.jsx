@@ -115,7 +115,7 @@
 "use client";
 
 import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
@@ -141,45 +141,32 @@ import Events from "./pages/Events";
 import Clubs from "./pages/Clubs";
 import Challenges from "./pages/Challenges";
 import Awards from "./pages/Awards";
+import StudentDashboard from "./pages/StudentDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import CoursePlayer from "./pages/CoursePlayer";
+import ResetPassword from "./pages/ResetPassword";
 
-export default function App() {
+const FULLSCREEN_PATHS = ["/dashboard", "/admin", "/reset-password"];
+
+function AppShell() {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
+  const location = useLocation();
+
+  const isFullScreen =
+    FULLSCREEN_PATHS.includes(location.pathname) ||
+    /^\/courses\/.+\/watch$/.test(location.pathname);
 
   return (
-    <div
-      className="
-        w-full
-        min-h-screen
+    <div className={`w-full min-h-screen bg-[#0B0F10] overflow-x-hidden`}>
+      {!isFullScreen && (
+        <Navbar
+          onLoginClick={() => { setShowSignup(false); setShowLogin(true); }}
+          onSignupClick={() => { setShowLogin(false); setShowSignup(true); }}
+        />
+      )}
 
-        bg-[#0B0F10]
-
-        overflow-x-hidden
-      "
-    >
-      {/* NAVBAR */}
-      <Navbar
-        onLoginClick={() => {
-          setShowSignup(false);
-          setShowLogin(true);
-        }}
-        onSignupClick={() => {
-          setShowLogin(false);
-          setShowSignup(true);
-        }}
-      />
-
-      {/* MAIN CONTENT */}
-      <main
-        className="
-          w-full
-
-          pt-[72px]
-
-          flex
-          flex-col
-        "
-      >
+      <main className={!isFullScreen ? "w-full pt-[72px] flex flex-col" : "w-full"}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<CoursesPage />} />
@@ -193,38 +180,36 @@ export default function App() {
           <Route path="/deals" element={<AiDeals />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/workshops" element={<WorkshopsPage />} />
-            <Route path="/forums" element={<Forums />} />
-  <Route path="/events" element={<Events />} />
-  <Route path="/clubs" element={<Clubs />} />
-  <Route path="/challenges" element={<Challenges />} />
-  <Route path="/awards" element={<Awards />} />
+          <Route path="/forums" element={<Forums />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/clubs" element={<Clubs />} />
+          <Route path="/challenges" element={<Challenges />} />
+          <Route path="/awards" element={<Awards />} />
+          <Route path="/dashboard" element={<StudentDashboard />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/courses/:id/watch" element={<CoursePlayer />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </main>
 
-      {/* FOOTER */}
-      <Footer />
+      {!isFullScreen && <Footer />}
 
-      {/* LOGIN MODAL */}
       {showLogin && !showSignup && (
         <LoginModal
           onClose={() => setShowLogin(false)}
-          onSwitchToSignup={() => {
-            setShowLogin(false);
-            setShowSignup(true);
-          }}
+          onSwitchToSignup={() => { setShowLogin(false); setShowSignup(true); }}
         />
       )}
-
-      {/* SIGNUP MODAL */}
       {showSignup && !showLogin && (
         <SignUpModal
           onClose={() => setShowSignup(false)}
-          onSwitchToLogin={() => {
-            setShowSignup(false);
-            setShowLogin(true);
-          }}
+          onSwitchToLogin={() => { setShowSignup(false); setShowLogin(true); }}
         />
       )}
     </div>
   );
+}
+
+export default function App() {
+  return <AppShell />;
 }

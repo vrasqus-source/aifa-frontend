@@ -98,9 +98,9 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const navLinks = [
   {
@@ -141,6 +141,33 @@ const navLinks = [
 export default function Navbar({ onLoginClick, onSignupClick }) {
   const [open, setOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [user, setUser] = useState(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const stored = localStorage.getItem("aifa_user");
+    if (stored) setUser(JSON.parse(stored));
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("aifa_token");
+    localStorage.removeItem("aifa_user");
+    setUser(null);
+    setShowUserMenu(false);
+    navigate("/");
+  };
 
   return (
     <header className="fixed top-0 w-full z-50 bg-[#0F1112] border-b border-white/10">
@@ -235,92 +262,54 @@ lg:py-[20px]
 
         {/* RIGHT BUTTONS */}
         <div className="hidden md:flex items-center gap-3">
-          <button
-            onClick={onLoginClick}
-            className="
-    px-[16px] py-[8px]
-    text-[#F0F0F0]
-    text-[14px] leading-[16px]
-    font-bold font-montserrat
-    text-center
-  
-    rounded-[6px]
-    transition-all duration-200 ease-in-out
-    hover:bg-white/10
-    active:scale-[0.97]
-  "
-          >
-            LOGIN
-          </button>
-          <button
-            className="
-    flex
-    items-center
-    justify-center
-    gap-[4px]
-
-    px-[16px]
-    py-[8px]
-
-    rounded-[4px]
-
-    border
-    border-[#F0F0F0]
-
-    bg-transparent
-
-    text-[#F0F0F0]
-
-    font-montserrat
-    text-[14px]
-    font-bold
-    leading-[18px]
-
-   
-
-    transition-all
-    duration-300
-
-    hover:bg-[#F0F0F0]
-    hover:text-[#0F1112]
-  "
-          >
-            JOIN
-          </button>
-          <button
-            className="
-    flex
-    items-center
-    justify-center
-    gap-[8px]
-
-    px-[16px]
-    py-[8px]
-
-    rounded-[4px]
-
-    bg-[#F0F0F0]
-    text-[#0F1112]
-
-    font-montserrat
-    text-[14px]
-    font-bold
-    leading-[24px]
-
-    transition-all
-    duration-300
-
-    hover:bg-gray-200
-    active:scale-[0.97]
-  "
-          >
-            TALK TO SALES
-            <img
-              src="/logos/Arrowleftsales.svg"
-              alt="arrow"
-              className="w-[14px] h-[14px]"
-            />
-          </button>
+          {user ? (
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="flex items-center gap-2 px-[16px] py-[8px] rounded-[6px] border border-white/20 text-[#F0F0F0] text-[14px] font-bold font-montserrat hover:bg-white/10 transition-all"
+              >
+                <span className="w-7 h-7 rounded-full bg-[#C7E36B] text-black flex items-center justify-center font-bold text-sm">
+                  {user.name?.[0]?.toUpperCase()}
+                </span>
+                {user.name?.split(" ")[0]}
+                <ChevronDown size={14} className={`transition-all ${showUserMenu ? "rotate-180" : ""}`} />
+              </button>
+              {showUserMenu && (
+                <div className="absolute right-0 top-full mt-2 w-[200px] bg-[#0F1112] border border-[#414243] rounded-[8px] overflow-hidden z-50">
+                  <Link to="/dashboard" onClick={() => setShowUserMenu(false)} className="block px-4 py-3 text-[#F0F0F0] text-sm hover:bg-white/10 border-b border-[#414243]">
+                    My Dashboard
+                  </Link>
+                  {user.role === "admin" && (
+                    <Link to="/admin" onClick={() => setShowUserMenu(false)} className="block px-4 py-3 text-[#C7E36B] text-sm hover:bg-white/10 border-b border-[#414243]">
+                      Admin Dashboard
+                    </Link>
+                  )}
+                  <button onClick={handleLogout} className="w-full text-left px-4 py-3 text-red-400 text-sm hover:bg-white/10">
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <button
+                onClick={onLoginClick}
+                className="px-[16px] py-[8px] text-[#F0F0F0] text-[14px] leading-[16px] font-bold font-montserrat rounded-[6px] transition-all duration-200 hover:bg-white/10 active:scale-[0.97]"
+              >
+                LOGIN
+              </button>
+              <button
+                onClick={onSignupClick}
+                className="flex items-center justify-center gap-[4px] px-[16px] py-[8px] rounded-[4px] border border-[#F0F0F0] bg-transparent text-[#F0F0F0] font-montserrat text-[14px] font-bold leading-[18px] transition-all duration-300 hover:bg-[#F0F0F0] hover:text-[#0F1112]"
+              >
+                JOIN
+              </button>
+              <button className="flex items-center justify-center gap-[8px] px-[16px] py-[8px] rounded-[4px] bg-[#F0F0F0] text-[#0F1112] font-montserrat text-[14px] font-bold leading-[24px] transition-all duration-300 hover:bg-gray-200 active:scale-[0.97]">
+                TALK TO SALES
+                <img src="/logos/Arrowleftsales.svg" alt="arrow" className="w-[14px] h-[14px]" />
+              </button>
+            </>
+          )}
         </div>
 
         {/* MOBILE TOGGLE */}
@@ -435,36 +424,32 @@ h-[40px]
             </div>
           ))}
 
-          {/* BUTTONS */}
+          {/* MOBILE BUTTONS */}
           <div className="flex flex-col gap-[12px] pt-[8px]">
-            <button
-              onClick={onLoginClick}
-              className="
-          h-[48px]
-          rounded-[10px]
-          bg-[#F0F0F0]
-          text-[#0F1112]
-          text-[14px]
-          font-bold
-        "
-            >
-              LOGIN
-            </button>
-
-            <button
-              onClick={onSignupClick}
-              className="
-          h-[48px]
-          rounded-[10px]
-          border
-          border-[#F0F0F0]
-          text-[#F0F0F0]
-          text-[14px]
-          font-bold
-        "
-            >
-              JOIN
-            </button>
+            {user ? (
+              <>
+                <Link to="/dashboard" onClick={() => setOpen(false)} className="h-[48px] rounded-[10px] bg-[#C7E36B] text-black text-[14px] font-bold flex items-center justify-center">
+                  My Dashboard
+                </Link>
+                {user.role === "admin" && (
+                  <Link to="/admin" onClick={() => setOpen(false)} className="h-[48px] rounded-[10px] border border-[#C7E36B] text-[#C7E36B] text-[14px] font-bold flex items-center justify-center">
+                    Admin Dashboard
+                  </Link>
+                )}
+                <button onClick={handleLogout} className="h-[48px] rounded-[10px] border border-red-400 text-red-400 text-[14px] font-bold">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button onClick={onLoginClick} className="h-[48px] rounded-[10px] bg-[#F0F0F0] text-[#0F1112] text-[14px] font-bold">
+                  LOGIN
+                </button>
+                <button onClick={onSignupClick} className="h-[48px] rounded-[10px] border border-[#F0F0F0] text-[#F0F0F0] text-[14px] font-bold">
+                  JOIN
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

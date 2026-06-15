@@ -412,10 +412,15 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.load();
-      videoRef.current.play();
+    const vid = videoRef.current;
+    if (!vid) return;
+    vid.pause();
+    vid.load();
+    const playPromise = vid.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {});
     }
+    return () => { vid.pause(); };
   }, [active]);
 
   return (
