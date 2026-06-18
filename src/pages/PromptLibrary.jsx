@@ -1,72 +1,30 @@
 "use client";
 import { useState } from "react";
 
+const PROMPT_CATEGORIES = ["All", "Cinematic", "Product", "Character", "Landscape", "VFX"];
+
 export default function PromptLibrary() {
   const [category, setCategory] = useState("All");
+  const [subCategory, setSubCategory] = useState("All");
 
   const prompts = [
     {
-      title: "[Cinematic Poster / Sora/Chat GPT / Midjourney]",
+      title: "Futuristic Hologram Portrait",
+      category: "Cinematic",
       img: "/propmt/pr1.png",
-      text: "Keep the same boy’s face, identity, and natural smile exactly as provided. Maintain realistic skin tone and facial features. A hyper-realistic cinematic portrait of a young man standing in a dark blue futuristic studio environment. He is smiling confidently while holding a glowing holographic projection between his hands.  Scene: A floating cinematic frame appears between his hands, displaying an action movie scene with explosions, running characters, and a futuristic city background. Electric blue energy waves and lightning effects surround the hologram, creating a powerful AI-generated visual effect.  Hands: Positioned forward, slightly open, as if controlling or presenting the hologram. Blue energy flows around fingers and palms.  Lighting: Dramatic neon blue lighting with soft highlights on the face and hands. Glow from the hologram illuminates the subject naturally. Subtle particles and sparks in the background.  Background: Deep blue gradient with stars, light particles, and electric energy patterns, giving a sci-fi AI filmmaking atmosphere.  Mood: Creative, futuristic, powerful — representing AI filmmaking and imagination coming to life.  Style: Ultra-realistic, cinematic VFX, 8K resolution, sharp focus, high detail, volumetric lighting, depth of field, professional studio composition.",
+      text: "Hyper-realistic cinematic portrait of a young man in a dark blue futuristic studio, holding a glowing holographic film reel. Electric blue energy waves surround the hologram. Neon blue lighting with volumetric fog. Deep blue gradient background with star particles. Style: Ultra-realistic, cinematic VFX, 8K resolution, --ar 16:9 --style raw --v 6",
     },
-   {
-      title: "[Cinematic Poster / Sora/Chat GPT / Midjourney]",
-      img: "/propmt/pr2.png",
-      text: "Keep the same boy’s face, identity, and natural smile exactly as provided. Maintain realistic skin tone and facial features. A hyper-realistic cinematic portrait of a young man standing in a dark blue futuristic studio environment. He is smiling confidently while holding a glowing holographic projection between his hands.  Scene: A floating cinematic frame appears between his hands, displaying an action movie scene with explosions, running characters, and a futuristic city background. Electric blue energy waves and lightning effects surround the hologram, creating a powerful AI-generated visual effect.  Hands: Positioned forward, slightly open, as if controlling or presenting the hologram. Blue energy flows around fingers and palms.  Lighting: Dramatic neon blue lighting with soft highlights on the face and hands. Glow from the hologram illuminates the subject naturally. Subtle particles and sparks in the background.  Background: Deep blue gradient with stars, light particles, and electric energy patterns, giving a sci-fi AI filmmaking atmosphere.  Mood: Creative, futuristic, powerful — representing AI filmmaking and imagination coming to life.  Style: Ultra-realistic, cinematic VFX, 8K resolution, sharp focus, high detail, volumetric lighting, depth of field, professional studio composition.",
-    },
-    {
-      title: "[Cinematic Poster / Sora/Chat GPT / Midjourney]",
-  img: "/propmt/pr3.png",
-      text: "Keep the same boy’s face, identity, and natural smile exactly as provided. Maintain realistic skin tone and facial features. A hyper-realistic cinematic portrait of a young man standing in a dark blue futuristic studio environment. He is smiling confidently while holding a glowing holographic projection between his hands.  Scene: A floating cinematic frame appears between his hands, displaying an action movie scene with explosions, running characters, and a futuristic city background. Electric blue energy waves and lightning effects surround the hologram, creating a powerful AI-generated visual effect.  Hands: Positioned forward, slightly open, as if controlling or presenting the hologram. Blue energy flows around fingers and palms.  Lighting: Dramatic neon blue lighting with soft highlights on the face and hands. Glow from the hologram illuminates the subject naturally. Subtle particles and sparks in the background.  Background: Deep blue gradient with stars, light particles, and electric energy patterns, giving a sci-fi AI filmmaking atmosphere.  Mood: Creative, futuristic, powerful — representing AI filmmaking and imagination coming to life.  Style: Ultra-realistic, cinematic VFX, 8K resolution, sharp focus, high detail, volumetric lighting, depth of field, professional studio composition.",
-    },
-    {
-      title: "[Cinematic Poster / Sora/Chat GPT / Midjourney]",
-   img: "/propmt/pr4.png",
-      text: "Keep the same boy’s face, identity, and natural smile exactly as provided. Maintain realistic skin tone and facial features. A hyper-realistic cinematic portrait of a young man standing in a dark blue futuristic studio environment. He is smiling confidently while holding a glowing holographic projection between his hands.  Scene: A floating cinematic frame appears between his hands, displaying an action movie scene with explosions, running characters, and a futuristic city background. Electric blue energy waves and lightning effects surround the hologram, creating a powerful AI-generated visual effect.  Hands: Positioned forward, slightly open, as if controlling or presenting the hologram. Blue energy flows around fingers and palms.  Lighting: Dramatic neon blue lighting with soft highlights on the face and hands. Glow from the hologram illuminates the subject naturally. Subtle particles and sparks in the background.  Background: Deep blue gradient with stars, light particles, and electric energy patterns, giving a sci-fi AI filmmaking atmosphere.  Mood: Creative, futuristic, powerful — representing AI filmmaking and imagination coming to life.  Style: Ultra-realistic, cinematic VFX, 8K resolution, sharp focus, high detail, volumetric lighting, depth of field, professional studio composition.",
-    },
-    {
-      title: "[Cinematic Poster / Sora/Chat GPT / Midjourney]",
-   img: "/propmt/pr5.png",
-      text: "Keep the same boy’s face, identity, and natural smile exactly as provided. Maintain realistic skin tone and facial features. A hyper-realistic cinematic portrait of a young man standing in a dark blue futuristic studio environment. He is smiling confidently while holding a glowing holographic projection between his hands.  Scene: A floating cinematic frame appears between his hands, displaying an action movie scene with explosions, running characters, and a futuristic city background. Electric blue energy waves and lightning effects surround the hologram, creating a powerful AI-generated visual effect.  Hands: Positioned forward, slightly open, as if controlling or presenting the hologram. Blue energy flows around fingers and palms.  Lighting: Dramatic neon blue lighting with soft highlights on the face and hands. Glow from the hologram illuminates the subject naturally. Subtle particles and sparks in the background.  Background: Deep blue gradient with stars, light particles, and electric energy patterns, giving a sci-fi AI filmmaking atmosphere.  Mood: Creative, futuristic, powerful — representing AI filmmaking and imagination coming to life.  Style: Ultra-realistic, cinematic VFX, 8K resolution, sharp focus, high detail, volumetric lighting, depth of field, professional studio composition.",
-    },
-    
-     {
-      title: "[Cinematic Poster / Sora/Chat GPT / Midjourney]",
-  img: "/propmt/pr6.png",
-      text: "Keep the same boy’s face, identity, and natural smile exactly as provided. Maintain realistic skin tone and facial features. A hyper-realistic cinematic portrait of a young man standing in a dark blue futuristic studio environment. He is smiling confidently while holding a glowing holographic projection between his hands.  Scene: A floating cinematic frame appears between his hands, displaying an action movie scene with explosions, running characters, and a futuristic city background. Electric blue energy waves and lightning effects surround the hologram, creating a powerful AI-generated visual effect.  Hands: Positioned forward, slightly open, as if controlling or presenting the hologram. Blue energy flows around fingers and palms.  Lighting: Dramatic neon blue lighting with soft highlights on the face and hands. Glow from the hologram illuminates the subject naturally. Subtle particles and sparks in the background.  Background: Deep blue gradient with stars, light particles, and electric energy patterns, giving a sci-fi AI filmmaking atmosphere.  Mood: Creative, futuristic, powerful — representing AI filmmaking and imagination coming to life.  Style: Ultra-realistic, cinematic VFX, 8K resolution, sharp focus, high detail, volumetric lighting, depth of field, professional studio composition.",
-    },
-    
-     {
-      title: "[Cinematic Poster / Sora/Chat GPT / Midjourney]",
-   img: "/propmt/pr7.png",
-      text: "Keep the same boy’s face, identity, and natural smile exactly as provided. Maintain realistic skin tone and facial features. A hyper-realistic cinematic portrait of a young man standing in a dark blue futuristic studio environment. He is smiling confidently while holding a glowing holographic projection between his hands.  Scene: A floating cinematic frame appears between his hands, displaying an action movie scene with explosions, running characters, and a futuristic city background. Electric blue energy waves and lightning effects surround the hologram, creating a powerful AI-generated visual effect.  Hands: Positioned forward, slightly open, as if controlling or presenting the hologram. Blue energy flows around fingers and palms.  Lighting: Dramatic neon blue lighting with soft highlights on the face and hands. Glow from the hologram illuminates the subject naturally. Subtle particles and sparks in the background.  Background: Deep blue gradient with stars, light particles, and electric energy patterns, giving a sci-fi AI filmmaking atmosphere.  Mood: Creative, futuristic, powerful — representing AI filmmaking and imagination coming to life.  Style: Ultra-realistic, cinematic VFX, 8K resolution, sharp focus, high detail, volumetric lighting, depth of field, professional studio composition.",
-    },
-    
-     {
-      title: "[Cinematic Poster / Sora/Chat GPT / Midjourney]",
-      img: "/propmt/pr8.png",
-      text: "Keep the same boy’s face, identity, and natural smile exactly as provided. Maintain realistic skin tone and facial features. A hyper-realistic cinematic portrait of a young man standing in a dark blue futuristic studio environment. He is smiling confidently while holding a glowing holographic projection between his hands.  Scene: A floating cinematic frame appears between his hands, displaying an action movie scene with explosions, running characters, and a futuristic city background. Electric blue energy waves and lightning effects surround the hologram, creating a powerful AI-generated visual effect.  Hands: Positioned forward, slightly open, as if controlling or presenting the hologram. Blue energy flows around fingers and palms.  Lighting: Dramatic neon blue lighting with soft highlights on the face and hands. Glow from the hologram illuminates the subject naturally. Subtle particles and sparks in the background.  Background: Deep blue gradient with stars, light particles, and electric energy patterns, giving a sci-fi AI filmmaking atmosphere.  Mood: Creative, futuristic, powerful — representing AI filmmaking and imagination coming to life.  Style: Ultra-realistic, cinematic VFX, 8K resolution, sharp focus, high detail, volumetric lighting, depth of field, professional studio composition.",
-    },
-    {
-      title: "[Cinematic Poster / Sora/Chat GPT / Midjourney]",
- img: "/propmt/pr9.png",
-      text: "Keep the same boy’s face, identity, and natural smile exactly as provided. Maintain realistic skin tone and facial features. A hyper-realistic cinematic portrait of a young man standing in a dark blue futuristic studio environment. He is smiling confidently while holding a glowing holographic projection between his hands.  Scene: A floating cinematic frame appears between his hands, displaying an action movie scene with explosions, running characters, and a futuristic city background. Electric blue energy waves and lightning effects surround the hologram, creating a powerful AI-generated visual effect.  Hands: Positioned forward, slightly open, as if controlling or presenting the hologram. Blue energy flows around fingers and palms.  Lighting: Dramatic neon blue lighting with soft highlights on the face and hands. Glow from the hologram illuminates the subject naturally. Subtle particles and sparks in the background.  Background: Deep blue gradient with stars, light particles, and electric energy patterns, giving a sci-fi AI filmmaking atmosphere.  Mood: Creative, futuristic, powerful — representing AI filmmaking and imagination coming to life.  Style: Ultra-realistic, cinematic VFX, 8K resolution, sharp focus, high detail, volumetric lighting, depth of field, professional studio composition.",
-    },
-    {
-      title: "[Cinematic Poster / Sora/Chat GPT / Midjourney]",
-      img: "/propmt/pr10.png",
-      text: "Keep the same boy’s face, identity, and natural smile exactly as provided. Maintain realistic skin tone and facial features. A hyper-realistic cinematic portrait of a young man standing in a dark blue futuristic studio environment. He is smiling confidently while holding a glowing holographic projection between his hands.  Scene: A floating cinematic frame appears between his hands, displaying an action movie scene with explosions, running characters, and a futuristic city background. Electric blue energy waves and lightning effects surround the hologram, creating a powerful AI-generated visual effect.  Hands: Positioned forward, slightly open, as if controlling or presenting the hologram. Blue energy flows around fingers and palms.  Lighting: Dramatic neon blue lighting with soft highlights on the face and hands. Glow from the hologram illuminates the subject naturally. Subtle particles and sparks in the background.  Background: Deep blue gradient with stars, light particles, and electric energy patterns, giving a sci-fi AI filmmaking atmosphere.  Mood: Creative, futuristic, powerful — representing AI filmmaking and imagination coming to life.  Style: Ultra-realistic, cinematic VFX, 8K resolution, sharp focus, high detail, volumetric lighting, depth of field, professional studio composition.",
-    },
-    {
-      title: "[Cinematic Poster / Sora/Chat GPT / Midjourney]",
-     img: "/propmt/pr11.png",
-      text: "Keep the same boy’s face, identity, and natural smile exactly as provided. Maintain realistic skin tone and facial features. A hyper-realistic cinematic portrait of a young man standing in a dark blue futuristic studio environment. He is smiling confidently while holding a glowing holographic projection between his hands.  Scene: A floating cinematic frame appears between his hands, displaying an action movie scene with explosions, running characters, and a futuristic city background. Electric blue energy waves and lightning effects surround the hologram, creating a powerful AI-generated visual effect.  Hands: Positioned forward, slightly open, as if controlling or presenting the hologram. Blue energy flows around fingers and palms.  Lighting: Dramatic neon blue lighting with soft highlights on the face and hands. Glow from the hologram illuminates the subject naturally. Subtle particles and sparks in the background.  Background: Deep blue gradient with stars, light particles, and electric energy patterns, giving a sci-fi AI filmmaking atmosphere.  Mood: Creative, futuristic, powerful — representing AI filmmaking and imagination coming to life.  Style: Ultra-realistic, cinematic VFX, 8K resolution, sharp focus, high detail, volumetric lighting, depth of field, professional studio composition.",
-    },{
-      title: "[Cinematic Poster / Sora/Chat GPT / Midjourney]",
-img: "/propmt/pr12.png",
-      text: "Keep the same boy’s face, identity, and natural smile exactly as provided. Maintain realistic skin tone and facial features. A hyper-realistic cinematic portrait of a young man standing in a dark blue futuristic studio environment. He is smiling confidently while holding a glowing holographic projection between his hands.  Scene: A floating cinematic frame appears between his hands, displaying an action movie scene with explosions, running characters, and a futuristic city background. Electric blue energy waves and lightning effects surround the hologram, creating a powerful AI-generated visual effect.  Hands: Positioned forward, slightly open, as if controlling or presenting the hologram. Blue energy flows around fingers and palms.  Lighting: Dramatic neon blue lighting with soft highlights on the face and hands. Glow from the hologram illuminates the subject naturally. Subtle particles and sparks in the background.  Background: Deep blue gradient with stars, light particles, and electric energy patterns, giving a sci-fi AI filmmaking atmosphere.  Mood: Creative, futuristic, powerful — representing AI filmmaking and imagination coming to life.  Style: Ultra-realistic, cinematic VFX, 8K resolution, sharp focus, high detail, volumetric lighting, depth of field, professional studio composition.",
-    },
+    { title: "Sci-Fi Space Station Interior", category: "Landscape", img: "/propmt/pr2.png", text: "Hyper-realistic interior of a deep-space research station, curved white corridors with blue LED strips, astronaut in orange spacesuit walking through airlock, Earth visible through panoramic windows, dramatic natural lighting from planet below, lens flare, 8K, --ar 16:9 --v 6" },
+    { title: "Vintage Film Noir Detective", category: "Character", img: "/propmt/pr3.png", text: "Film noir detective portrait, 1940s style, man in fedora and trenchcoat under a flickering street lamp in the rain, dramatic chiaroscuro lighting, heavy shadows, wet cobblestones, cigarette smoke, black and white with selective amber tone, cinematic grain, Leica 35mm --ar 4:5 --style raw" },
+    { title: "Luxury Perfume Product Shot", category: "Product", img: "/propmt/pr4.png", text: "Ultra-luxury perfume bottle on black marble surface, golden liquid, studio light with dramatic side-lighting, bokeh background with gold dust particles, reflections on marble surface, editorial photography, 4K commercial quality, --ar 4:5 --style raw --v 6" },
+    { title: "Cyberpunk City Street", category: "Landscape", img: "/propmt/pr5.png", text: "Cyberpunk mega-city street at night, neon signs in Japanese and Hindi, rain-slicked asphalt reflecting holographic ads, flying vehicles overhead, dense crowd with umbrellas, fog and smog, blade runner aesthetic, cinematic anamorphic lens, --ar 21:9 --v 6" },
+    { title: "AI Energy Burst Portrait", category: "VFX", img: "/propmt/pr6.png", text: "Dynamic portrait of a young woman, electric golden energy bursting from her hands, particles swirling around her body, dark studio background, dramatic rim lighting, cinematic composition, high-contrast, hyperrealistic skin texture, 8K resolution --ar 2:3 --style raw" },
+    { title: "Isometric Smart City", category: "Landscape", img: "/propmt/pr7.png", text: "Isometric view of a futuristic smart city at golden hour, solar panels on every rooftop, autonomous vehicles on clean white roads, vertical gardens on skyscrapers, soft warm lighting, clean graphic style, 3D render quality, detailed, --ar 1:1 --v 6" },
+    { title: "Ancient Warrior Character", category: "Character", img: "/propmt/pr8.png", text: "Epic fantasy warrior, ancient Indian Rajput armour in gold and crimson, dramatic battle pose, monsoon storm background with lightning, extreme detail on armour engravings, hyper-realistic skin texture, cinematic lighting, close-up composition, --ar 2:3 --style raw --v 6" },
+    { title: "AI Exploding Paint Splash VFX", category: "VFX", img: "/propmt/pr9.png", text: "Slow-motion explosion of multicolour paint against pure black background, hyper-realistic paint physics, droplets frozen in time, vivid saturated reds blues greens, studio strobe lighting, ultra-high-speed photography style, 8K --ar 16:9 --style raw" },
+    { title: "Cinematic Ocean Storm", category: "Landscape", img: "/propmt/pr10.png", text: "Massive cargo ship battling a 100-foot rogue wave in a North Atlantic storm, dramatic grey sky with lightning, spray and foam, low camera angle at water level, cinematic anamorphic lens, ultra-realistic ocean simulation, photographic quality, --ar 21:9 --v 6" },
+    { title: "Tech Product Reveal", category: "Product", img: "/propmt/pr11.png", text: "Next-gen wireless earbuds floating on a gradient blue-to-purple studio background, dramatic side lighting highlighting product curves, metallic finish with holographic accents, minimalist composition, Apple-style commercial photography, 4K --ar 1:1 --style raw" },
+    { title: "Dramatic Sunset Portrait", category: "Cinematic", img: "/propmt/pr12.png", text: "Silhouette of a lone filmmaker standing on a hilltop at sunset, golden hour orange and purple sky, camera on tripod, cinematic wide shot, dust particles in air, dramatic rays of light through clouds, moody atmospheric, 8K, --ar 16:9 --v 6" },
     
     
     
@@ -84,23 +42,15 @@ img: "/propmt/pr12.png",
 
           {/* FILTERS */}
           <div className="flex gap-4">
-            <select className="bg-[#111] border border-white/10 px-4 py-2 rounded-md">
-              <option>All</option>
-              <option>AI Film</option>
-              <option>UI Design</option>
-            </select>
-
-            <select className="bg-[#111] border border-white/10 px-4 py-2 rounded-md">
-              <option>Sub Category</option>
-              <option>Cinematic</option>
-              <option>Product</option>
+            <select value={category} onChange={e=>setCategory(e.target.value)} className="bg-[#111] border border-white/10 px-4 py-2 rounded-md text-white">
+              {PROMPT_CATEGORIES.map(c=><option key={c}>{c}</option>)}
             </select>
           </div>
         </div>
 
         {/* 🔥 GRID */}
         <div className="grid md:grid-cols-3 gap-6">
-          {prompts.map((item, i) => (
+          {prompts.filter(p => category === "All" || p.category === category).map((item, i) => (
             <div
               key={i}
               className="bg-[#111] border border-white/10 rounded-2xl overflow-hidden hover:border-[#C7E36B]/40 transition group"

@@ -363,100 +363,408 @@ function AdminOverview({ token, onNavigate }) {
 }
 
 /* ── BOOTCAMP ADMIN ── */
+const BC_ST={ACTIVE:"bg-green-500/20 text-green-400",COMPLETED:"bg-blue-500/20 text-blue-400",CANCELLED:"bg-red-500/20 text-red-400","COMING SOON":"bg-yellow-500/20 text-yellow-400",DROPPED:"bg-red-500/20 text-red-400",PUBLISHED:"bg-green-500/20 text-green-400",SCHEDULED:"bg-yellow-500/20 text-yellow-400",DRAFT:"bg-gray-500/20 text-gray-400"};
+const BC_CARDS=[
+  {_id:"b1",code:"B01",title:"AI Filmmaking Bootcamp",desc:"Master AI-powered filmmaking from script to screen in 12 intensive weeks.",students:21,price:"₹6,499",duration:"12 Weeks",status:"ACTIVE"},
+  {_id:"b2",code:"B02",title:"Advanced VFX with AI",desc:"Deep dive into visual effects using generative AI tools and pipelines.",students:14,price:"₹4,999",duration:"8 Weeks",status:"COMPLETED"},
+  {_id:"b3",code:"B03",title:"AI Screenwriting Workshop",desc:"Learn to write compelling scripts using AI-assisted tools and prompting.",students:0,price:"₹3,499",duration:"4 Weeks",status:"COMING SOON"},
+];
+const BC_SESS=[
+  {no:1,name:"Introduction to AI Filmmaking",status:"COMPLETED"},{no:2,name:"Storyboarding with Midjourney",status:"COMPLETED"},
+  {no:3,name:"Generative Video Fundamentals",status:"COMPLETED"},{no:4,name:"Prompt Engineering for Video",status:"COMPLETED"},
+  {no:5,name:"Cinematic Camera Movements",status:"COMPLETED"},{no:6,name:"AI Audio & Soundscapes",status:"COMPLETED"},
+  {no:7,name:"Color Grading with AI Tools",status:"COMPLETED"},{no:8,name:"Character Consistency in AI",status:"COMPLETED"},
+  {no:9,name:"Editing Workflows for AI Film",status:"COMPLETED"},{no:10,name:"VFX Compositing Basics",status:"COMPLETED"},
+  {no:11,name:"Narrative Structure in AI Cinema",status:"COMPLETED"},{no:12,name:"Generative Video with Sora & Midjourney",status:"ACTIVE"},
+  {no:13,name:"Advanced Temporal Consistency",status:"COMING SOON"},{no:14,name:"Multi-Scene Storytelling",status:"COMING SOON"},
+];
+const BC_STUDS=[
+  {name:"Rajesh Kumar",email:"rajesh@gmail.com",mobile:"+91 98765 43210",joinDate:"Oct 1, 2024",status:"ACTIVE"},
+  {name:"Priya Sharma",email:"priya@gmail.com",mobile:"+91 87654 32109",joinDate:"Oct 1, 2024",status:"ACTIVE"},
+  {name:"Amit Patel",email:"amit@gmail.com",mobile:"+91 76543 21098",joinDate:"Oct 3, 2024",status:"COMPLETED"},
+  {name:"Sneha Reddy",email:"sneha@gmail.com",mobile:"+91 65432 10987",joinDate:"Oct 5, 2024",status:"DROPPED"},
+  {name:"Vikram Singh",email:"vikram@gmail.com",mobile:"+91 54321 09876",joinDate:"Oct 1, 2024",status:"ACTIVE"},
+];
+const BC_PROJS_DATA=[
+  {no:"PROJECT 01",title:"AI-Generated Cinematic Storyboard",desc:"Create a 10-frame storyboard using Midjourney or DALL-E 3 depicting a sci-fi landscape.",req:["Minimum 10 story frames","Consistent character design throughout","Export as high-resolution PDF","Include prompt annotations"],res:["Storyboard_Template.pdf","Reference_Guide.zip"]},
+  {no:"PROJECT 02",title:"Generative Video Short (30s)",desc:"Produce a 30-second short film using Runway Gen-2 or Pika Labs focusing on environmental storytelling.",req:["Minimum 30 seconds runtime","At least 3 distinct scenes","Original AI-generated audio","Submit as MP4 1080p"],res:["Video_Spec_Sheet.pdf","Audio_Guidelines.pdf"]},
+  {no:"PROJECT 03",title:"AI Soundscapes & Scoring",desc:"Compose an original background score for your short film using Udio or Suno AI.",req:["Minimum 2-minute composition","3 distinct emotional shifts","Submission format: MP3 or WAV (320kbps)"],res:["Music_Brief.pdf"]},
+  {no:"PROJECT 04",title:"Character Arc Visual Narrative",desc:"Create a complete character visual narrative using AI image generation tools.",req:["5 character state images","Consistent visual style","Clear story progression"],res:["Character_Sheet.pdf","Style_Reference.zip"]},
+  {no:"PROJECT 05",title:"Final AI Film Portfolio",desc:"A 3-minute capstone film integrating all bootcamp skills learned throughout the program.",req:["Minimum 3 minutes runtime","All previous techniques integrated","Original score","Professional color grade"],res:["Portfolio_Rubric.pdf","Submission_Guide.pdf"]},
+];
+const BC_ANNS_DATA=[
+  {id:1,title:"New Resource: AI Cinematography Guide",date:"Nov 15, 2024",status:"PUBLISHED",content:"I've just uploaded the comprehensive guide for Module 5. Please review it before today's live session at 7 PM EST."},
+  {id:2,title:"Workshop Rescheduled: 1-on-1 Mentoring",date:"Nov 12, 2024",status:"PUBLISHED",content:"The Friday mentorship slot has been moved to 3:00 PM EST. Check the Mentorship tab for updates."},
+  {id:3,title:"Upcoming: Guest Lecture by AI Director",date:"Nov 20, 2024",status:"SCHEDULED",content:"We have a special guest lecture coming up. A renowned AI film director will join us for a Q&A session."},
+  {id:4,title:"Project 03 Deadline Extended",date:"Nov 10, 2024",status:"DRAFT",content:"Due to popular request, the deadline for Project 03 has been extended by one week."},
+];
+const BC_RESS=[
+  {name:"AI Filmmaking Syllabus",category:"Course Material",type:"PDF",size:"2.4 MB",uploaded:"Oct 1",dl:145},
+  {name:"Midjourney Prompt Cheatsheet",category:"Reference",type:"PDF",size:"1.2 MB",uploaded:"Oct 5",dl:203},
+  {name:"Session Recording – Week 1",category:"Recording",type:"MP4",size:"1.8 GB",uploaded:"Oct 7",dl:67},
+  {name:"Runway Gen-2 Tutorial Pack",category:"Project Files",type:"ZIP",size:"240 MB",uploaded:"Oct 10",dl:89},
+  {name:"Color Grading LUTs Pack",category:"Project Files",type:"ZIP",size:"85 MB",uploaded:"Oct 15",dl:112},
+  {name:"AIFA Community Discord",category:"External",type:"LINK",size:"—",uploaded:"Oct 1",dl:0},
+];
 function BootcampAdmin({ token }) {
-  const [tab, setTab] = useState("settings");
-  const [saving, setSaving] = useState(false);
-  const [msg, setMsg] = useState("");
-  const [bootcampId, setBootcampId] = useState(null);
-  const [f, setF] = useState({ title:"AI Filmmaking Bootcamp", shortDesc:"Master the art of AI-driven cinema and storytelling.", fullDesc:"A comprehensive 8-week program designed to take you from beginner to advanced in AI filmmaking.", basePrice:2499, discPrice:1999, access:"Lifetime Access", publicVis:true, certs:true, liveChat:true, drip:true });
+  const [view,setView]=useState("list");
+  const [sel,setSel]=useState(null);
+  const [tab,setTab]=useState("overview");
+  const [selProj,setSelProj]=useState(BC_PROJS_DATA[0]);
+  const [selAnn,setSelAnn]=useState(null);
+  const [annF,setAnnF]=useState({title:"",content:""});
+  const [stgs,setStgs]=useState({name:"AI Filmmaking Bootcamp",code:"B01",startDate:"2024-10-01",endDate:"2025-01-31",status:"ACTIVE",zoomLink:"",zoomId:"",zoomPass:"",autoRecord:true,reminders:true,chat:true});
+  const [mentors,setMentors]=useState([{name:"David Fincher AI",role:"Lead Instructor"},{name:"Sarah Jenkins",role:"Technical Mentor"}]);
+  const [newMentor,setNewMentor]=useState("");
+  const TABS=["Overview","Sessions","Students","Projects","Announcement","Resources","Settings"];
 
-  useEffect(() => {
-    fetch("/api/bootcamps", { headers:{ Authorization:`Bearer ${token}` } })
-      .then(r=>r.json()).then(d => {
-        if (Array.isArray(d) && d.length > 0) {
-          const b = d[0];
-          setBootcampId(b._id);
-          setF(prev => ({ ...prev, title: b.title || prev.title, fullDesc: b.description || prev.fullDesc, basePrice: b.price || prev.basePrice }));
-        }
-      }).catch(()=>{});
-  }, [token]);
+  if(view==="list") return(
+    <div className="flex flex-col h-full">
+      <div className="px-6 pt-5 pb-4 border-b border-white/5 flex items-center justify-between">
+        <div><h1 className="text-xl font-bold text-white">Bootcamps</h1><p className="text-xs text-gray-400">Manage and monitor all bootcamp programs.</p></div>
+        <button className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5"><I name="plus" size={14}/>Create Bootcamp</button>
+      </div>
+      <div className="p-6 grid grid-cols-4 gap-4 border-b border-white/5">
+        {[{icon:"users",label:"TOTAL STUDENTS",val:"35"},{icon:"payments",label:"TOTAL REVENUE",val:"₹1,82,900"},{icon:"bootcamp",label:"TOTAL BOOTCAMPS",val:"3"},{icon:"check",label:"ACTIVE BOOTCAMPS",val:"1"}].map(s=>(
+          <div key={s.label} className="bg-[#0F1112] border border-white/10 rounded-xl p-4">
+            <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center mb-3"><I name={s.icon} size={18} className="text-gray-400"/></div>
+            <p className="text-[10px] text-gray-400 uppercase tracking-wider">{s.label}</p>
+            <p className="text-2xl font-bold text-white mt-1">{s.val}</p>
+          </div>
+        ))}
+      </div>
+      <div className="flex-1 overflow-y-auto p-6">
+        <div className="grid grid-cols-3 gap-4">
+          {BC_CARDS.map(b=>(
+            <div key={b._id} onClick={()=>{setSel(b);setTab("overview");setView("detail");}} className="bg-[#0F1112] border border-white/10 rounded-xl p-5 cursor-pointer hover:border-[#C7E36B]/40 transition-all">
+              <div className="flex items-start justify-between mb-3">
+                <span className="text-[10px] bg-white/10 text-gray-400 font-bold px-2 py-0.5 rounded">{b.code}</span>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${BC_ST[b.status]||"bg-gray-500/20 text-gray-400"}`}>{b.status}</span>
+              </div>
+              <h3 className="text-sm font-bold text-white mb-1">{b.title}</h3>
+              <p className="text-[11px] text-gray-400 mb-4 line-clamp-2">{b.desc}</p>
+              <div className="grid grid-cols-3 gap-2 border-t border-white/5 pt-3">
+                {[["Students",b.students],["Price",b.price],["Duration",b.duration]].map(([l,v])=>(
+                  <div key={l}><p className="text-[10px] text-gray-500 uppercase">{l}</p><p className="text-xs font-bold text-white mt-0.5">{v}</p></div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
-  const save = async () => {
-    setSaving(true); setMsg("");
-    try {
-      const body = { title: f.title, description: f.fullDesc, price: Number(f.basePrice), isPublished: f.publicVis };
-      const url = bootcampId ? `/api/bootcamps/${bootcampId}` : "/api/bootcamps";
-      const method = bootcampId ? "PUT" : "POST";
-      const res = await fetch(url, { method, headers:{ "Content-Type":"application/json", Authorization:`Bearer ${token}` }, body: JSON.stringify(body) });
-      const data = await res.json();
-      if (res.ok) { setMsg("Changes saved successfully!"); if (!bootcampId && data._id) setBootcampId(data._id); }
-      else setMsg(data.message || "Save failed.");
-    } catch { setMsg("Network error."); }
-    setSaving(false);
-  };
-
-  return (
+  return(
     <div className="flex flex-col h-full">
       <div className="px-6 pt-5 pb-0 border-b border-white/5">
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <div className="flex items-center gap-2"><h1 className="text-lg font-bold text-white">AI Filmmaking Bootcamp</h1><span className="text-[10px] bg-green-500/20 text-green-400 font-bold px-2 py-0.5 rounded-full">ACTIVE</span></div>
-            <p className="text-xs text-gray-400">Manage structure, content, and student access for this program.</p>
+          <div className="flex items-center gap-3">
+            <button onClick={()=>setView("list")} className="text-gray-400 hover:text-white p-1"><I name="back" size={18}/></button>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-bold text-white">{sel?.title}</h1>
+                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${BC_ST[sel?.status]||"bg-gray-500/20 text-gray-400"}`}>{sel?.status}</span>
+              </div>
+              <p className="text-xs text-gray-400">Manage structure, content, and student access for this program.</p>
+            </div>
           </div>
           <div className="flex gap-2">
             <button className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg hover:bg-white/5">PREVIEW STUDENT VIEW</button>
-            <button onClick={save} disabled={saving} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5">
-              <I name="plus" size={14}/>{saving?"SAVING...":"+ SAVE CHANGES"}
-            </button>
+            <button className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5"><I name="check" size={14}/>SAVE CHANGES</button>
           </div>
         </div>
         <div className="flex gap-0">
-          {["Overview","Curriculum","Enrollments","Assignments","Live Classes","Resources","Settings"].map(t=>(
+          {TABS.map(t=>(
             <button key={t} onClick={()=>setTab(t.toLowerCase())} className={`text-sm px-4 py-2.5 border-b-2 transition-all ${tab===t.toLowerCase()?"border-[#C7E36B] text-[#C7E36B]":"border-transparent text-gray-400 hover:text-white"}`}>{t}</button>
           ))}
         </div>
       </div>
       <div className="flex-1 overflow-y-auto p-6">
-        {tab==="settings" && (
-          <div className="max-w-2xl space-y-5">
-            {msg && <div className="bg-green-500/10 border border-green-500/30 text-green-400 text-sm px-4 py-2 rounded-lg">{msg}</div>}
-            <Sect icon="resources" title="General Information">
-              <div className="grid grid-cols-2 gap-4">
-                <Fld label="BOOTCAMP TITLE" value={f.title} onChange={v=>setF({...f,title:v})} />
-                <Fld label="SHORT DESCRIPTION" value={f.shortDesc} onChange={v=>setF({...f,shortDesc:v})} />
-              </div>
-              <Fld label="FULL DESCRIPTION" value={f.fullDesc} onChange={v=>setF({...f,fullDesc:v})} textarea />
-            </Sect>
-            <Sect icon="payments" title="Pricing & Access">
-              <div className="grid grid-cols-3 gap-4">
-                <Fld label="BASE PRICE (USD)" value={f.basePrice} onChange={v=>setF({...f,basePrice:v})} prefix="$" />
-                <Fld label="DISCOUNTED PRICE" value={f.discPrice} onChange={v=>setF({...f,discPrice:v})} prefix="$" />
-                <Fld label="ACCESS DURATION" value={f.access} onChange={v=>setF({...f,access:v})} />
-              </div>
-            </Sect>
-            <Sect icon="eye" title="Visibility & Features">
-              <div className="grid grid-cols-2 gap-3">
-                {[["publicVis","Public Visibility","Make this bootcamp visible on the marketplace."],["certs","Enable Certificates","Issue automated certificates upon completion."],["liveChat","Live Chat","Allow students to chat during live sessions."],["drip","Drip Content","Release modules based on a schedule."]].map(([k,l,d])=>(
-                  <div key={k} className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-start justify-between">
-                    <div><p className="text-sm font-semibold text-white">{l}</p><p className="text-[11px] text-gray-400 mt-0.5">{d}</p></div>
-                    <Tog value={f[k]} onChange={v=>setF({...f,[k]:v})} />
-                  </div>
-                ))}
-              </div>
-            </Sect>
-            <div className="border border-red-500/30 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-3"><I name="warning" size={16} className="text-red-400"/><h3 className="text-sm font-semibold text-red-400">Danger Zone</h3></div>
-              <div className="flex items-center justify-between">
-                <div><p className="text-sm font-semibold text-white">Delete this Bootcamp</p><p className="text-xs text-gray-400">Once deleted, all data including student progress will be permanently removed.</p></div>
-                <div className="flex gap-2 ml-4 shrink-0">
-                  <button className="text-xs bg-[#C7E36B] text-black font-bold px-3 py-2 rounded-lg">Archive Bootcamp</button>
-                  <button className="text-xs border border-red-500 text-red-400 px-3 py-2 rounded-lg hover:bg-red-500/10">Delete Permanently</button>
+
+        {tab==="overview"&&(
+          <div className="space-y-5">
+            <div className="grid grid-cols-4 gap-4">
+              {[{icon:"users",label:"TOTAL STUDENTS",val:"21"},{icon:"payments",label:"TOTAL REVENUE",val:"₹64,200"},{icon:"check",label:"SESSIONS COMPLETED",val:"08/22"},{icon:"resources",label:"PROJECT COMPLETED",val:"4/12"}].map(s=>(
+                <div key={s.label} className="bg-[#0F1112] border border-white/10 rounded-xl p-4">
+                  <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center mb-3"><I name={s.icon} size={18} className="text-gray-400"/></div>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider">{s.label}</p>
+                  <p className="text-2xl font-bold text-white mt-1">{s.val}</p>
                 </div>
+              ))}
+            </div>
+            <div className="bg-gradient-to-r from-[#1D4ED8] to-[#3B82F6] rounded-2xl p-6 flex items-center justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="flex items-center gap-1.5 text-[10px] font-bold bg-white/20 text-white px-2.5 py-1 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-400"/>NEXT LIVE : SESSION 12
+                  </span>
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">Generative Video with Sora &amp; Midjourney</h2>
+                <div className="flex items-center gap-5 text-white/80 text-sm mb-4">
+                  <span>📅 Today, 7:00 PM EST</span><span>⏳ Starts in 2h 45m</span>
+                </div>
+                <div className="flex gap-3">
+                  <button className="bg-[#C7E36B] text-black text-sm font-bold px-5 py-2.5 rounded-xl hover:bg-lime-300">Join Session Now →</button>
+                  <button className="bg-white/20 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-white/30">Edit Session</button>
+                </div>
+              </div>
+              <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center ml-6 shrink-0">
+                <I name="video" size={36} className="text-white"/>
               </div>
             </div>
           </div>
         )}
-        {tab!=="settings" && <Placeholder title={`Bootcamp ${tab.charAt(0).toUpperCase()+tab.slice(1)}`} />}
+
+        {tab==="sessions"&&(
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-semibold text-white">All Sessions ({BC_SESS.length})</h2>
+              <button className="text-xs bg-[#C7E36B] text-black font-bold px-3 py-1.5 rounded-lg flex items-center gap-1"><I name="plus" size={12}/>Add Session</button>
+            </div>
+            <div className="bg-[#0F1112] border border-white/10 rounded-xl overflow-hidden">
+              <table className="w-full text-xs">
+                <thead><tr className="border-b border-white/10 text-gray-400">
+                  {["No.","Session Name","Status","Edit Details","View Recording"].map(h=><th key={h} className="text-left px-4 py-3 font-semibold">{h}</th>)}
+                </tr></thead>
+                <tbody>
+                  {BC_SESS.map(s=>(
+                    <tr key={s.no} className="border-b border-white/5 last:border-0 hover:bg-white/[0.03]">
+                      <td className="px-4 py-3 text-gray-400">{String(s.no).padStart(2,"0")}</td>
+                      <td className="px-4 py-3 text-white font-medium">{s.name}</td>
+                      <td className="px-4 py-3"><span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${BC_ST[s.status]||"bg-gray-500/20 text-gray-400"}`}>{s.status}</span></td>
+                      <td className="px-4 py-3"><button className="text-[#C7E36B] hover:underline text-xs">Edit Details</button></td>
+                      <td className="px-4 py-3">{s.status==="COMING SOON"?<span className="text-gray-600">—</span>:<button className="text-blue-400 hover:underline text-xs">View Recording</button>}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {tab==="students"&&(
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-semibold text-white">Enrolled Students ({BC_STUDS.length})</h2>
+              <button className="text-xs bg-[#C7E36B] text-black font-bold px-3 py-1.5 rounded-lg flex items-center gap-1"><I name="plus" size={12}/>Add Student</button>
+            </div>
+            <div className="bg-[#0F1112] border border-white/10 rounded-xl overflow-hidden">
+              <table className="w-full text-xs">
+                <thead><tr className="border-b border-white/10 text-gray-400">
+                  {["Student","Email","Mobile","Join Date","Status","Actions"].map(h=><th key={h} className="text-left px-4 py-3 font-semibold">{h}</th>)}
+                </tr></thead>
+                <tbody>
+                  {BC_STUDS.map((s,i)=>(
+                    <tr key={i} className="border-b border-white/5 last:border-0 hover:bg-white/[0.03]">
+                      <td className="px-4 py-3"><div className="flex items-center gap-2"><div className="w-7 h-7 rounded-full bg-[#C7E36B]/20 flex items-center justify-center text-[#C7E36B] text-[10px] font-bold">{s.name[0]}</div><span className="text-white font-medium">{s.name}</span></div></td>
+                      <td className="px-4 py-3 text-gray-400">{s.email}</td>
+                      <td className="px-4 py-3 text-gray-400">{s.mobile}</td>
+                      <td className="px-4 py-3 text-gray-400">{s.joinDate}</td>
+                      <td className="px-4 py-3"><span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${BC_ST[s.status]||"bg-gray-500/20 text-gray-400"}`}>{s.status}</span></td>
+                      <td className="px-4 py-3"><div className="flex gap-2"><button className="text-gray-400 hover:text-[#C7E36B]"><I name="eye" size={14}/></button><button className="text-gray-400 hover:text-[#C7E36B]"><I name="edit" size={14}/></button></div></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {tab==="projects"&&(
+          <div className="flex gap-5 h-full">
+            <div className="w-[260px] shrink-0 space-y-2">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-white">Projects</h3>
+                <button className="text-xs bg-[#C7E36B] text-black font-bold px-2.5 py-1 rounded-lg flex items-center gap-1"><I name="plus" size={12}/>Add</button>
+              </div>
+              {BC_PROJS_DATA.map((p,i)=>(
+                <div key={i} onClick={()=>setSelProj(p)} className={`p-3 border rounded-xl cursor-pointer transition-all ${selProj?.no===p.no?"border-[#C7E36B]/50 bg-[#C7E36B]/5":"border-white/10 bg-[#0F1112] hover:border-white/20"}`}>
+                  <p className="text-[10px] text-gray-400 font-semibold uppercase">{p.no}</p>
+                  <p className="text-xs font-bold text-white mt-0.5">{p.title}</p>
+                  <p className="text-[10px] text-gray-500 mt-1 line-clamp-2">{p.desc}</p>
+                </div>
+              ))}
+            </div>
+            {selProj&&(
+              <div className="flex-1 bg-[#0F1112] border border-white/10 rounded-xl p-5 space-y-5 overflow-y-auto">
+                <div className="grid grid-cols-2 gap-4">
+                  <Fld label="Project Number" value={selProj.no} onChange={()=>{}} />
+                  <Fld label="Project Title" value={selProj.title} onChange={()=>{}} />
+                </div>
+                <Fld label="Description" value={selProj.desc} onChange={()=>{}} textarea />
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-[10px] text-gray-400 font-semibold uppercase">Requirements</p>
+                    <button className="text-[10px] text-[#C7E36B] flex items-center gap-1"><I name="plus" size={11}/>Add Requirement</button>
+                  </div>
+                  <div className="space-y-2">
+                    {selProj.req.map((r,i)=>(
+                      <div key={i} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
+                        <I name="check" size={13} className="text-[#C7E36B] shrink-0"/>
+                        <span className="text-xs text-white flex-1">{r}</span>
+                        <button className="text-gray-500 hover:text-red-400"><I name="trash" size={13}/></button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-[10px] text-gray-400 font-semibold uppercase">Project Downloads</p>
+                    <button className="text-[10px] text-[#C7E36B] flex items-center gap-1"><I name="upload" size={11}/>Upload File</button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {selProj.res.map((f,i)=>(
+                      <div key={i} className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2">
+                        <span className="text-lg">📄</span>
+                        <span className="text-xs text-white flex-1 truncate">{f}</span>
+                        <button className="text-gray-500 hover:text-red-400 shrink-0"><I name="trash" size={12}/></button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <button className="flex-1 border border-white/20 text-gray-300 text-xs font-semibold py-2 rounded-lg hover:bg-white/5">Discard</button>
+                  <button className="flex-1 bg-[#C7E36B] text-black text-xs font-bold py-2 rounded-lg hover:bg-lime-300">Save Project</button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {tab==="announcement"&&(
+          <div className="flex gap-5">
+            <div className="w-[260px] shrink-0 space-y-2">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-white">Announcements</h3>
+                <button onClick={()=>{setSelAnn(null);setAnnF({title:"",content:"",status:"DRAFT"});}} className="text-xs bg-[#C7E36B] text-black font-bold px-2.5 py-1 rounded-lg flex items-center gap-1"><I name="plus" size={12}/>New</button>
+              </div>
+              {BC_ANNS_DATA.map(a=>(
+                <div key={a.id} onClick={()=>{setSelAnn(a);setAnnF({title:a.title,content:a.content,status:a.status});}} className={`p-3 border rounded-xl cursor-pointer transition-all ${selAnn?.id===a.id?"border-[#C7E36B]/50 bg-[#C7E36B]/5":"border-white/10 bg-[#0F1112] hover:border-white/20"}`}>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-xs font-bold text-white line-clamp-1 flex-1 pr-1">{a.title}</p>
+                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${BC_ST[a.status]}`}>{a.status}</span>
+                  </div>
+                  <p className="text-[10px] text-gray-500">{a.date}</p>
+                </div>
+              ))}
+            </div>
+            <div className="flex-1 bg-[#0F1112] border border-white/10 rounded-xl p-5 space-y-4">
+              <Fld label="Announcement Title" value={annF.title} onChange={v=>setAnnF({...annF,title:v})} placeholder="Enter announcement title..." />
+              <div>
+                <p className="text-[10px] text-gray-400 mb-1.5 font-semibold uppercase">Content</p>
+                <div className="border border-white/10 rounded-lg overflow-hidden">
+                  <div className="flex items-center gap-1 px-3 py-2 border-b border-white/10 bg-white/[0.03]">
+                    {["B","I","U","Link"].map(t=><button key={t} className={`text-[11px] px-2 py-0.5 rounded text-gray-400 hover:text-white hover:bg-white/10 ${t==="B"?"font-bold":""}`}>{t}</button>)}
+                  </div>
+                  <textarea value={annF.content} onChange={e=>setAnnF({...annF,content:e.target.value})} className="w-full bg-transparent px-3 py-3 text-xs text-white outline-none resize-none" rows={7} placeholder="Write your announcement here..." />
+                </div>
+              </div>
+              <div className="border-2 border-dashed border-white/10 rounded-lg p-3 text-center hover:border-[#C7E36B]/30 cursor-pointer transition-all">
+                <I name="upload" size={18} className="mx-auto text-gray-500 mb-1"/>
+                <p className="text-[11px] text-gray-400">Attach files (PDF, ZIP, etc.)</p>
+              </div>
+              <div className="flex gap-2">
+                <button className="flex-1 border border-white/20 text-gray-300 text-xs font-semibold py-2 rounded-lg hover:bg-white/5">Save Draft</button>
+                <button className="flex-1 bg-[#C7E36B] text-black text-xs font-bold py-2 rounded-lg hover:bg-lime-300">Publish Now</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {tab==="resources"&&(
+          <div>
+            <div className="grid grid-cols-3 gap-4 mb-5">
+              {[{icon:"resources",label:"PDF Documents",val:"24"},{icon:"link",label:"External Links",val:"8"},{icon:"upload",label:"Project Files",val:"15"}].map(s=>(
+                <div key={s.label} className="bg-[#0F1112] border border-white/10 rounded-xl p-4 flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center"><I name={s.icon} size={18} className="text-[#C7E36B]"/></div>
+                  <div><p className="text-xl font-bold text-white">{s.val}</p><p className="text-[10px] text-gray-400">{s.label}</p></div>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex-1 bg-[#0F1112] border border-white/10 rounded-lg px-3 py-2 flex items-center gap-2 mr-3 max-w-sm">
+                <I name="search" size={14} className="text-gray-500"/><input className="bg-transparent text-xs text-white outline-none flex-1 placeholder-gray-600" placeholder="Search resources..." />
+              </div>
+              <button className="text-xs bg-[#C7E36B] text-black font-bold px-3 py-2 rounded-lg flex items-center gap-1"><I name="upload" size={12}/>Upload Resource</button>
+            </div>
+            <div className="bg-[#0F1112] border border-white/10 rounded-xl overflow-hidden">
+              <table className="w-full text-xs">
+                <thead><tr className="border-b border-white/10 text-gray-400">
+                  {["Name / Category","Type","Size","Uploaded","Downloads","Actions"].map(h=><th key={h} className="text-left px-4 py-3 font-semibold">{h}</th>)}
+                </tr></thead>
+                <tbody>
+                  {BC_RESS.map((r,i)=>(
+                    <tr key={i} className="border-b border-white/5 last:border-0 hover:bg-white/[0.03]">
+                      <td className="px-4 py-3"><p className="text-white font-medium">{r.name}</p><p className="text-[10px] text-gray-500">{r.category}</p></td>
+                      <td className="px-4 py-3"><span className="text-[10px] bg-white/10 text-gray-300 font-bold px-2 py-0.5 rounded">{r.type}</span></td>
+                      <td className="px-4 py-3 text-gray-400">{r.size}</td>
+                      <td className="px-4 py-3 text-gray-400">{r.uploaded}</td>
+                      <td className="px-4 py-3 text-gray-300">{r.dl}</td>
+                      <td className="px-4 py-3"><div className="flex gap-2"><button className="text-gray-400 hover:text-[#C7E36B]"><I name="edit" size={13}/></button><button className="text-gray-400 hover:text-red-400"><I name="trash" size={13}/></button></div></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {tab==="settings"&&(
+          <div className="max-w-2xl space-y-5">
+            <Sect icon="bootcamp" title="Batch Information">
+              <div className="grid grid-cols-2 gap-4">
+                <Fld label="Bootcamp Name" value={stgs.name} onChange={v=>setStgs({...stgs,name:v})} />
+                <Fld label="Batch Code" value={stgs.code} onChange={v=>setStgs({...stgs,code:v})} />
+                <Fld label="Start Date" value={stgs.startDate} onChange={v=>setStgs({...stgs,startDate:v})} />
+                <Fld label="End Date" value={stgs.endDate} onChange={v=>setStgs({...stgs,endDate:v})} />
+              </div>
+              <div>
+                <p className="text-[10px] text-gray-400 mb-1.5 font-semibold uppercase">Batch Status</p>
+                <div className="flex gap-2 flex-wrap">
+                  {["ACTIVE","COMPLETED","COMING SOON","CANCELLED"].map(s=>(
+                    <button key={s} onClick={()=>setStgs({...stgs,status:s})} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg border transition-all ${stgs.status===s?"bg-[#C7E36B] text-black border-[#C7E36B]":"border-white/20 text-gray-400 hover:border-white/40"}`}>{s}</button>
+                  ))}
+                </div>
+              </div>
+            </Sect>
+            <Sect icon="link" title="Zoom Configuration">
+              <Fld label="Meeting Link" value={stgs.zoomLink} onChange={v=>setStgs({...stgs,zoomLink:v})} placeholder="https://zoom.us/j/..." />
+              <div className="grid grid-cols-2 gap-4">
+                <Fld label="Meeting ID" value={stgs.zoomId} onChange={v=>setStgs({...stgs,zoomId:v})} placeholder="000 0000 0000" />
+                <Fld label="Passcode" value={stgs.zoomPass} onChange={v=>setStgs({...stgs,zoomPass:v})} placeholder="••••••" />
+              </div>
+              <div className="grid grid-cols-3 gap-3 mt-1">
+                {[["autoRecord","Record Automatically"],["reminders","Send Reminders"],["chat","Enable Chat"]].map(([k,l])=>(
+                  <div key={k} className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
+                    <span className="text-xs text-gray-300">{l}</span>
+                    <Tog value={stgs[k]} onChange={v=>setStgs({...stgs,[k]:v})} />
+                  </div>
+                ))}
+              </div>
+            </Sect>
+            <Sect icon="users" title="Mentors">
+              <div className="space-y-2 mb-3">
+                {mentors.map((m,i)=>(
+                  <div key={i} className="flex items-center gap-3 bg-white/5 rounded-lg px-3 py-2.5">
+                    <div className="w-8 h-8 rounded-full bg-[#C7E36B]/20 flex items-center justify-center text-[#C7E36B] text-sm font-bold">{m.name[0]}</div>
+                    <div className="flex-1"><p className="text-xs font-semibold text-white">{m.name}</p><p className="text-[10px] text-gray-400">{m.role}</p></div>
+                    <button onClick={()=>setMentors(ms=>ms.filter((_,j)=>j!==i))} className="text-gray-500 hover:text-red-400"><I name="trash" size={13}/></button>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input value={newMentor} onChange={e=>setNewMentor(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&newMentor.trim()){setMentors(ms=>[...ms,{name:newMentor.trim(),role:"Mentor"}]);setNewMentor("");}}} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[#C7E36B]/50 placeholder-gray-600" placeholder="Mentor name..." />
+                <button onClick={()=>{if(newMentor.trim()){setMentors(ms=>[...ms,{name:newMentor.trim(),role:"Mentor"}]);setNewMentor("");}}} className="text-xs bg-[#C7E36B] text-black font-bold px-3 py-2 rounded-lg flex items-center gap-1"><I name="plus" size={12}/>Add Mentor</button>
+              </div>
+            </Sect>
+            <div className="flex justify-end gap-2">
+              <button className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg hover:bg-white/5">Discard Changes</button>
+              <button className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300">Save Settings</button>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -2675,6 +2983,42 @@ function PlatformSettings({ token }) {
               <strong className="text-white">Note:</strong> After saving, also add <code className="text-[#C7E36B]">VITE_GOOGLE_CLIENT_ID</code> to your <strong>Vercel environment variables</strong> and redeploy the frontend for the Google login button to activate.
             </p>
           </div>
+
+          <div className="border-t border-white/10 pt-5">
+            <p className="text-xs font-bold text-gray-300 mb-3">📱 Phone OTP (Twilio)</p>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-xs text-gray-400 mb-3">
+              <p className="font-bold text-white mb-1">How to get Twilio credentials:</p>
+              <ol className="list-decimal list-inside space-y-0.5">
+                <li>Sign up free at <strong className="text-white">twilio.com</strong></li>
+                <li>Go to <strong className="text-white">Console → Account Info</strong></li>
+                <li>Copy <strong className="text-white">Account SID</strong> and <strong className="text-white">Auth Token</strong></li>
+                <li>Get a phone number: <strong className="text-white">Phone Numbers → Manage → Buy</strong></li>
+              </ol>
+            </div>
+            <div className="space-y-3">
+              <ConfigField configKey="TWILIO_SID"/>
+              <ConfigField configKey="TWILIO_TOKEN"/>
+              <ConfigField configKey="TWILIO_PHONE"/>
+            </div>
+          </div>
+
+          <div className="border-t border-white/10 pt-5">
+            <p className="text-xs font-bold text-gray-300 mb-3">🤖 Cloudflare Turnstile (CAPTCHA)</p>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-xs text-gray-400 mb-3">
+              <p className="font-bold text-white mb-1">How to get Turnstile keys:</p>
+              <ol className="list-decimal list-inside space-y-0.5">
+                <li>Go to <strong className="text-white">dash.cloudflare.com → Turnstile</strong> (free)</li>
+                <li>Click <strong className="text-white">Add Site</strong> → enter your domain</li>
+                <li>Copy the <strong className="text-white">Site Key</strong> (public) and <strong className="text-white">Secret Key</strong> below</li>
+                <li>Widget type: <strong className="text-white">Managed</strong> (recommended)</li>
+              </ol>
+            </div>
+            <div className="space-y-3">
+              <ConfigField configKey="TURNSTILE_SITE_KEY"/>
+              <ConfigField configKey="TURNSTILE_SECRET_KEY"/>
+            </div>
+          </div>
+
           <div className="pt-2 flex items-center justify-between">
             {saved && <p className={`text-xs ${saved.includes("fail") ? "text-red-400" : "text-green-400"}`}>{saved}</p>}
             <button onClick={() => saveGroup("auth")} disabled={saving} className="ml-auto text-xs bg-[#C7E36B] text-black font-bold px-5 py-2 rounded-lg disabled:opacity-60">{saving ? "Saving…" : "Save Auth Settings"}</button>

@@ -441,7 +441,7 @@ export default function CoursesPage() {
     overflow-hidden
   "
                     >
-                      {course.desc}
+                      {course.description || course.desc}
                     </p>
                     {/* PRICE */}
                     <div className="flex items-center gap-[8px] self-stretch mt-auto">

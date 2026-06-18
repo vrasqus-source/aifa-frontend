@@ -1,10 +1,53 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+
+const STATIC_TALENTS = [
+  {
+    name: "Sarah Jenkins",
+    location: "San Francisco, CA",
+    avatar: "/talent/avatar1.jpg",
+    works: ["/talent/ta1.png", "/talent/ta2.png", "/talent/ta3.png"],
+  },
+  {
+    name: "Rajiv K",
+    location: "Mumbai, India",
+    avatar: "/talent/avatar2.png",
+    works: ["/talent/ta4.png", "/talent/ta5.png", "/talent/ta6.png"],
+  },
+  {
+    name: "Jessica",
+    location: "New York, USA",
+    avatar: "/talent/avatar3.png",
+    works: ["/talent/ta7.png", "/talent/ta8.png", "/talent/ta9.png"],
+  },
+];
 
 export default function HireTalent() {
   const [selected, setSelected] = useState("All");
   const scrollRef = useRef(null);
+  const [talents, setTalents] = useState(STATIC_TALENTS);
+  const [inquirySent, setInquirySent] = useState(null);
+
+  useEffect(() => {
+    fetch("https://aifa-backend-4an6.onrender.com/api/talent")
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (Array.isArray(data) && data.length > 0) setTalents(data); })
+      .catch(() => {});
+  }, []);
+
+  const sendInquiry = async (talent) => {
+    try {
+      const token = localStorage.getItem("aifa_token");
+      await fetch("https://aifa-backend-4an6.onrender.com/api/service-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ talentName: talent.name, type: "hire-talent" }),
+      });
+    } catch (_) {}
+    setInquirySent(talent.name);
+    setTimeout(() => setInquirySent(null), 3000);
+  };
 
   const scroll = (dir) => {
     if (!scrollRef.current) return;
@@ -26,29 +69,13 @@ export default function HireTalent() {
     { name: "Sound Design", img: "/logos/logoback.jpg" },
   ];
 
-  const talents = [
-    {
-      name: "Sarah Jenkins",
-      location: "San Francisco, CA",
-      avatar: "/talent/avatar1.jpg",
-      works: ["/talent/ta1.png", "/talent/ta2.png", "/talent/ta3.png"],
-    },
-    {
-      name: "Rajiv K",
-      location: "Mumbai, India",
-      avatar: "/talent/avatar2.png",
-      works: ["/talent/ta4.png", "/talent/ta5.png", "/talent/ta6.png"],
-    },
-    {
-      name: "Jessica",
-      location: "New York, USA",
-      avatar: "/talent/avatar3.png",
-      works: ["/talent/ta7.png", "/talent/ta8.png", "/talent/ta9.png"],
-    },
-  ];
-
   return (
     <section className="bg-[#0B0F10] text-white overflow-hidden pt-[80px] sm:pt-[100px] lg:pt-[120px] pb-[64px]">
+      {inquirySent && (
+        <div className="fixed top-6 right-6 z-50 bg-[#C7E36B] text-black px-5 py-3 rounded-xl font-semibold shadow-lg animate-fade-in">
+          Inquiry sent to {inquirySent}!
+        </div>
+      )}
       {/* HIDE SCROLLBAR */}
       <style>{`
         .scrollbar-hide::-webkit-scrollbar {
@@ -299,6 +326,7 @@ export default function HireTalent() {
 
                 {/* BUTTON */}
                 <button
+                  onClick={() => sendInquiry(t)}
                   className="
                     flex
                     justify-center
@@ -311,6 +339,8 @@ export default function HireTalent() {
                     rounded-[4px]
                     w-full
                     sm:w-auto
+                    hover:opacity-90
+                    transition
                   "
                 >
                   <span

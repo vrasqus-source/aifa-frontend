@@ -6,51 +6,15 @@ export default function Projects() {
   const [category, setCategory] = useState("All");
 
   const data = [
-    {
-      title: "Idea Generation",
-      desc: "Generate unique story ideas instantly using powerful AI tools for filmmakers  ",
-      img: "/workflow/workflow1.png",
-    },
-    {
-      title: "Script Writing",
-      desc: "Write engaging scripts automatically with AI assistance for storytelling ",
-      img: "/workflow/workflow2.png",
-    },
-    {
-      title: "Scene Creation",
-      desc: "Design cinematic scenes using AI tools with detailed control over visuals",
-      img: "/workflow/workflow3.png",
-    },
-    {
-      title: "Image Rendering",
-      desc: "Generate high-quality images using AI models for concept art and storyboarding",
-      img: "/workflow/workflow4.png",
-    },
-    {
-      title: "Voice Generation",
-      desc: "Convert text into realistic voiceovers using AI-based text-to-speech technology",
-      img: "/workflow/workflow5.png",
-    },
-    {
-      title: "Video Creation",
-      desc: "Produce AI-powered videos with smooth transitions and cinematic effects",
-      img: "/workflow/workflow6.png",
-    },
-    {
-      title: "Editing Process",
-      desc: "Refine visuals using AI tools for editing and post-production",
-      img: "/workflow/workflow7.png",
-    },
-    {
-      title: "Sound Design",
-      desc: "Enhance audio using AI-based sound tools for immersive soundscapes",
-      img: "/workflow/workflow8.png",
-    },
-    {
-      title: "VFX Effects",
-      desc: "Add cinematic VFX effects using AI tools for stunning visuals",
-      img: "/workflow/workflow9.png",
-    },
+    { title: "Luxury Perfume Ad", desc: "A cinematic AI-generated commercial for a luxury fragrance brand using Midjourney and Runway Gen-2.", img: "/workflow/workflow1.png", tags: ["Commercial", "VFX"] },
+    { title: "Cyberpunk Music Video", desc: "Futuristic music video with Stable Diffusion visuals and AI-synced lip animations for an indie artist.", img: "/workflow/workflow2.png", tags: ["Music Video", "AI Film"] },
+    { title: "Sci-Fi Cinematic Short", desc: "3-minute AI short film with consistent characters, generative environments, and AI-scored music.", img: "/workflow/workflow3.png", tags: ["AI Film", "Editing"] },
+    { title: "Product Launch Reel", desc: "60-second product reveal reel built entirely with AI tools — script, visuals, voiceover, and edit.", img: "/workflow/workflow4.png", tags: ["Commercial", "Editing"] },
+    { title: "AI Horror Film Teaser", desc: "Dark atmospheric horror teaser using Pika Labs for motion and ElevenLabs for a spine-chilling narration.", img: "/workflow/workflow5.png", tags: ["AI Film", "VFX"] },
+    { title: "AI Travel Documentary", desc: "Immersive travel doc spanning 5 locations, generated entirely using AI tools and narrated with AI voice.", img: "/workflow/workflow6.png", tags: ["Documentary", "AI Film"] },
+    { title: "Fashion Lookbook Video", desc: "High-fashion lookbook video using Midjourney model generations and CapCut AI transitions.", img: "/workflow/workflow7.png", tags: ["Commercial", "Editing"] },
+    { title: "Animated Kids Story", desc: "Fully AI-animated children's story with consistent characters, background music, and voiceover.", img: "/workflow/workflow8.png", tags: ["Animation", "AI Film"] },
+    { title: "Corporate Brand Film", desc: "Professional 2-minute brand film for a tech company, created end-to-end with AI filmmaking tools.", img: "/workflow/workflow9.png", tags: ["Commercial", "Editing"] },
   ];
 
   return (

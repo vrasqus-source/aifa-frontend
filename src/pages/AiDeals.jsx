@@ -113,7 +113,7 @@ export default function AiDeals() {
 
         {/* 🔥 GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {deals.map((item, i) => (
+          {deals.filter(d => active === "All Benefits" || d.tag.toUpperCase() === active.toUpperCase()).map((item, i) => (
             <div
               key={i}
               className="rounded-3xl border border-white/10 overflow-hidden bg-black hover:border-[#C7E36B]/40 transition"

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 /* ─── ICONS (inline SVG keeps bundle tiny) ─── */
@@ -56,10 +56,11 @@ const NAV = [
   { id: "workshops",    label: "Workshops",    icon: "workshop"  },
   { id: "video-courses",label: "Video Courses",icon: "video"     },
   { id: "certificates", label: "Certificates", icon: "cert"      },
-  { id: "jobs",         label: "Jobs",         icon: "jobs"          },
+  { id: "jobs",         label: "Jobs",         icon: "jobs"      },
   { id: "resources",    label: "Resources",    icon: "resources" },
   { id: "community",    label: "Community",    icon: "community" },
-  { id: "hire-talent",  label: "Hire Talent",  icon: "hire" },
+  { id: "hire-talent",  label: "Hire Talent",  icon: "hire"      },
+  { id: "settings",     label: "Settings",     icon: "settings"  },
 ];
 
 /* ════════════════════════════════════════════
@@ -455,392 +456,249 @@ function DashboardHome({ profile, token, onNavigate }) {
 /* ════════════════════════════════════════════
    BOOTCAMP SECTION
 ════════════════════════════════════════════ */
-const MODULES = [
-  {
-    title: "Module 1: AI Fundamentals", status: "completed", lessons: [
-      { title: "Introduction to AI", duration: "12:45", status: "done" },
-    ]
-  },
-  {
-    title: "Module 2: Generative Video", status: "in-progress", lessons: [
-      { title: "Introduction to Sora", duration: "12:45", status: "active", vimeoId: "" },
-      { title: "2.2 Advanced Prompting", duration: "", status: "active" },
-      { title: "2.3 Video Consistency", duration: "16:30", status: "pending" },
-    ]
-  },
-  {
-    title: "Module 3: AI Cinematography", status: "locked", lessons: []
-  },
+const BC_SESSION_LIST = [
+  { no:1, title:"Introduction to AI Filmmaking", tag:"Foundation", locked:false },
+  { no:2, title:"Storyboarding with Midjourney", tag:"Visual Dev", locked:false },
+  { no:3, title:"Generative Video Fundamentals", tag:"Video AI", locked:false },
+  { no:4, title:"Prompt Engineering for Video", tag:"Prompting", locked:false },
+  { no:5, title:"Cinematic Camera Movements", tag:"Cinematography", locked:false },
+  { no:6, title:"AI Audio & Soundscapes", tag:"Audio", locked:false },
+  { no:7, title:"Color Grading with AI Tools", tag:"Post-Prod", locked:false },
+  { no:8, title:"Character Consistency in AI", tag:"Visual Dev", locked:false },
+  { no:9, title:"Editing Workflows for AI Film", tag:"Editing", locked:false },
+  { no:10, title:"VFX Compositing Basics", tag:"VFX", locked:false },
+  { no:11, title:"Narrative Structure in AI Cinema", tag:"Storytelling", locked:true },
+  { no:12, title:"Generative Video with Sora & Midjourney", tag:"Advanced", locked:true },
 ];
-
-const PROJECTS = [
-  { id: "PROJECT 01", title: "AI-Generated Cinematic Storyboard", status: "REVIEWED", grade: "A+", desc: "Create a 10-frame storyboard using Midjourney or DALL-E 3 depicting a sci-fi landscape with consistent character design.", submitted: "Oct 12", feedback: true },
-  { id: "PROJECT 02", title: "Generative Video Short (30s)", status: "SUBMITTED", desc: "Produce a 30-second short film using Runway Gen-2 or Pika Labs focusing on environmental storytelling. Review pending (2-3 days)", quote: "Great use of temporal consistency in the second scene." },
-  { id: "PROJECT 03", title: "AI Soundscapes & Scoring", status: "NOT STARTED", desc: "Compose an original background score for your short film using Udio or Suno AI, synced with visual emotional beats.", deadline: "OCT 28 (5 DAYS LEFT)" },
+const BC_PROJECT_LIST = [
+  { no:"PROJECT 01", title:"AI-Generated Cinematic Storyboard", desc:"Create a 10-frame storyboard using Midjourney or DALL-E 3.", req:[{done:true,text:"10 story frames minimum"},{done:true,text:"Consistent character design"},{done:false,text:"Export as high-resolution PDF"},{done:false,text:"Include prompt annotations"}], res:["Storyboard_Template.pdf","Reference_Guide.zip","Style_Board.pdf"] },
+  { no:"PROJECT 02", title:"Generative Video Short (30s)", desc:"Produce a 30-second short film using Runway Gen-2 or Pika Labs.", req:[{done:true,text:"30 seconds minimum runtime"},{done:false,text:"At least 3 distinct scenes"},{done:false,text:"Original AI-generated audio"},{done:false,text:"Submit as MP4 1080p"}], res:["Video_Spec_Sheet.pdf","Audio_Guidelines.pdf"] },
+  { no:"PROJECT 03", title:"AI Soundscapes & Scoring", desc:"Compose an original score for your short film using Udio or Suno AI.", req:[{done:false,text:"Minimum 2-minute composition"},{done:false,text:"3 distinct emotional shifts"},{done:false,text:"MP3 or WAV (320kbps)"}], res:["Music_Brief.pdf"] },
+  { no:"PROJECT 04", title:"Character Arc Visual Narrative", desc:"Create a character visual narrative using AI image generation.", req:[{done:false,text:"5 character state images"},{done:false,text:"Consistent visual style"},{done:false,text:"Clear story progression"}], res:["Character_Sheet.pdf","Style_Reference.zip"] },
+  { no:"PROJECT 05", title:"Final AI Film Portfolio", desc:"A 3-minute capstone film integrating all bootcamp skills.", req:[{done:false,text:"Minimum 3 minutes runtime"},{done:false,text:"All techniques integrated"},{done:false,text:"Original score required"},{done:false,text:"Professional color grade"}], res:["Portfolio_Rubric.pdf","Submission_Guide.pdf"] },
 ];
 
 function BootcampSection({ token }) {
+  const [enrolled, setEnrolled] = useState(false);
   const [tab, setTab] = useState("overview");
-  const [activeLesson, setActiveLesson] = useState(MODULES[1].lessons[0]);
-  const [activeProject, setActiveProject] = useState(PROJECTS[2]);
-  const [openModule, setOpenModule] = useState(1);
+  const [activeSession, setActiveSession] = useState(BC_SESSION_LIST[0]);
+  const [activeProject, setActiveProject] = useState(BC_PROJECT_LIST[0]);
+
+  if (!enrolled) return (
+    <div className="flex items-center justify-center min-h-full p-6">
+      <div className="max-w-xl w-full">
+        <div className="bg-[#0F1112] border border-white/10 rounded-2xl overflow-hidden">
+          <div className="relative h-44 bg-gradient-to-br from-[#4C1D95] via-[#7C3AED]/60 to-[#1e1b4b] flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-5xl mb-3">🎬</div>
+              <span className="text-[11px] bg-[#7C3AED] text-white font-bold px-3 py-1 rounded-full tracking-wide">BATCH 3 · 2024</span>
+            </div>
+          </div>
+          <div className="p-6">
+            <h1 className="text-2xl font-black text-white mb-2">Build AI-Powered Films</h1>
+            <p className="text-sm text-gray-400 leading-relaxed mb-5">Transform your storytelling with cutting-edge AI tools. Learn to create cinematic masterpieces from script to screen — no prior filmmaking experience needed.</p>
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              {[{icon:"🎯",label:"Beginner",desc:"Friendly"},{icon:"⏱",label:"22 Hours",desc:"of Content"},{icon:"📋",label:"20",desc:"Assignments"},{icon:"📥",label:"Downloadable",desc:"Content"},{icon:"🎓",label:"Certificate",desc:"on Completion"},{icon:"🎬",label:"Project-Based",desc:"Learning"}].map((f,i)=>(
+                <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
+                  <div className="text-xl mb-1">{f.icon}</div>
+                  <p className="text-[11px] font-bold text-white">{f.label}</p>
+                  <p className="text-[10px] text-gray-500">{f.desc}</p>
+                </div>
+              ))}
+            </div>
+            <button onClick={()=>setEnrolled(true)} className="w-full bg-[#7C3AED] hover:bg-purple-600 text-white font-bold py-3 rounded-xl text-sm transition-all">
+              ENROLL NOW →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="flex flex-col h-full">
-      {/* Hero */}
-      <div className="relative h-36 overflow-hidden shrink-0">
-        <img src="/courses/v6.png" alt="bootcamp" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/30 flex items-end p-6">
-          <div>
-            <h1 className="text-xl font-bold text-white">AI Filmmaking Bootcamp</h1>
-            <p className="text-gray-300 text-xs mt-1">Batch 3 • 2024 • 24 students enrolled</p>
-          </div>
+      <div className="bg-[#7C3AED]/10 border-b border-[#7C3AED]/20 px-6 py-3 shrink-0 flex items-center gap-3">
+        <span className="text-[10px] font-bold bg-[#7C3AED] text-white px-2.5 py-1 rounded-full">IN PROGRESS</span>
+        <div>
+          <h2 className="text-sm font-bold text-white">AI Filmmaking Bootcamp</h2>
+          <p className="text-[10px] text-gray-400">Batch 3 · 2024 · 24 students enrolled</p>
         </div>
       </div>
-
-      {/* Tabs */}
       <div className="flex border-b border-white/10 bg-[#0F1112] px-6 shrink-0">
-        {["overview", "curriculum", "projects", "bootcamp"].map(t => (
-          <button key={t} onClick={() => setTab(t)}
-            className={`capitalize text-sm font-medium px-4 py-3 border-b-2 transition-all ${tab === t ? "border-[#C7E36B] text-[#C7E36B]" : "border-transparent text-gray-400 hover:text-white"}`}>
-            {t}
-          </button>
+        {["overview","sessions","projects"].map(t=>(
+          <button key={t} onClick={()=>setTab(t)} className={`capitalize text-sm font-medium px-4 py-3 border-b-2 transition-all ${tab===t?"border-[#7C3AED] text-[#7C3AED]":"border-transparent text-gray-400 hover:text-white"}`}>{t}</button>
         ))}
       </div>
+      <div className="flex-1 overflow-hidden">
 
-      <div className="flex-1 overflow-y-auto p-6">
-        {tab === "overview" && <BootcampOverview />}
-        {tab === "curriculum" && <BootcampCurriculum modules={MODULES} activeLesson={activeLesson} setActiveLesson={setActiveLesson} openModule={openModule} setOpenModule={setOpenModule} />}
-        {tab === "projects" && <BootcampProjects projects={PROJECTS} activeProject={activeProject} setActiveProject={setActiveProject} />}
-        {tab === "bootcamp" && <BootcampEnrollTab />}
-      </div>
-    </div>
-  );
-}
-
-function BootcampEnrollTab() {
-  const [enrolled, setEnrolled] = useState(false);
-  const highlights = [
-    { icon:"🎬", label:"12 Weeks", desc:"Structured learning path" },
-    { icon:"🤖", label:"15+ AI Tools", desc:"Hands-on with cutting-edge tools" },
-    { icon:"🎓", label:"Certificate", desc:"Industry-recognised credential" },
-    { icon:"👨‍🏫", label:"Live Mentoring", desc:"Weekly 1-on-1 sessions" },
-    { icon:"📁", label:"Real Projects", desc:"Build a professional portfolio" },
-    { icon:"💼", label:"Job Support", desc:"Career placement assistance" },
-  ];
-  return (
-    <div className="max-w-2xl space-y-6">
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h2 className="text-lg font-bold text-white">AI Filmmaking Bootcamp</h2>
-            <p className="text-sm text-gray-400 mt-1">Batch 3 · 2024 · 24 students enrolled</p>
+        {tab==="overview"&&(
+          <div className="flex gap-5 p-6 h-full overflow-y-auto">
+            <div className="flex-1 space-y-4 min-w-0">
+              <div className="bg-gradient-to-r from-[#1D4ED8] to-[#3B82F6] rounded-2xl p-5">
+                <span className="flex items-center gap-1.5 text-[10px] font-bold bg-white/20 text-white px-2.5 py-1 rounded-full w-fit mb-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"/>NEXT LIVE : SESSION 12
+                </span>
+                <h3 className="text-xl font-bold text-white mb-1">Generative Video with Sora &amp; Midjourney</h3>
+                <div className="flex items-center gap-4 text-white/80 text-xs mb-4">
+                  <span>📅 Today, 7:00 PM IST</span><span>⏳ Starts in 2h 45m</span>
+                </div>
+                <div className="flex gap-3">
+                  <button className="bg-[#7C3AED] text-white text-sm font-bold px-5 py-2 rounded-xl hover:bg-purple-600">Join Session Now →</button>
+                  <button className="bg-white/20 text-white text-sm font-semibold px-5 py-2 rounded-xl hover:bg-white/30">Mark as Watched</button>
+                </div>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h3 className="text-sm font-semibold text-white mb-3">Your Bootcamp Progress</h3>
+                <div className="flex items-center gap-4 mb-3">
+                  <span className="text-3xl font-black text-white">65%</span>
+                  <div className="flex-1">
+                    <div className="w-full bg-white/10 rounded-full h-2 mb-1"><div className="bg-[#7C3AED] h-2 rounded-full" style={{width:"65%"}}/></div>
+                    <p className="text-[10px] text-gray-500">Overall completion</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-white/5 rounded-lg p-3 text-center"><p className="text-base font-bold text-white">08/22</p><p className="text-[10px] text-gray-400 mt-0.5">Sessions Completed</p></div>
+                  <div className="bg-white/5 rounded-lg p-3 text-center"><p className="text-base font-bold text-white">04/12</p><p className="text-[10px] text-gray-400 mt-0.5">Projects Done</p></div>
+                </div>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-white">Announcements</h3>
+                  <button className="text-xs text-[#7C3AED] hover:underline">View All</button>
+                </div>
+                {[{title:"New Resource: AI Cinematography Guide",time:"2h ago",desc:"I've just uploaded the comprehensive guide for Module 5. Please review it before today's live session."},{title:"Workshop Rescheduled: 1-on-1 Mentoring",time:"Yesterday",desc:"The Friday mentorship slot has been moved to 3:00 PM EST. Check the Mentorship tab for updates."}].map((a,i)=>(
+                  <div key={i} className="border-b border-white/5 last:border-0 pb-3 last:pb-0 mb-3 last:mb-0">
+                    <div className="flex items-center justify-between"><p className="text-xs font-semibold text-white">{a.title}</p><span className="text-[10px] text-gray-500 shrink-0 ml-2">{a.time}</span></div>
+                    <p className="text-[11px] text-gray-400 mt-1">{a.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="w-[210px] shrink-0 space-y-4">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h3 className="text-xs font-semibold text-white mb-3">Bootcamp Resources</h3>
+                {["Filmmaking Syllabus.pdf","Resource Engineering.zip","Weekly Reading List.pdf"].map((r,i)=>(
+                  <div key={i} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                    <span className="text-[10px] text-gray-300 truncate flex-1 mr-1">📄 {r}</span>
+                    <button className="text-gray-400 hover:text-[#7C3AED] shrink-0"><Ic name="download" size={13}/></button>
+                  </div>
+                ))}
+                <button className="text-xs text-[#7C3AED] hover:underline mt-2">View All Files</button>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                <h3 className="text-xs font-semibold text-white mb-3">Your Mentors</h3>
+                {[{name:"David Fincher AI",role:"Lead Instructor"},{name:"Sarah Jenkins",role:"Technical Mentor"}].map((m,i)=>(
+                  <div key={i} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-bold">{m.name[0]}</div>
+                      <div><p className="text-[10px] font-semibold text-white">{m.name}</p><p className="text-[9px] text-gray-500">{m.role}</p></div>
+                    </div>
+                    <button className="text-gray-400 hover:text-[#7C3AED]"><Ic name="message" size={13}/></button>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-          <span className="text-[10px] bg-[#C7E36B]/20 text-[#C7E36B] font-bold px-2 py-1 rounded-full">ENROLLING NOW</span>
-        </div>
-        <p className="text-sm text-gray-400 leading-relaxed mb-6">
-          The most comprehensive AI filmmaking program available. Master every aspect of AI-powered film production, from concept to final cut, with live mentoring and real project work.
-        </p>
-        <button onClick={() => setEnrolled(!enrolled)}
-          className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${enrolled ? "bg-[#C7E36B]/20 border border-[#C7E36B] text-[#C7E36B]" : "bg-[#C7E36B] text-black hover:bg-lime-300"}`}>
-          {enrolled ? "✓ Already Enrolled — You're In!" : "Enrol Now →"}
-        </button>
-        {enrolled && <p className="text-xs text-gray-500 text-center mt-2">Check your email for onboarding details.</p>}
-      </div>
-      <div>
-        <h3 className="text-sm font-bold text-white mb-3">What's Included</h3>
-        <div className="grid grid-cols-2 gap-3">
-          {highlights.map((h, i) => (
-            <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-start gap-3">
-              <span className="text-xl shrink-0">{h.icon}</span>
+        )}
+
+        {tab==="sessions"&&(
+          <div className="flex h-full">
+            <div className="w-[270px] shrink-0 border-r border-white/10 overflow-y-auto">
+              {BC_SESSION_LIST.map((s,i)=>(
+                <button key={i} onClick={()=>!s.locked&&setActiveSession(s)} disabled={s.locked} className={`w-full flex items-center gap-3 px-4 py-3 border-b border-white/5 text-left transition-all ${activeSession?.no===s.no&&!s.locked?"bg-[#7C3AED]/10 border-l-2 border-l-[#7C3AED]":"hover:bg-white/5"} ${s.locked?"opacity-40 cursor-not-allowed":""}`}>
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[9px] font-bold ${s.locked?"bg-white/5 text-gray-600":s.no<=10?"bg-green-500/20 text-green-400":"bg-[#7C3AED]/20 text-[#7C3AED]"}`}>
+                    {s.locked?<Ic name="lock" size={11} className="text-gray-500"/>:s.no<=10?<Ic name="check" size={11} className="text-green-400"/>:s.no}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-[11px] font-semibold truncate ${activeSession?.no===s.no&&!s.locked?"text-[#7C3AED]":"text-white"}`}>Session {s.no}</p>
+                    <p className="text-[10px] text-gray-500 truncate">{s.title}</p>
+                  </div>
+                  <span className="text-[9px] bg-white/10 text-gray-400 px-1.5 py-0.5 rounded shrink-0">{s.tag}</span>
+                </button>
+              ))}
+            </div>
+            <div className="flex-1 overflow-y-auto p-5 space-y-4">
+              <div className="aspect-video bg-black rounded-xl flex items-center justify-center border border-white/5">
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-3">
+                    <Ic name="play" size={28} className="text-white ml-1"/>
+                  </div>
+                  <p className="text-xs text-gray-500 max-w-[200px]">{activeSession?.title}</p>
+                </div>
+              </div>
               <div>
-                <p className="text-sm font-semibold text-white">{h.label}</p>
-                <p className="text-[10px] text-gray-400 mt-0.5">{h.desc}</p>
+                <p className="text-[10px] text-gray-500 mb-1 uppercase tracking-wider">Session {String(activeSession?.no||1).padStart(2,"0")}</p>
+                <h2 className="text-lg font-bold text-white mb-2">{activeSession?.title}</h2>
+                <p className="text-sm text-gray-400 leading-relaxed">In this session, we dive deep into the concepts and techniques needed to master {activeSession?.title?.toLowerCase()}. Follow along with hands-on exercises and real-world filmmaking examples.</p>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function BootcampOverview() {
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2 space-y-5">
-        {/* Next Session */}
-        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <span className="text-[10px] bg-[#C7E36B]/20 text-[#C7E36B] px-2 py-0.5 rounded-full font-bold">BEST SELLER</span>
-              <h3 className="text-sm font-bold text-white mt-1">Generative Video with Sora & Midjourney</h3>
-              <p className="text-xs text-gray-400 mt-0.5">📅 Today, 7:00 PM IST · Starts in 30 min</p>
-            </div>
-            <button className="bg-[#C7E36B] text-black text-xs font-bold px-4 py-2 rounded-lg hover:bg-lime-300 transition-all">
-              Join Session Now →
-            </button>
-          </div>
-        </div>
-
-        {/* Progress */}
-        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-white">Your Bootcamp Progress</h3>
-            <span className="text-xs text-gray-400">Week 3 of 12</span>
-          </div>
-          <div className="mb-2">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs text-gray-400">Overall Completion</span>
-              <span className="text-xs font-bold text-white">65%</span>
-            </div>
-            <div className="w-full bg-white/10 rounded-full h-2">
-              <div className="bg-[#C7E36B] h-2 rounded-full" style={{ width: "65%" }} />
-            </div>
-            <p className="text-[10px] text-gray-500 mt-1">600 lessons completed</p>
-          </div>
-          <div className="grid grid-cols-3 gap-3 mt-4">
-            {[
-              { label: "QUIZZES", value: "08/10" },
-              { label: "ASSIGNMENTS", value: "04/06" },
-              { label: "POINTS", value: "2,450 XP" },
-            ].map(s => (
-              <div key={s.label} className="bg-white/5 rounded-lg p-3 text-center">
-                <p className="text-xs text-gray-400 mb-1">{s.label}</p>
-                <p className="text-base font-bold text-white">{s.value}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Announcements */}
-        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-white">Announcements</h3>
-            <button className="text-xs text-[#C7E36B] hover:underline">View All</button>
-          </div>
-          <div className="space-y-3">
-            {[
-              { title: "New Resource: AI Cinematography Guide", time: "2h ago", desc: "I've just uploaded the comprehensive guide for Module 5. Please review it before today's live session." },
-              { title: "Workshop Rescheduled: 1-on-1 Mentoring", time: "Yesterday", desc: "The Friday mentorship slot has been moved to 3:00 PM EST. Check the Mentorship tab for updates." },
-            ].map((a, i) => (
-              <div key={i} className="border-b border-white/5 last:border-0 pb-3 last:pb-0">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold text-white">{a.title}</p>
-                  <span className="text-[10px] text-gray-500">{a.time}</span>
+              <div>
+                <h4 className="text-xs font-semibold text-white mb-3">Lesson Attachments</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {["Lesson_Notes.pdf","Reference_Materials.zip","Exercise_Files.pdf"].map((f,i)=>(
+                    <div key={i} className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 cursor-pointer hover:border-[#7C3AED]/30 transition-all">
+                      <span className="text-base">📄</span>
+                      <span className="text-xs text-gray-300 flex-1 truncate">{f}</span>
+                      <Ic name="download" size={13} className="text-gray-400 hover:text-[#7C3AED] shrink-0"/>
+                    </div>
+                  ))}
                 </div>
-                <p className="text-[11px] text-gray-400 mt-1">{a.desc}</p>
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Right Sidebar */}
-      <div className="space-y-4">
-        {/* Resources */}
-        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-          <h3 className="text-xs font-semibold text-white mb-3">Bootcamp Resources</h3>
-          {["Filmmaking Syllabus.pdf", "Resource Engineering.zip", "Weekly Reading List"].map((r, i) => (
-            <div key={i} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-              <span className="text-[11px] text-gray-300">{r}</span>
-              <button className="text-gray-400 hover:text-[#C7E36B]"><Ic name="download" size={14} /></button>
             </div>
-          ))}
-          <button className="text-xs text-[#C7E36B] hover:underline mt-2">View All Files</button>
-        </div>
+          </div>
+        )}
 
-        {/* Mentors */}
-        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-          <h3 className="text-xs font-semibold text-white mb-3">Your Mentors</h3>
-          {[
-            { name: "David Fincher AI", role: "Lead Instructor - Director" },
-            { name: "Sarah Jenkins", role: "Technical Mentor - AI Artist" },
-          ].map((m, i) => (
-            <div key={i} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-xs font-bold">{m.name[0]}</div>
+        {tab==="projects"&&(
+          <div className="flex h-full">
+            <div className="w-[250px] shrink-0 border-r border-white/10 overflow-y-auto p-3 space-y-2">
+              {BC_PROJECT_LIST.map((p,i)=>(
+                <div key={i} onClick={()=>setActiveProject(p)} className={`p-3 border rounded-xl cursor-pointer transition-all ${activeProject?.no===p.no?"border-[#7C3AED]/50 bg-[#7C3AED]/5":"border-white/10 hover:border-white/20"}`}>
+                  <p className="text-[10px] text-[#7C3AED] font-bold uppercase">{p.no}</p>
+                  <p className="text-xs font-bold text-white mt-0.5">{p.title}</p>
+                  <p className="text-[10px] text-gray-500 mt-1 line-clamp-2">{p.desc}</p>
+                </div>
+              ))}
+            </div>
+            {activeProject&&(
+              <div className="flex-1 overflow-y-auto p-5 space-y-5">
                 <div>
-                  <p className="text-[11px] font-semibold text-white">{m.name}</p>
-                  <p className="text-[10px] text-gray-500">{m.role}</p>
+                  <p className="text-[10px] text-[#7C3AED] font-bold uppercase mb-1">{activeProject.no}</p>
+                  <h2 className="text-xl font-bold text-white mb-2">{activeProject.title}</h2>
+                  <p className="text-sm text-gray-400 leading-relaxed">{activeProject.desc}</p>
+                </div>
+                <div>
+                  <h4 className="text-xs font-semibold text-white mb-3">Requirements</h4>
+                  <div className="space-y-2.5">
+                    {activeProject.req.map((r,i)=>(
+                      <div key={i} className="flex items-center gap-2.5">
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${r.done?"border-[#7C3AED] bg-[#7C3AED]":"border-white/20"}`}>
+                          {r.done&&<Ic name="check" size={11} className="text-white"/>}
+                        </div>
+                        <p className={`text-xs ${r.done?"text-gray-500 line-through":"text-white"}`}>{r.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-xs font-semibold text-white mb-3">Project Resources</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {activeProject.res.map((f,i)=>(
+                      <div key={i} className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-3 cursor-pointer hover:border-[#7C3AED]/40 transition-all">
+                        <span className="text-xl shrink-0">📄</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-white font-medium truncate">{f}</p>
+                          <p className="text-[10px] text-gray-500">Download</p>
+                        </div>
+                        <Ic name="download" size={14} className="text-[#7C3AED] shrink-0"/>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-              <button className="text-gray-400 hover:text-[#C7E36B]"><Ic name="message" size={14} /></button>
-            </div>
-          ))}
-        </div>
-
-        {/* Office Hours */}
-        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-          <p className="text-[10px] text-gray-400 font-semibold uppercase mb-2">Office Hours</p>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-white">Friday, 10:00 AM</span>
-            <button className="text-xs bg-[#C7E36B] text-black font-bold px-3 py-1 rounded-lg hover:bg-lime-300">Book Slot</button>
+            )}
           </div>
-        </div>
+        )}
+
       </div>
-    </div>
-  );
-}
-
-function BootcampCurriculum({ modules, activeLesson, setActiveLesson, openModule, setOpenModule }) {
-  return (
-    <div className="flex gap-6 h-full">
-      {/* Module List */}
-      <div className="w-[280px] shrink-0 space-y-2">
-        {modules.map((mod, i) => (
-          <div key={i} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
-            <button onClick={() => setOpenModule(openModule === i ? null : i)}
-              className="w-full flex items-center justify-between px-4 py-3 text-left">
-              <div className="flex items-center gap-2">
-                {mod.status === "completed" && <Ic name="check" size={14} className="text-green-400" />}
-                {mod.status === "in-progress" && <span className="w-3.5 h-3.5 rounded-full border-2 border-[#C7E36B] flex items-center justify-center"><span className="w-1.5 h-1.5 rounded-full bg-[#C7E36B]" /></span>}
-                {mod.status === "locked" && <Ic name="lock" size={14} className="text-gray-500" />}
-                <span className={`text-xs font-semibold ${mod.status === "locked" ? "text-gray-500" : "text-white"}`}>{mod.title}</span>
-              </div>
-              <Ic name="chevron" size={14} className={`text-gray-400 transition-all ${openModule === i ? "rotate-90" : ""}`} />
-            </button>
-            {openModule === i && mod.lessons.map((lesson, j) => (
-              <button key={j} onClick={() => setActiveLesson(lesson)}
-                className={`w-full flex items-center justify-between px-4 py-2.5 border-t border-white/5 text-left transition-all ${activeLesson?.title === lesson.title ? "bg-[#C7E36B]/10" : "hover:bg-white/5"}`}>
-                <span className={`text-xs ${activeLesson?.title === lesson.title ? "text-[#C7E36B]" : "text-gray-400"}`}>{lesson.title}</span>
-                <span className="text-[10px] text-gray-500">{lesson.duration}</span>
-              </button>
-            ))}
-          </div>
-        ))}
-        <div className="bg-white/5 border border-white/10 rounded-xl p-3">
-          <p className="text-[10px] text-gray-400 font-semibold mb-1">NEXT MILESTONE</p>
-          <p className="text-xs font-bold text-white">AI Director Certificate</p>
-          <p className="text-[10px] text-gray-500 mt-1">7 lessons to go · XP: 2,450 / 3,000</p>
-        </div>
-      </div>
-
-      {/* Video + Content */}
-      <div className="flex-1 space-y-4">
-        <div className="aspect-video bg-black rounded-xl overflow-hidden flex items-center justify-center">
-          {activeLesson?.vimeoId ? (
-            <iframe src={`https://player.vimeo.com/video/${activeLesson.vimeoId}`} className="w-full h-full" allowFullScreen />
-          ) : (
-            <div className="text-center text-gray-500">
-              <Ic name="play" size={48} className="mx-auto mb-2 text-gray-600" />
-              <p className="text-sm">CINEMATIC LIGHTING TECHNIQUES</p>
-            </div>
-          )}
-        </div>
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-[10px] text-gray-500 mb-1">MODULE 2 · LESSON 2.2</p>
-            <h2 className="text-lg font-bold text-white">Advanced Prompting for Cinematic Realism</h2>
-            <p className="text-sm text-gray-400 mt-1">In this session, we dive deep into the technical syntax required to achieve hyper-realistic cinematic lighting and camera movements using generative AI models.</p>
-          </div>
-          <button className="flex items-center gap-1 text-xs text-gray-400 hover:text-[#C7E36B] shrink-0 ml-4">
-            <Ic name="check" size={14} />Mark as Complete
-          </button>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-            <h4 className="text-xs font-semibold text-white mb-3">Lesson Attachments</h4>
-            {["Cinematic_Cheat_Sheet.", "Reference_Frames.zip"].map((f, i) => (
-              <div key={i} className="flex items-center justify-between py-2 border-t border-white/5 first:border-0">
-                <span className="text-xs text-gray-300">📄 {f}</span>
-                <button className="text-gray-400 hover:text-[#C7E36B]"><Ic name="download" size={14} /></button>
-              </div>
-            ))}
-          </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-            <h4 className="text-xs font-semibold text-white mb-1">Lesson Quiz</h4>
-            <p className="text-[11px] text-gray-400 mb-3">Test your knowledge of Module 2.2 concepts.</p>
-            <button className="w-full bg-[#7C3AED] hover:bg-purple-700 text-white text-xs font-bold py-2 rounded-lg transition-all">
-              START QUIZ (5 QUESTIONS)
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function BootcampProjects({ projects, activeProject, setActiveProject }) {
-  return (
-    <div className="flex gap-6">
-      <div className="flex-1 space-y-3">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-sm font-semibold text-white">Active Projects</h2>
-          <select className="bg-white/5 border border-white/10 text-gray-400 text-xs rounded-lg px-2 py-1">
-            <option>Sort by: Deadline</option>
-          </select>
-        </div>
-        {projects.map((p, i) => (
-          <div key={i} onClick={() => setActiveProject(p)}
-            className={`bg-white/5 border rounded-xl p-4 cursor-pointer transition-all ${activeProject?.id === p.id ? "border-[#C7E36B]/50 bg-[#C7E36B]/5" : "border-white/10 hover:border-white/20"}`}>
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center text-[10px] text-gray-400 font-bold shrink-0">{p.id}</div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-sm font-semibold text-white">{p.title}</h3>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
-                    p.status === "REVIEWED" ? "bg-blue-500/20 text-blue-400" :
-                    p.status === "SUBMITTED" ? "bg-yellow-500/20 text-yellow-400" :
-                    "bg-gray-500/20 text-gray-400"
-                  }`}>{p.status}</span>
-                </div>
-                <p className="text-xs text-gray-400">{p.desc}</p>
-                {p.grade && <p className="text-xs text-[#C7E36B] mt-1">Submitted {p.submitted} · GRADE: {p.grade}</p>}
-                {p.deadline && <p className="text-xs text-orange-400 mt-1">📅 DEADLINE: {p.deadline}</p>}
-                {p.quote && <p className="text-[11px] text-gray-500 italic mt-1">"{p.quote}"</p>}
-              </div>
-            </div>
-            <div className="flex gap-2 mt-3">
-              {p.feedback && <button className="text-xs text-[#C7E36B] hover:underline">View Feedback →</button>}
-              {p.status === "SUBMITTED" && <button className="text-xs text-gray-400 flex items-center gap-1"><Ic name="edit" size={12} />Edit Submission</button>}
-              {p.status === "NOT STARTED" && <button className="text-xs bg-[#C7E36B] text-black font-bold px-3 py-1 rounded-lg hover:bg-lime-300">Start Project</button>}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Project Details Panel */}
-      {activeProject && (
-        <div className="w-[280px] shrink-0 bg-white/5 border border-white/10 rounded-xl p-4 space-y-4 h-fit">
-          <h3 className="text-sm font-semibold text-white">Project Details</h3>
-          <div className="bg-[#C7E36B]/10 border border-[#C7E36B]/30 rounded-lg p-3">
-            <p className="text-[10px] text-gray-400 mb-1">CURRENT SELECTION</p>
-            <p className="text-sm font-bold text-white">{activeProject.title}</p>
-            <div className="flex gap-2 mt-1">
-              <span className="text-[10px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded">High Priority</span>
-              <span className="text-[10px] text-gray-400">Est. time: 4-6 hours</span>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-xs font-semibold text-white mb-2">Requirements</h4>
-            {["Minimum 2-minute original composition", "Must include at least 3 distinct emotional shifts", "Submission format: MP3 or WAV (320kbps)"].map((r, i) => (
-              <div key={i} className="flex items-start gap-2 mb-1.5">
-                <Ic name="check" size={12} className="text-gray-400 mt-0.5 shrink-0" />
-                <p className="text-[11px] text-gray-400">{r}</p>
-              </div>
-            ))}
-          </div>
-          <div>
-            <h4 className="text-xs font-semibold text-white mb-2">Submit Your Work</h4>
-            <div className="border-2 border-dashed border-white/20 rounded-xl p-4 text-center hover:border-[#C7E36B]/50 transition-all cursor-pointer">
-              <Ic name="upload" size={20} className="mx-auto text-gray-500 mb-1" />
-              <p className="text-[11px] text-gray-400">Click to upload or drag and drop</p>
-              <p className="text-[10px] text-gray-500">Max file size: 50MB</p>
-            </div>
-            <input type="text" placeholder="Or paste a link (SoundCloud, Google Drive)" className="w-full mt-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[#C7E36B]/50 placeholder-gray-600" />
-          </div>
-          <button className="w-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold py-2 rounded-lg transition-all">Submit Project</button>
-          <div className="flex items-center gap-2 border-t border-white/10 pt-3">
-            <div className="w-6 h-6 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-bold">S</div>
-            <div>
-              <p className="text-[11px] text-white font-semibold">Sarah Jenkins</p>
-              <p className="text-[10px] text-green-400">Lead Mentor · Active now</p>
-            </div>
-            <button className="ml-auto text-gray-400 hover:text-[#C7E36B]"><Ic name="message" size={14} /></button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -1140,41 +998,89 @@ function CertificatesSection({ token, profile }) {
 ════════════════════════════════════════════ */
 const TAG_COLORS = { "AI Film": "bg-[#C7E36B] text-black", "AI Ads": "bg-orange-400 text-black", "AI Story": "bg-pink-400 text-black", "AI Editing": "bg-blue-400 text-black", "AI Voice": "bg-purple-400 text-white", "AI Avatar": "bg-teal-400 text-black", "AI Music": "bg-indigo-400 text-white" };
 
+const JOB_CATEGORIES = ["Cinematography","Video Editing","Sound Design","Directing","Production Design"];
+const JOB_BUDGETS    = ["< ₹50/hr","₹50–100/hr","₹100–200/hr","₹200+/hr"];
+const JOB_TIMELINES  = ["Immediate","Within 2 Weeks","1 Month+","Flexible"];
+const JOB_TAG_COLORS = { "AI Film":"bg-[#C7E36B]/20 text-[#C7E36B]","AI Story":"bg-purple-500/20 text-purple-300","AI Editing":"bg-blue-500/20 text-blue-300","AI Ads":"bg-orange-500/20 text-orange-300","AI Music":"bg-pink-500/20 text-pink-300" };
+
 function JobsSection({ token }) {
-  const [jobs, setJobs]       = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [tagFilter, setTagFilter] = useState("All");
-  const [typeFilter, setTypeFilter] = useState("All");
+  const [jobs, setJobs]         = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [catFilter, setCat]     = useState("All");
+  const [budgetFilter, setBudget]     = useState("All");
+  const [timelineFilter, setTimeline] = useState("All");
+  const [detailJob, setDetailJob]     = useState(null);
 
   useEffect(() => {
-    fetch("/api/jobs")
-      .then(r=>r.json()).then(d=>{ if(Array.isArray(d)) setJobs(d); setLoading(false); }).catch(()=>setLoading(false));
+    fetch("https://aifa-backend-4an6.onrender.com/api/jobs")
+      .then(r => r.ok ? r.json() : [])
+      .then(d => { if (Array.isArray(d)) setJobs(d); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
-  const allTags  = ["All", ...new Set(jobs.map(j=>j.tag).filter(Boolean))];
-  const allTypes = ["All", ...new Set(jobs.map(j=>j.type).filter(Boolean))];
-
   const filtered = jobs.filter(j => {
-    const matchTag  = tagFilter  === "All" || j.tag  === tagFilter;
-    const matchType = typeFilter === "All" || j.type === typeFilter;
-    return matchTag && matchType;
+    if (catFilter !== "All" && !(j.skills || []).some(s => s.toLowerCase().includes(catFilter.toLowerCase()))) return false;
+    if (budgetFilter !== "All" && j.budget !== budgetFilter) return false;
+    if (timelineFilter !== "All" && j.timeline !== timelineFilter) return false;
+    return true;
   });
+
+  const Sel = ({ val, opts, onChange, placeholder }) => (
+    <select value={val} onChange={e => onChange(e.target.value)} className="bg-white/5 border border-white/10 text-gray-300 text-sm rounded-xl px-4 py-2 outline-none hover:border-white/20 transition-all">
+      <option value="All">{placeholder}</option>
+      {opts.map(o => <option key={o} value={o}>{o}</option>)}
+    </select>
+  );
 
   return (
     <div className="p-6">
+      {/* View Details Modal */}
+      {detailJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={() => setDetailJob(null)}>
+          <div className="bg-[#0F1112] border border-white/10 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6" onClick={e => e.stopPropagation()}>
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${TAG_COLORS[detailJob.tag] || "bg-gray-500/30 text-white"}`}>{detailJob.tag}</span>
+                <h2 className="text-lg font-bold text-white mt-2">{detailJob.title}</h2>
+                <p className="text-xs text-gray-500 uppercase font-semibold mt-0.5">{detailJob.type}</p>
+              </div>
+              <button onClick={() => setDetailJob(null)} className="text-gray-400 hover:text-white text-xl leading-none">✕</button>
+            </div>
+            <p className="text-sm text-gray-300 leading-relaxed mb-4">{detailJob.description}</p>
+            {detailJob.skills?.length > 0 && (
+              <div className="mb-4">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Required Skills</p>
+                <div className="flex flex-wrap gap-2">
+                  {detailJob.skills.map(s => <span key={s} className="text-xs bg-[#7C3AED]/20 text-purple-300 border border-[#7C3AED]/30 px-3 py-1 rounded-full">{s}</span>)}
+                </div>
+              </div>
+            )}
+            <div className="flex gap-3 mb-4">
+              {detailJob.budget && <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-center flex-1"><p className="text-[10px] text-gray-500 uppercase">Budget</p><p className="text-sm font-bold text-white">{detailJob.budget}</p></div>}
+              {detailJob.timeline && <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-center flex-1"><p className="text-[10px] text-gray-500 uppercase">Timeline</p><p className="text-sm font-bold text-white">{detailJob.timeline}</p></div>}
+            </div>
+            <div className="bg-[#7C3AED]/10 border border-[#7C3AED]/30 rounded-xl p-4 mb-4">
+              <p className="text-xs font-bold text-purple-300 mb-1">How to Apply</p>
+              <p className="text-xs text-gray-400">Submit your portfolio and a brief introduction via the AIFA platform. Shortlisted candidates will be contacted within 5 business days.</p>
+            </div>
+            <button className="w-full bg-[#7C3AED] hover:bg-[#6d28d9] text-white font-bold py-3 rounded-xl transition-all text-sm">Apply Now</button>
+          </div>
+        </div>
+      )}
+
       <div className="mb-6">
         <h1 className="text-xl font-bold text-white">Jobs</h1>
-        <p className="text-gray-400 text-sm mt-1">{loading ? "Loading..." : `${jobs.length} opportunities available`}</p>
+        <p className="text-gray-400 text-sm mt-1">{loading ? "Loading..." : `${filtered.length} of ${jobs.length} opportunities`}</p>
       </div>
 
       {/* Filters */}
       <div className="flex gap-3 mb-6 flex-wrap">
-        <select value={tagFilter} onChange={e=>setTagFilter(e.target.value)} className="bg-white/5 border border-white/10 text-gray-300 text-sm rounded-xl px-4 py-2 outline-none hover:border-white/20 transition-all">
-          {allTags.map(t => <option key={t} value={t}>{t === "All" ? "All Categories" : t}</option>)}
-        </select>
-        <select value={typeFilter} onChange={e=>setTypeFilter(e.target.value)} className="bg-white/5 border border-white/10 text-gray-300 text-sm rounded-xl px-4 py-2 outline-none hover:border-white/20 transition-all">
-          {allTypes.map(t => <option key={t} value={t}>{t === "All" ? "All Types" : t}</option>)}
-        </select>
+        <Sel val={catFilter}      opts={JOB_CATEGORIES} onChange={setCat}      placeholder="All Categories" />
+        <Sel val={budgetFilter}   opts={JOB_BUDGETS}    onChange={setBudget}   placeholder="All Budgets" />
+        <Sel val={timelineFilter} opts={JOB_TIMELINES}  onChange={setTimeline} placeholder="All Timelines" />
+        {(catFilter !== "All" || budgetFilter !== "All" || timelineFilter !== "All") && (
+          <button onClick={() => { setCat("All"); setBudget("All"); setTimeline("All"); }} className="text-xs text-gray-400 hover:text-white underline">Clear</button>
+        )}
       </div>
 
       {loading ? (
@@ -1191,15 +1097,18 @@ function JobsSection({ token }) {
               <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full w-fit mb-2 ${TAG_COLORS[j.tag] || "bg-gray-500/30 text-white"}`}>{j.tag}</span>
               <h3 className="text-sm font-bold text-white mb-1">{j.title}</h3>
               <p className="text-[11px] text-gray-500 uppercase font-semibold mb-2">{j.type}</p>
-              <p className="text-xs text-gray-400 flex-1 mb-3">{j.description}</p>
+              <p className="text-xs text-gray-400 flex-1 mb-3 line-clamp-3">{j.description}</p>
               {j.skills?.length > 0 && (
                 <div className="flex flex-wrap gap-1 mb-3">
-                  {j.skills.slice(0,3).map(s => <span key={s} className="text-[10px] bg-white/10 text-gray-400 px-2 py-0.5 rounded-full">{s}</span>)}
+                  {j.skills.slice(0, 3).map(s => <span key={s} className="text-[10px] bg-white/10 text-gray-400 px-2 py-0.5 rounded-full">{s}</span>)}
                 </div>
               )}
-              <div className="flex items-center justify-between border-t border-white/10 pt-3">
-                {j.budget && <span className="text-xs bg-white/10 text-white px-2.5 py-1 rounded-full font-semibold">{j.budget}</span>}
-                {j.timeline && <span className="text-[11px] bg-white/10 text-gray-400 px-2.5 py-1 rounded-full">{j.timeline}</span>}
+              <div className="flex items-center justify-between border-t border-white/10 pt-3 mt-auto">
+                <div className="flex gap-2">
+                  {j.budget && <span className="text-xs bg-white/10 text-white px-2.5 py-1 rounded-full font-semibold">{j.budget}</span>}
+                  {j.timeline && <span className="text-[11px] bg-white/10 text-gray-400 px-2.5 py-1 rounded-full">{j.timeline}</span>}
+                </div>
+                <button onClick={() => setDetailJob(j)} className="text-xs text-[#7C3AED] hover:text-purple-300 font-semibold transition-all">View Details →</button>
               </div>
             </div>
           ))}
