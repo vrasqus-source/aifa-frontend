@@ -49,7 +49,7 @@ const NAV_ITEMS = [
   { id: "resources",          label: "Resources",      icon: "resources" },
   { id: "certificates",       label: "Certificates",   icon: "cert"     },
   { id: "jobs",               label: "Jobs",           icon: "jobs"     },
-  { id: "community",          label: "Community",      icon: "community",     soon: true },
+  { id: "community",          label: "Community",      icon: "community" },
   { id: "service-request",    label: "Service Request",icon: "service",       soon: true },
   { id: "sales-consultation", label: "Sales Consult.", icon: "sales",         soon: true },
   { id: "hire-talent",        label: "Hire Talent",    icon: "hire",          soon: true },
@@ -158,7 +158,8 @@ export default function AdminDashboard() {
           {activePage === "certificates"    && <CertificatesAdmin token={token} />}
           {activePage === "jobs"            && <JobsAdmin token={token} />}
           {activePage === "profile"         && <AdminProfile token={token} profile={profile} onUpdated={setProfile} />}
-          {["community","service-request","sales-consultation","hire-talent","membership"].includes(activePage) && (
+          {activePage === "community" && <CommunityAdmin token={token} />}
+          {["service-request","sales-consultation","hire-talent","membership"].includes(activePage) && (
             <Placeholder title={[...NAV_ITEMS,...MGMT_ITEMS].find(n=>n.id===activePage)?.label} />
           )}
         </main>
@@ -169,75 +170,188 @@ export default function AdminDashboard() {
 
 /* ── ADMIN OVERVIEW ── */
 function AdminOverview({ token, onNavigate }) {
-  const [stats, setStats] = useState({});
+  const [stats, setStats]       = useState({});
+  const [analytics, setAnalytics] = useState(null);
   const [recentTxs, setRecentTxs] = useState([]);
+  const [chartRange, setChartRange] = useState("30d");
+
   useEffect(() => {
     const h = { Authorization:`Bearer ${token}` };
-    fetch("/api/admin/stats", { headers: h }).then(r=>r.json()).then(d=>{ if(!d.message) setStats(d); }).catch(()=>{});
-    fetch("/api/admin/enrollments/recent", { headers: h }).then(r=>r.json()).then(d=>{ if(Array.isArray(d)) setRecentTxs(d); }).catch(()=>{});
+    fetch("/api/admin/stats",              { headers:h }).then(r=>r.json()).then(d=>{ if(!d.message) setStats(d); }).catch(()=>{});
+    fetch("/api/admin/analytics",          { headers:h }).then(r=>r.json()).then(d=>{ if(!d.message) setAnalytics(d); }).catch(()=>{});
+    fetch("/api/admin/enrollments/recent", { headers:h }).then(r=>r.json()).then(d=>{ if(Array.isArray(d)) setRecentTxs(d); }).catch(()=>{});
   }, [token]);
 
-  const fmt = v => v >= 1000 ? `₹${(v/1000).toFixed(1)}K` : `₹${v}`;
-  const cards = [
-    { label:"Total Users",    value: stats.users     ?? 0, icon:"users",      color:"text-blue-400",   bg:"bg-blue-500/10"   },
-    { label:"Active Courses", value: stats.courses   ?? 0, icon:"video",      color:"text-green-400",  bg:"bg-green-500/10"  },
-    { label:"Workshops",      value: stats.workshops ?? 0, icon:"workshop",   color:"text-purple-400", bg:"bg-purple-500/10" },
-    { label:"Bootcamps",      value: stats.bootcamps ?? 0, icon:"bootcamp",   color:"text-orange-400", bg:"bg-orange-500/10" },
-    { label:"Total Revenue",  value: fmt(stats.revenue ?? 0), icon:"payments", color:"text-[#C7E36B]", bg:"bg-[#C7E36B]/10"  },
-    { label:"Enrollments",    value: stats.enrollments ?? 0, icon:"enrolments",color:"text-pink-400",  bg:"bg-pink-500/10"   },
+  const fmtRev = v => v >= 100000 ? `₹${(v/100000).toFixed(1)}L` : v >= 1000 ? `₹${(v/1000).toFixed(1)}K` : `₹${v}`;
+  const fmtPct = (n, total) => total ? ((n/total)*100).toFixed(1)+"%" : "0%";
+
+  const topCards = [
+    { label:"Total Revenue",     value: fmtRev(stats.revenue??0),     icon:"payments",   color:"text-[#C7E36B]", bg:"bg-[#C7E36B]/10", trend:"+12.5%", up:true  },
+    { label:"Total Enrollments", value: stats.enrollments??0,          icon:"enrolments", color:"text-blue-400",  bg:"bg-blue-500/10",  trend:"+8.2%",  up:true  },
+    { label:"Active Users",      value: stats.users??0,                icon:"users",      color:"text-green-400", bg:"bg-green-500/10", trend:"+4.1%",  up:true  },
+    { label:"Courses",           value: (stats.courses??0)+(stats.workshops??0)+(stats.bootcamps??0), icon:"video", color:"text-purple-400", bg:"bg-purple-500/10", trend:"-2.4%", up:false },
   ];
+
+  /* Build chart data from analytics.monthlyData (last 6 points) */
+  const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const chartData = analytics?.monthlyData?.slice(-6).map(m => ({
+    label: MONTHS[m._id.month-1],
+    count: m.count,
+    rev:   m.revenue,
+  })) ?? [];
+  const maxCount = Math.max(...chartData.map(d=>d.count), 1);
+  const maxRev   = Math.max(...chartData.map(d=>d.rev), 1);
+
+  const topCourses = analytics?.topCourses ?? [];
 
   const quickActions = [
-    { label:"New Course",   icon:"video",    cls:"bg-blue-500/20 text-blue-400",     page:"video-courses" },
-    { label:"New Workshop", icon:"workshop", cls:"bg-purple-500/20 text-purple-400", page:"workshops"     },
-    { label:"New Bootcamp", icon:"bootcamp", cls:"bg-orange-500/20 text-orange-400", page:"bootcamp"      },
-    { label:"View Users",   icon:"users",    cls:"bg-green-500/20 text-green-400",   page:"users"         },
+    { label:"Add Bootcamp",    icon:"bootcamp", bg:"bg-white/5 hover:bg-white/10", page:"bootcamp"      },
+    { label:"Create Workshop", icon:"workshop", bg:"bg-white/5 hover:bg-white/10", page:"workshops"     },
+    { label:"Upload Course",   icon:"upload",   bg:"bg-white/5 hover:bg-white/10", page:"video-courses" },
+    { label:"View Users",      icon:"users",    bg:"bg-white/5 hover:bg-white/10", page:"users"         },
   ];
 
+  /* Build activity feed from recent txs + static items */
+  const activity = recentTxs.slice(0,4).map((tx,i) => ({
+    icon: i%3===0?"users": i%3===1?"payments":"cert",
+    color: i%3===0?"bg-[#C7E36B] text-black": i%3===1?"bg-blue-500 text-white":"bg-purple-500 text-white",
+    text: i%3===0 ? `${tx.user?.name||"A student"} enrolled in ${tx.itemTitle||"a course"}`
+                  : i%3===1 ? `Payment received from ${tx.user?.name||"a student"}`
+                            : `Certificate issued for ${tx.itemTitle||"a course"}`,
+    amount: i%3===1 ? `+₹${tx.amount||0}` : null,
+    time: tx.createdAt ? new Date(tx.createdAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : "—",
+  }));
+  if (activity.length === 0) {
+    activity.push({ icon:"users", color:"bg-[#C7E36B] text-black", text:"No recent activity yet", amount:null, time:"—" });
+  }
+
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-xl font-bold text-white">Admin Dashboard</h1>
-        <p className="text-sm text-gray-400">Platform overview and key metrics</p>
-      </div>
-      <div className="grid grid-cols-3 gap-4">
-        {cards.map(s => (
-          <div key={s.label} className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center gap-4">
-            <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center shrink-0`}>
-              <I name={s.icon} size={20} className={s.color} />
+    <div className="p-6 space-y-5">
+      {/* 4 top stat cards */}
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        {topCards.map(s => (
+          <div key={s.label} className="bg-white/5 border border-white/10 rounded-xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className={`w-9 h-9 rounded-xl ${s.bg} flex items-center justify-center`}>
+                <I name={s.icon} size={18} className={s.color} />
+              </div>
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${s.up ? "text-green-400 bg-green-500/10":"text-red-400 bg-red-500/10"}`}>
+                {s.up?"↑":"↓"} {s.trend}
+              </span>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-white">{s.value}</p>
-              <p className="text-xs text-gray-400">{s.label}</p>
-            </div>
+            <p className="text-xs text-gray-400 mb-0.5">{s.label}</p>
+            <p className="text-2xl font-black text-white">{s.value}</p>
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-          <h3 className="text-sm font-semibold text-white mb-3">Recent Enrollments</h3>
-          {recentTxs.length === 0
-            ? <p className="text-xs text-gray-500 py-4 text-center">No paid enrollments yet</p>
-            : recentTxs.map((tx,i) => (
-              <div key={i} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-[#C7E36B] text-black font-bold text-[11px] flex items-center justify-center">{(tx.user?.name||"U")[0]}</div>
-                  <div><p className="text-xs font-semibold text-white">{tx.user?.name||"User"}</p><p className="text-[10px] text-gray-500">{tx.itemTitle}</p></div>
-                </div>
-                <span className="text-[10px] text-gray-500">{new Date(tx.createdAt).toLocaleDateString()}</span>
+
+      {/* Revenue chart + Recent Activity */}
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-4">
+        {/* Revenue Overview */}
+        <div className="bg-white/5 border border-white/10 rounded-xl p-5">
+          <div className="flex items-center justify-between mb-1">
+            <div>
+              <h3 className="text-sm font-bold text-white">Revenue Overview</h3>
+              <p className="text-[10px] text-gray-500">Detailed financial growth metrics</p>
+            </div>
+            <div className="flex gap-1">
+              {["7d","30d","3m"].map(r => (
+                <button key={r} onClick={() => setChartRange(r)}
+                  className={`text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all ${chartRange===r?"bg-[#C7E36B] text-black":"bg-white/10 text-gray-400 hover:bg-white/20"}`}>
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+          {chartData.length === 0 ? (
+            <div className="h-[140px] flex items-center justify-center text-xs text-gray-600">No data yet — make some sales!</div>
+          ) : (
+            <div className="mt-4">
+              {/* CSS bar chart for enrollments */}
+              <div className="flex items-end gap-2 h-[120px]">
+                {chartData.map((d,i) => (
+                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                    <div className="w-full flex flex-col justify-end" style={{height:"100px"}}>
+                      <div className="w-full bg-[#C7E36B]/80 rounded-t transition-all hover:bg-[#C7E36B]"
+                        style={{height:`${Math.max(4,(d.count/maxCount)*100)}px`}}
+                        title={`${d.count} enrollments`} />
+                    </div>
+                    <span className="text-[9px] text-gray-500">{d.label}</span>
+                  </div>
+                ))}
               </div>
-            ))
-          }
+              {/* Revenue sparkline — simple dots */}
+              <div className="flex items-center gap-4 mt-3 pt-3 border-t border-white/5 text-[10px] text-gray-500">
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#C7E36B] inline-block" /> Enrollments</span>
+                <span className="ml-auto text-gray-400">Total: {analytics?.totalEnrollments??0} paid enrollments</span>
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* Recent Activity */}
         <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-          <h3 className="text-sm font-semibold text-white mb-3">Quick Actions</h3>
-          <div className="grid grid-cols-2 gap-2">
-            {quickActions.map(({label,icon,cls,page}) => (
-              <button key={label} onClick={() => onNavigate(page)} className={`${cls} rounded-xl p-3 flex items-center gap-2 text-xs font-semibold hover:opacity-80 transition-all`}>
-                <I name={icon} size={16}/>{label}
-              </button>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-bold text-white">Recent Activity</h3>
+            <button onClick={() => onNavigate("enrolments")} className="text-[10px] text-[#C7E36B] hover:underline">View All</button>
+          </div>
+          <div className="space-y-3">
+            {activity.map((a,i) => (
+              <div key={i} className="flex items-start gap-2.5">
+                <div className={`w-7 h-7 rounded-full ${a.color} flex items-center justify-center shrink-0`}>
+                  <I name={a.icon} size={13} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] text-white leading-snug line-clamp-2">{a.text}</p>
+                  <p className="text-[10px] text-gray-500 mt-0.5">{a.time}</p>
+                </div>
+                {a.amount && <span className="text-[10px] font-bold text-green-400 shrink-0">{a.amount}</span>}
+              </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Top Performing Courses + Quick Actions */}
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto] gap-4">
+        {/* Top courses */}
+        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-bold text-white">Top Performing Courses</h3>
+            <button className="text-[10px] text-gray-500 hover:text-white">• • •</button>
+          </div>
+          {topCourses.length === 0 ? (
+            <p className="text-xs text-gray-500 text-center py-6">No course enrollments yet</p>
+          ) : topCourses.map((c,i) => (
+            <div key={i} className="flex items-center justify-between py-2.5 border-b border-white/5 last:border-0">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                  <I name="video" size={15} className="text-gray-400" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-white line-clamp-1">{c._id}</p>
+                  <p className="text-[10px] text-gray-500">Course · {c.count} students</p>
+                </div>
+              </div>
+              <div className="text-right shrink-0 ml-3">
+                <p className="text-xs font-bold text-white">{fmtRev(c.revenue)}</p>
+                <p className="text-[10px] text-green-400">+ growth</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Quick Actions grid (2×2) */}
+        <div className="grid grid-cols-2 gap-3 content-start" style={{minWidth:"260px"}}>
+          {quickActions.map(({label,icon,bg,page}) => (
+            <button key={label} onClick={() => onNavigate(page)}
+              className={`${bg} border border-white/10 rounded-xl p-4 flex flex-col items-center gap-2 text-xs font-semibold text-white hover:border-white/20 transition-all`}>
+              <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
+                <I name={icon} size={18} className="text-gray-300" />
+              </div>
+              <span className="text-center leading-tight">{label}</span>
+            </button>
+          ))}
         </div>
       </div>
     </div>
@@ -1265,6 +1379,153 @@ function Tog({ value, onChange }) {
     <button onClick={()=>onChange(!value)} className={`w-10 h-5 rounded-full transition-all shrink-0 relative ${value?"bg-[#C7E36B]":"bg-white/20"}`}>
       <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${value?"right-0.5":"left-0.5"}`}/>
     </button>
+  );
+}
+
+/* ── COMMUNITY ADMIN ── */
+const MOCK_THREADS = [
+  { id:1, votes:142, tag:"DISCUSSION", tagCls:"bg-green-500/20 text-green-400",  title:"The future of Sora in commercial filmmaking?",          excerpt:"I've been testing some of the new clips and the temporal consistency is actually impressive for short-form ads...", author:"Sarah Chen",  time:"2h ago",  replies:48, flagged:false },
+  { id:2, votes:12,  tag:"REPORTED",   tagCls:"bg-red-500/20 text-red-400",     title:"Spam link detected in prompt sharing",                    excerpt:"Content hidden pending moderator review...",                                                                       author:"User_9921", time:"5h ago",  replies:0,  flagged:true  },
+  { id:3, votes:89,  tag:"FIX MY PROMPT",tagCls:"bg-yellow-500/20 text-yellow-400",title:"Help! My Midjourney hands are still looking like claws",excerpt:"I've tried --v 6 and specific negative prompts but I can't get it right...",                                      author:"David Miller",time:"8h ago", replies:12, flagged:false },
+];
+const MOCK_REPORTS = [
+  { type:"HATE SPEECH", typeCls:"bg-red-500",    content:'Reported on: "Is AI taking over..."', time:"10m ago", actions:["Ban","Dismiss"]   },
+  { type:"SPAM",        typeCls:"bg-orange-500",  content:'Reported on: "Check my new tool..."', time:"45m ago", actions:["Warn","Dismiss"]  },
+];
+
+function CommunityAdmin({ token }) {
+  const [keywords, setKeywords] = useState(["crypto","nft","discount"]);
+  const [newKw, setNewKw]       = useState("");
+
+  return (
+    <div className="flex h-full overflow-hidden">
+      {/* Main panel */}
+      <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h1 className="text-xl font-bold text-white">Forum Management</h1>
+            <p className="text-xs text-gray-400 mt-0.5">Monitor community discussions and moderate content.</p>
+          </div>
+          <button className="bg-[#C7E36B] text-black font-bold text-sm px-4 py-2 rounded-xl hover:opacity-90 flex items-center gap-2">
+            <I name="plus" size={15} /> Create Thread
+          </button>
+        </div>
+
+        {/* Filter bar */}
+        <div className="flex items-center gap-3 mb-5 flex-wrap">
+          {["All Categories","All Flairs","Status: Active"].map(f => (
+            <button key={f} className="text-xs border border-white/15 text-gray-400 px-3 py-1.5 rounded-lg hover:border-white/30 hover:text-white transition-all">
+              {f}
+            </button>
+          ))}
+          <div className="ml-auto text-xs text-gray-500">
+            Sort: <span className="text-white font-semibold">Newest</span>
+          </div>
+        </div>
+
+        {/* Thread list */}
+        <div className="space-y-3">
+          {MOCK_THREADS.map(t => (
+            <div key={t.id} className={`border rounded-xl p-4 transition-all ${t.flagged ? "border-red-500/30 bg-red-500/5" : "border-white/10 bg-white/5 hover:border-white/20"}`}>
+              <div className="flex gap-4">
+                {/* Vote column */}
+                <div className="flex flex-col items-center gap-0.5 shrink-0 w-8 pt-0.5">
+                  <button className="text-gray-600 hover:text-[#C7E36B] text-xs leading-none">▲</button>
+                  <span className="text-xs font-bold text-white">{t.votes}</span>
+                  <button className="text-gray-600 hover:text-red-400 text-xs leading-none">▼</button>
+                </div>
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${t.tagCls}`}>{t.tag}</span>
+                    <h3 className="text-sm font-semibold text-white">{t.title}</h3>
+                  </div>
+                  <p className={`text-xs mb-2 line-clamp-2 ${t.flagged ? "text-gray-500 italic" : "text-gray-400"}`}>{t.excerpt}</p>
+                  <div className="flex items-center gap-3 text-[10px] text-gray-500 flex-wrap">
+                    {t.flagged && <span className="text-red-400 font-semibold">⚠ Flagged by 3 users</span>}
+                    <span className="font-semibold text-gray-400">{t.author}</span>
+                    <span>• {t.time}</span>
+                    {t.replies > 0 && <span>💬 {t.replies} replies</span>}
+                  </div>
+                </div>
+                {/* Actions */}
+                <div className="flex items-center gap-1 shrink-0">
+                  {t.flagged && (
+                    <button className="text-[10px] bg-red-500/20 text-red-400 font-bold px-2 py-1 rounded-lg hover:bg-red-500/30 mr-1">Resolve</button>
+                  )}
+                  <button title="Pin" className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/10 text-gray-500 hover:text-white text-xs transition-all">📌</button>
+                  <button title="Delete" className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-500/10 text-gray-500 hover:text-red-400 transition-all"><I name="trash" size={13} /></button>
+                  <button title="Move" className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/10 text-gray-500 hover:text-white text-xs transition-all">⇅</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Moderation Hub sidebar */}
+      <div className="w-[260px] shrink-0 border-l border-white/5 bg-[#0F1112] overflow-y-auto p-4">
+        <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">🛡 Moderation Hub</h3>
+
+        {/* Active Reports */}
+        <div className="mb-5">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Active Reports</p>
+            <span className="text-[9px] bg-red-500/20 text-red-400 font-bold px-1.5 py-0.5 rounded">12 New</span>
+          </div>
+          <div className="space-y-2">
+            {MOCK_REPORTS.map((r, i) => (
+              <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-3">
+                <div className="flex items-center justify-between mb-1">
+                  <span className={`text-[9px] font-bold text-white px-1.5 py-0.5 rounded ${r.typeCls}`}>{r.type}</span>
+                  <span className="text-[10px] text-gray-500">{r.time}</span>
+                </div>
+                <p className="text-[11px] text-gray-400 mb-2">{r.content}</p>
+                <div className="flex gap-2">
+                  <button className="flex-1 text-[10px] bg-red-500/20 text-red-400 font-bold py-1 rounded-lg hover:bg-red-500/30 transition-all">{r.actions[0]}</button>
+                  <button className="flex-1 text-[10px] bg-white/10 text-gray-400 font-bold py-1 rounded-lg hover:bg-white/20 transition-all">{r.actions[1]}</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Flagged Keywords */}
+        <div className="mb-5">
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Flagged Keywords</p>
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {keywords.map(k => (
+              <span key={k} className="flex items-center gap-1 text-[10px] bg-white/10 text-gray-400 px-2 py-1 rounded-full">
+                {k}
+                <button onClick={() => setKeywords(ks => ks.filter(x => x !== k))} className="text-gray-600 hover:text-red-400 leading-none">×</button>
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-1">
+            <input value={newKw} onChange={e => setNewKw(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter" && newKw.trim()) { setKeywords(ks => [...ks, newKw.trim()]); setNewKw(""); } }}
+              placeholder="Add keyword..." className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[11px] text-white outline-none focus:border-[#C7E36B]/50 min-w-0" />
+            <button onClick={() => { if (newKw.trim()) { setKeywords(ks => [...ks, newKw.trim()]); setNewKw(""); } }}
+              className="text-[10px] border border-dashed border-[#C7E36B]/40 text-[#C7E36B] px-2 py-1 rounded-lg hover:border-[#C7E36B]/80 transition-all">+ Add</button>
+          </div>
+        </div>
+
+        {/* Community Pulse */}
+        <div>
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Community Pulse</p>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-white/5 rounded-xl p-3">
+              <p className="text-[9px] text-gray-500 uppercase tracking-wider mb-1">New Users</p>
+              <p className="text-base font-bold text-[#C7E36B]">+242</p>
+            </div>
+            <div className="bg-white/5 rounded-xl p-3">
+              <p className="text-[9px] text-gray-500 uppercase tracking-wider mb-1">Total Posts</p>
+              <p className="text-base font-bold text-white">1.2k</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

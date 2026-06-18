@@ -40,6 +40,9 @@ const ICONS = {
   star: "M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z",
   chevron: "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z",
   close: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z",
+  copy: "M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z",
+  link: "M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z",
+  trash: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z",
 };
 
 const Ic = ({ name, size = 18, className = "" }) => (
@@ -54,7 +57,7 @@ const NAV = [
   { id: "video-courses",label: "Video Courses",icon: "video"     },
   { id: "certificates", label: "Certificates", icon: "cert"      },
   { id: "jobs",         label: "Jobs",         icon: "jobs"          },
-  { id: "resources",    label: "Resources",    icon: "resources",    soon: true },
+  { id: "resources",    label: "Resources",    icon: "resources" },
   { id: "community",    label: "Community",    icon: "community",    soon: true },
   { id: "hire-talent",  label: "Hire Talent",  icon: "hire",         soon: true },
 ];
@@ -223,7 +226,7 @@ export default function StudentDashboard() {
               {activePage === "video-courses" && <VideoCoursesSection profile={profile} />}
               {activePage === "certificates" && <CertificatesSection token={token} profile={profile} />}
               {activePage === "jobs" && <JobsSection token={token} />}
-              {activePage === "resources" && <PlaceholderSection title="Resources" />}
+              {activePage === "resources" && <ResourcesSection token={token} />}
               {activePage === "community" && <PlaceholderSection title="Community" />}
               {activePage === "hire-talent" && <PlaceholderSection title="Hire Talent" />}
               {activePage === "profile" && <ProfileSection profile={profile} token={token} onUpdated={setProfile} />}
@@ -1585,6 +1588,232 @@ function SettingsSection({ token }) {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════
+   RESOURCES SECTION
+════════════════════════════════════════════ */
+const RES_TABS = [
+  { key: "prompt",   label: "Prompt Library" },
+  { key: "workflow", label: "Workflows"       },
+  { key: "project",  label: "Projects"        },
+  { key: "tip",      label: "Learning Tips"   },
+  { key: "deal",     label: "AI Deals"        },
+];
+
+const PLACEHOLDER_IMGS = [
+  "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80",
+  "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=600&q=80",
+  "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&q=80",
+  "https://images.unsplash.com/photo-1672240651781-3562e88f6c3f?w=600&q=80",
+  "https://images.unsplash.com/photo-1655720828018-edd2daec9349?w=600&q=80",
+  "https://images.unsplash.com/photo-1682685797660-3d847763208e?w=600&q=80",
+];
+
+function ResourcesSection({ token }) {
+  const [tab, setTab]         = useState("prompt");
+  const [resources, setRes]   = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch]   = useState("");
+  const [copied, setCopied]   = useState(null);
+  const [detail, setDetail]   = useState(null);
+
+  useEffect(() => {
+    setLoading(true); setRes([]);
+    fetch(`/api/resources?type=${tab}`)
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d)) setRes(d); })
+      .finally(() => setLoading(false));
+  }, [tab]);
+
+  const filtered = resources.filter(r =>
+    !search || r.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const img = (r, i) => r.logo || PLACEHOLDER_IMGS[i % PLACEHOLDER_IMGS.length];
+
+  const copyText = r => {
+    navigator.clipboard.writeText(r.content || r.description || "").catch(() => {});
+    setCopied(r._id);
+    setTimeout(() => setCopied(null), 2000);
+  };
+
+  return (
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <h1 className="text-xl font-bold text-white">Resources</h1>
+          <p className="text-xs text-gray-400 mt-0.5">Tools, prompts and workflows to supercharge your AI filmmaking</p>
+        </div>
+      </div>
+
+      {/* Tab bar */}
+      <div className="flex gap-1 bg-white/5 rounded-xl p-1 w-fit mb-5 overflow-x-auto">
+        {RES_TABS.map(t => (
+          <button key={t.key} onClick={() => { setTab(t.key); setSearch(""); }}
+            className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${tab === t.key ? "bg-[#7C3AED] text-white" : "text-gray-400 hover:text-white"}`}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Search */}
+      <div className="relative mb-5 w-[280px]">
+        <input value={search} onChange={e => setSearch(e.target.value)}
+          placeholder={`Search ${RES_TABS.find(t => t.key === tab)?.label.toLowerCase()}...`}
+          className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#7C3AED]/50" />
+        <Ic name="search" size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center h-48">
+          <div className="w-6 h-6 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-16 text-gray-500">
+          <p className="text-4xl mb-3">📦</p>
+          <p className="font-semibold text-white">No {RES_TABS.find(t => t.key === tab)?.label} yet</p>
+          <p className="text-sm mt-1">Check back soon — the team is adding content</p>
+        </div>
+      ) : tab === "prompt" ? (
+        /* ── PROMPT LIBRARY ── */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((r, i) => (
+            <div key={r._id} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-[#7C3AED]/40 transition-all">
+              <div className="h-[140px] overflow-hidden">
+                <img src={img(r, i)} alt={r.title} className="w-full h-full object-cover" />
+              </div>
+              <div className="p-3">
+                <h3 className="text-sm font-semibold text-white mb-2 line-clamp-1">{r.title}</h3>
+                <div className="bg-white/5 rounded-lg p-2 mb-2 relative group">
+                  <span className="text-[9px] font-bold text-[#7C3AED] tracking-widest uppercase block mb-1">PROMPT</span>
+                  <p className="text-[11px] text-gray-400 line-clamp-3 pr-5">{r.content || r.description}</p>
+                  <button onClick={() => copyText(r)} title="Copy prompt"
+                    className="absolute top-2 right-2 p-1 rounded hover:bg-white/10 transition-all">
+                    <Ic name={copied === r._id ? "check" : "copy"} size={13}
+                      className={copied === r._id ? "text-green-400" : "text-gray-500"} />
+                  </button>
+                </div>
+                {r.tags?.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {r.tags.slice(0, 3).map(t => (
+                      <span key={t} className="text-[9px] bg-white/10 text-gray-400 px-1.5 py-0.5 rounded">{t}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : tab === "workflow" || tab === "project" ? (
+        /* ── WORKFLOWS / PROJECTS ── */
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filtered.map((r, i) => (
+              <div key={r._id} onClick={() => setDetail(r)}
+                className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-[#7C3AED]/40 transition-all cursor-pointer group">
+                <div className="h-[160px] overflow-hidden relative">
+                  <img src={img(r, i)} alt={r.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  {r.category && (
+                    <span className="absolute top-2 left-2 text-[9px] font-bold bg-black/70 text-[#C7E36B] px-2 py-0.5 rounded uppercase tracking-wider">{r.category}</span>
+                  )}
+                </div>
+                <div className="p-3">
+                  <h3 className="text-sm font-semibold text-white mb-1">{r.title}</h3>
+                  <p className="text-[11px] text-gray-400 line-clamp-2 mb-2">{r.description}</p>
+                  <span className="flex items-center gap-1 text-xs text-[#C7E36B] font-semibold">
+                    View Details <Ic name="chevron" size={12} />
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Detail Modal */}
+          {detail && (
+            <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setDetail(null)}>
+              <div className="bg-[#0F1112] border border-white/10 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                <div className="h-[200px] overflow-hidden rounded-t-2xl relative">
+                  <img src={img(detail, 0)} alt={detail.title} className="w-full h-full object-cover" />
+                  <button onClick={() => setDetail(null)}
+                    className="absolute top-3 right-3 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center hover:bg-black/80 transition-all">
+                    <Ic name="close" size={14} className="text-white" />
+                  </button>
+                </div>
+                <div className="p-6">
+                  {detail.category && <span className="text-[10px] font-bold text-[#C7E36B] tracking-wider uppercase">{detail.category}</span>}
+                  <h2 className="text-xl font-bold text-white mt-1 mb-2">{detail.title}</h2>
+                  <p className="text-sm text-gray-400 mb-4">{detail.description}</p>
+                  {detail.content && (
+                    <div className="bg-white/5 rounded-xl p-4 mb-4">
+                      <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">
+                        {tab === "workflow" ? "Steps / Process" : "Content"}
+                      </h4>
+                      <p className="text-sm text-gray-300 whitespace-pre-wrap">{detail.content}</p>
+                    </div>
+                  )}
+                  {detail.tags?.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {detail.tags.map(t => (
+                        <span key={t} className="text-xs bg-[#7C3AED]/20 text-[#7C3AED] px-2 py-1 rounded-lg">{t}</span>
+                      ))}
+                    </div>
+                  )}
+                  {detail.link && (
+                    <a href={detail.link} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-xl text-sm hover:opacity-90 transition-all">
+                      Open Resource <Ic name="link" size={14} />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      ) : tab === "tip" ? (
+        /* ── LEARNING TIPS ── */
+        <div className="space-y-3 max-w-2xl">
+          {filtered.map((r, i) => (
+            <div key={r._id} className="bg-white/5 border border-white/10 rounded-xl p-4 flex gap-4 hover:border-[#7C3AED]/40 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-[#7C3AED]/20 flex items-center justify-center shrink-0 text-lg">💡</div>
+              <div>
+                <h3 className="text-sm font-semibold text-white mb-1">{r.title}</h3>
+                <p className="text-xs text-gray-400">{r.description}</p>
+                {r.content && <p className="text-xs text-gray-500 mt-2 italic border-l-2 border-[#7C3AED]/40 pl-2">"{r.content}"</p>}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : tab === "deal" ? (
+        /* ── AI DEALS ── */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((r, i) => (
+            <div key={r._id} className="bg-white rounded-xl p-4 flex flex-col gap-2 shadow-sm">
+              {r.logo
+                ? <img src={r.logo} alt={r.title} className="h-8 object-contain" />
+                : <div className="h-8 flex items-center"><span className="text-xs font-bold text-gray-800">{r.title}</span></div>
+              }
+              <h3 className="text-sm font-bold text-black">{r.title}</h3>
+              <p className="text-xs text-gray-600 flex-1">{r.description}</p>
+              {r.discount && (
+                <span className="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full w-fit">{r.discount} OFF</span>
+              )}
+              {r.link ? (
+                <a href={r.link} target="_blank" rel="noopener noreferrer"
+                  className="text-xs bg-black text-white font-bold py-2 px-3 rounded-lg text-center hover:opacity-80 transition-all">
+                  Get Deal →
+                </a>
+              ) : (
+                <button className="text-xs bg-black text-white font-bold py-2 px-3 rounded-lg hover:opacity-80 transition-all">
+                  Get Deal →
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
