@@ -38,6 +38,7 @@ const ICONS = {
   back: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z",
   copy: "M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z",
   link: "M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z",
+  settings: "M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.92c.04-.34.07-.68.07-1.08s-.03-.74-.07-1.08l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.34-.07.69-.07 1.08s.03.74.07 1.08l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.58 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65z",
 };
 const I = ({ name, size = 16, className = "" }) => <Ic d={ICONS[name] || ICONS.dashboard} size={size} className={className} />;
 
@@ -53,6 +54,7 @@ const NAV_ITEMS = [
   { id: "service-request",    label: "Service Request",icon: "service"   },
   { id: "sales-consultation", label: "Sales Consult.", icon: "sales"     },
   { id: "hire-talent",        label: "Hire Talent",    icon: "hire"      },
+  { id: "platform-settings", label: "Settings",       icon: "settings"  },
 ];
 const MGMT_ITEMS = [
   { id: "users",      label: "Users",      icon: "users"      },
@@ -163,6 +165,7 @@ export default function AdminDashboard() {
           {activePage === "sales-consultation" && <SalesConsultAdmin token={token} />}
           {activePage === "hire-talent"        && <HireTalentAdmin token={token} />}
           {activePage === "membership"         && <MembershipAdmin token={token} />}
+          {activePage === "platform-settings"  && <PlatformSettings token={token} />}
         </main>
       </div>
     </div>
@@ -683,7 +686,11 @@ function VideoCoursesAdmin({ token }) {
   const [f, setF] = useState({ title:"", shortDesc:"", fullDesc:"", category:"AI & Machine Learning", level:"Beginner", language:"English", instructor:"", price:"", discPrice:"", accessType:"Lifetime", genCert:true });
   const [sections, setSections] = useState([{ title:"Section 1: AI Fundamentals", lessons:[{ title:"Introduction to AI Cinema", duration:"09:45", type:"Video", desc:"", isFree:true }] }]);
   const [activeL, setActiveL] = useState({ s:0, l:0 });
-  const [saving, setSaving] = useState(false);
+  const [saving, setSaving]       = useState(false);
+  const [editCourse, setEditCourse] = useState(null);
+  const [editLessons, setEditLessons] = useState([]);
+  const [editSaving, setEditSaving] = useState(false);
+  const [editMsg, setEditMsg]     = useState("");
   const STEPS = ["Basic Info","Curriculum","Pricing","Publish"];
 
   const publish = async () => {
@@ -703,6 +710,101 @@ function VideoCoursesAdmin({ token }) {
 
   const addLesson = si => { const u=[...sections]; u[si].lessons.push({title:"New Lesson",duration:"",type:"Video",desc:"",isFree:false}); setSections(u); setActiveL({s:si,l:u[si].lessons.length-1}); };
   const updLesson = (key,val) => setSections(sections.map((s,si)=>si===activeL.s?{...s,lessons:s.lessons.map((l,li)=>li===activeL.l?{...l,[key]:val}:l)}:s));
+
+  if (view === "edit" && editCourse) return (
+    <div className="flex flex-col h-full">
+      <div className="px-6 pt-5 pb-3 border-b border-white/5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button onClick={() => { setView("list"); setEditCourse(null); }} className="text-gray-400 hover:text-white text-xs flex items-center gap-1"><I name="back" size={14}/> Back</button>
+          <div>
+            <h1 className="text-lg font-bold text-white">{editCourse.title}</h1>
+            <p className="text-xs text-gray-400">Edit course details and manage lesson videos</p>
+          </div>
+        </div>
+        <div className="flex gap-2 items-center">
+          {editMsg && <p className={`text-xs ${editMsg === "Saved!" ? "text-green-400" : "text-red-400"}`}>{editMsg}</p>}
+          <button onClick={async () => {
+            setEditSaving(true); setEditMsg("");
+            const res = await fetch(`/api/courses/${editCourse._id}/lessons`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ lessons: editLessons.map((l, i) => ({ ...l, order: i })) }),
+            });
+            if (res.ok) { setEditMsg("Saved!"); loadCourses(); }
+            else setEditMsg("Save failed.");
+            setEditSaving(false);
+            setTimeout(() => setEditMsg(""), 3000);
+          }} disabled={editSaving} className="text-xs bg-[#C7E36B] text-black font-bold px-5 py-2 rounded-lg disabled:opacity-60">
+            {editSaving ? "Saving…" : "Save Changes"}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex gap-4">
+          {editCourse.thumbnail && <img src={editCourse.thumbnail} alt="" className="w-24 h-16 rounded-lg object-cover shrink-0"/>}
+          <div>
+            <p className="text-xs text-gray-400 mb-1">{editCourse.level} · {editCourse.category} · {editCourse.language}</p>
+            <p className="text-sm text-gray-300 line-clamp-2">{editCourse.description}</p>
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-sm font-bold text-white">Lesson Videos</h2>
+              <p className="text-xs text-gray-400">{editLessons.length} lessons · Add YouTube or Vimeo embed URLs</p>
+            </div>
+            <button onClick={() => setEditLessons([...editLessons, { title: "", videoUrl: "", duration: "", isFree: false }])} className="text-xs bg-[#C7E36B] text-black font-bold px-3 py-1.5 rounded-lg flex items-center gap-1"><I name="plus" size={12}/> Add Lesson</button>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-xl p-3 mb-4 text-xs text-gray-400">
+            <p className="font-semibold text-gray-300 mb-1">Supported video URL formats:</p>
+            <div className="grid grid-cols-2 gap-2">
+              <div><p className="text-[#C7E36B] font-semibold">YouTube Embed:</p><code className="text-[10px]">https://www.youtube.com/embed/VIDEO_ID</code></div>
+              <div><p className="text-[#C7E36B] font-semibold">Vimeo Embed:</p><code className="text-[10px]">https://player.vimeo.com/video/VIDEO_ID</code></div>
+            </div>
+            <p className="mt-2 text-[10px] text-gray-500">To get YouTube embed URL: Open video → Share → Embed → copy the src URL (starts with https://www.youtube.com/embed/)</p>
+          </div>
+
+          <div className="space-y-3">
+            {editLessons.map((lesson, idx) => (
+              <div key={idx} className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  <span className="w-6 h-6 rounded-full bg-[#C7E36B]/20 text-[#C7E36B] text-xs font-bold flex items-center justify-center shrink-0">{idx + 1}</span>
+                  <input value={lesson.title} onChange={e => setEditLessons(ls => ls.map((l, i) => i === idx ? { ...l, title: e.target.value } : l))} placeholder="Lesson title e.g. Introduction to AI Cinematography" className="flex-1 bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 outline-none focus:border-[#C7E36B]/50"/>
+                  <button onClick={() => setEditLessons(ls => ls.filter((_, i) => i !== idx))} className="text-gray-600 hover:text-red-400 shrink-0 transition-colors" title="Remove lesson"><I name="trash" size={14}/></button>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="col-span-2">
+                    <p className="text-[10px] text-gray-500 font-semibold mb-1">VIDEO URL</p>
+                    <input value={lesson.videoUrl || ""} onChange={e => setEditLessons(ls => ls.map((l, i) => i === idx ? { ...l, videoUrl: e.target.value } : l))} placeholder="https://www.youtube.com/embed/..." className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 outline-none focus:border-[#C7E36B]/50 font-mono"/>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-gray-500 font-semibold mb-1">DURATION</p>
+                    <input value={lesson.duration || ""} onChange={e => setEditLessons(ls => ls.map((l, i) => i === idx ? { ...l, duration: e.target.value } : l))} placeholder="e.g. 12:30" className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 outline-none focus:border-[#C7E36B]/50"/>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  {lesson.videoUrl && <a href={lesson.videoUrl} target="_blank" rel="noreferrer" className="text-[10px] text-[#C7E36B] hover:underline flex items-center gap-1"><I name="video" size={11}/> Preview URL</a>}
+                  <div className="flex items-center gap-2 ml-auto">
+                    <span className="text-xs text-gray-400">Free Preview</span>
+                    <Tog value={lesson.isFree || false} onChange={v => setEditLessons(ls => ls.map((l, i) => i === idx ? { ...l, isFree: v } : l))}/>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {editLessons.length > 0 && (
+            <button onClick={() => setEditLessons([...editLessons, { title: "", videoUrl: "", duration: "", isFree: false }])} className="w-full mt-3 border-2 border-dashed border-white/10 text-gray-500 hover:border-[#C7E36B]/30 hover:text-[#C7E36B] text-xs py-3 rounded-xl transition-all flex items-center justify-center gap-1">
+              <I name="plus" size={12}/> Add Another Lesson
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
   if(view==="create") return (
     <div className="flex flex-col h-full">
@@ -902,6 +1004,7 @@ function VideoCoursesAdmin({ token }) {
                 </div>
                 <div className="flex gap-2">
                   <button onClick={()=>window.open(`/courses/${c._id}/watch`,"_blank")} className="flex-1 text-xs border border-white/20 text-gray-300 py-1.5 rounded-lg hover:bg-white/5 flex items-center justify-center gap-1"><I name="eye" size={11}/>View</button>
+                  <button onClick={()=>{ setEditCourse(c); setEditLessons(c.lessons&&c.lessons.length>0?c.lessons.map(l=>({...l})):[{title:"",videoUrl:"",duration:"",isFree:false}]); setView("edit"); }} className="text-xs border border-white/20 text-gray-300 px-2 py-1.5 rounded-lg hover:bg-white/5 flex items-center gap-1"><I name="edit" size={11}/>Edit</button>
                   <button onClick={()=>deleteCourse(c._id)} className="text-xs border border-red-500/30 text-red-400 px-2 py-1.5 rounded-lg hover:bg-red-500/10"><I name="trash" size={11}/></button>
                 </div>
               </div>
@@ -2382,6 +2485,211 @@ function MembershipAdmin({ token }) {
               </table>
             </div>
           )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── PLATFORM SETTINGS ── */
+function PlatformSettings({ token }) {
+  const [configs, setConfigs] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving]   = useState(false);
+  const [saved, setSaved]     = useState("");
+  const [tab, setTab]         = useState("email");
+  const [reveal, setReveal]   = useState({});
+
+  useEffect(() => {
+    const h = { Authorization: `Bearer ${token}` };
+    fetch("/api/admin/config/seed", { method: "POST", headers: h })
+      .then(() => fetch("/api/admin/config", { headers: h }))
+      .then(r => r.json())
+      .then(data => {
+        const map = {};
+        data.forEach(c => { map[c.key] = { ...c, editing: "" }; });
+        setConfigs(map);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [token]);
+
+  const handleChange = (key, val) => setConfigs(prev => ({ ...prev, [key]: { ...prev[key], editing: val } }));
+
+  const saveGroup = async (group) => {
+    setSaving(true); setSaved("");
+    const groupKeys = Object.values(configs).filter(c => c.group === group);
+    const updates = {};
+    groupKeys.forEach(c => { if (c.editing !== undefined && c.editing !== "") updates[c.key] = c.editing; });
+    if (Object.keys(updates).length === 0) { setSaving(false); setSaved("No changes to save."); setTimeout(() => setSaved(""), 3000); return; }
+    const res = await fetch("/api/admin/config", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(updates),
+    });
+    if (res.ok) {
+      setSaved("Saved successfully!");
+      setConfigs(prev => {
+        const next = { ...prev };
+        Object.keys(updates).forEach(k => { next[k] = { ...next[k], editing: "", hasValue: true }; });
+        return next;
+      });
+    } else setSaved("Save failed.");
+    setSaving(false);
+    setTimeout(() => setSaved(""), 3000);
+  };
+
+  const revealSecret = async (key) => {
+    if (reveal[key]) { setReveal(r => ({ ...r, [key]: false })); return; }
+    const res = await fetch(`/api/admin/config/${key}`, { headers: { Authorization: `Bearer ${token}` } });
+    const data = await res.json();
+    setReveal(r => ({ ...r, [key]: data.value || "" }));
+  };
+
+  const TABS = [
+    { id: "email",   label: "📧 Email / SMTP"    },
+    { id: "payment", label: "💳 Payment Gateway" },
+    { id: "auth",    label: "🔐 Social Auth"     },
+    { id: "site",    label: "🌐 Site Config"     },
+  ];
+
+  const ConfigField = ({ configKey }) => {
+    const c = configs[configKey];
+    if (!c) return null;
+    const currentVal = c.editing !== "" ? c.editing : "";
+    const displayPlaceholder = c.hasValue
+      ? (c.isSecret ? "••••••••  (set — type to change)" : "(already set — type to change)")
+      : "Not set";
+    return (
+      <div className="space-y-1">
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{c.label || configKey}</p>
+          {c.hasValue && <span className="text-[9px] bg-green-500/20 text-green-400 font-bold px-2 py-0.5 rounded-full">✓ SET</span>}
+        </div>
+        <div className="flex gap-2">
+          <input
+            type={c.isSecret && !reveal[configKey] ? "password" : "text"}
+            value={reveal[configKey] && typeof reveal[configKey] === "string" ? reveal[configKey] : currentVal}
+            onChange={e => handleChange(configKey, e.target.value)}
+            placeholder={displayPlaceholder}
+            className="flex-1 bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 outline-none focus:border-[#C7E36B]/50"
+          />
+          {c.isSecret && (
+            <button onClick={() => revealSecret(configKey)} className="text-xs border border-white/20 text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:border-white/40 shrink-0">
+              {reveal[configKey] ? "🙈 Hide" : "👁 Show"}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  if (loading) return <div className="p-6 text-gray-500 text-sm animate-pulse">Loading settings...</div>;
+
+  return (
+    <div className="p-6 max-w-3xl">
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-white">Platform Settings</h1>
+        <p className="text-xs text-gray-400 mt-1">Configure credentials, keys, and site information. Changes take effect immediately.</p>
+      </div>
+
+      <div className="flex gap-1 mb-6 border-b border-white/10">
+        {TABS.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)} className={`px-4 py-2 text-sm font-medium border-b-2 transition-all -mb-px ${tab === t.id ? "border-[#C7E36B] text-[#C7E36B]" : "border-transparent text-gray-400 hover:text-white"}`}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "email" && (
+        <div className="space-y-5">
+          <div className="bg-[#C7E36B]/5 border border-[#C7E36B]/20 rounded-xl p-4 text-xs text-[#C7E36B]">
+            <p className="font-bold mb-1">How to get a Gmail App Password:</p>
+            <ol className="list-decimal list-inside space-y-0.5 text-[#C7E36B]/80">
+              <li>Go to <strong>Google Account → Security → 2-Step Verification</strong></li>
+              <li>Scroll to <strong>App Passwords</strong></li>
+              <li>Select app: <strong>Mail</strong>, device: <strong>Other</strong>, name: <strong>AIFA</strong></li>
+              <li>Copy the 16-character password and paste below</li>
+            </ol>
+          </div>
+          <ConfigField configKey="EMAIL_USER"/>
+          <ConfigField configKey="EMAIL_PASS"/>
+          <ConfigField configKey="EMAIL_FROM_NAME"/>
+          <div className="pt-2 flex items-center justify-between">
+            {saved && <p className={`text-xs ${saved.includes("fail") ? "text-red-400" : "text-green-400"}`}>{saved}</p>}
+            <div className="ml-auto flex gap-2">
+              <button onClick={async () => {
+                const res = await fetch("/api/auth/forgot-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: "test@aifa.co.in" }) });
+                alert(res.ok ? "Test email triggered! Check inbox." : "Email test failed — check credentials.");
+              }} className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg hover:bg-white/5">Send Test Email</button>
+              <button onClick={() => saveGroup("email")} disabled={saving} className="text-xs bg-[#C7E36B] text-black font-bold px-5 py-2 rounded-lg disabled:opacity-60">{saving ? "Saving…" : "Save Email Settings"}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab === "payment" && (
+        <div className="space-y-5">
+          <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 text-xs text-blue-300">
+            <p className="font-bold mb-1">Where to find your Razorpay keys:</p>
+            <ol className="list-decimal list-inside space-y-0.5 text-blue-300/80">
+              <li>Login to <strong>dashboard.razorpay.com</strong></li>
+              <li>Go to <strong>Settings → API Keys</strong></li>
+              <li>Click <strong>Generate Test Key</strong> or <strong>Generate Live Key</strong></li>
+              <li>Copy the Key ID and Key Secret below</li>
+            </ol>
+          </div>
+          <ConfigField configKey="RAZORPAY_KEY_ID"/>
+          <ConfigField configKey="RAZORPAY_KEY_SECRET"/>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-white">Test Mode</p>
+              <p className="text-xs text-gray-400">Use test keys — no real money charged</p>
+            </div>
+            <Tog value={configs["RAZORPAY_TEST_MODE"]?.value === "true"} onChange={v => handleChange("RAZORPAY_TEST_MODE", v ? "true" : "false")}/>
+          </div>
+          <div className="pt-2 flex items-center justify-between">
+            {saved && <p className={`text-xs ${saved.includes("fail") ? "text-red-400" : "text-green-400"}`}>{saved}</p>}
+            <button onClick={() => saveGroup("payment")} disabled={saving} className="ml-auto text-xs bg-[#C7E36B] text-black font-bold px-5 py-2 rounded-lg disabled:opacity-60">{saving ? "Saving…" : "Save Payment Settings"}</button>
+          </div>
+        </div>
+      )}
+
+      {tab === "auth" && (
+        <div className="space-y-5">
+          <div className="bg-orange-500/5 border border-orange-500/20 rounded-xl p-4 text-xs text-orange-300">
+            <p className="font-bold mb-1">How to get a Google Client ID:</p>
+            <ol className="list-decimal list-inside space-y-0.5 text-orange-300/80">
+              <li>Go to <strong>console.cloud.google.com</strong></li>
+              <li>Create a project → <strong>APIs & Services → Credentials</strong></li>
+              <li>Click <strong>Create Credentials → OAuth 2.0 Client ID</strong></li>
+              <li>Application type: <strong>Web application</strong></li>
+              <li>Add your Vercel URL to <strong>Authorized JavaScript origins</strong></li>
+              <li>Copy the Client ID below</li>
+            </ol>
+          </div>
+          <ConfigField configKey="GOOGLE_CLIENT_ID"/>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+            <p className="text-xs text-gray-400">
+              <strong className="text-white">Note:</strong> After saving, also add <code className="text-[#C7E36B]">VITE_GOOGLE_CLIENT_ID</code> to your <strong>Vercel environment variables</strong> and redeploy the frontend for the Google login button to activate.
+            </p>
+          </div>
+          <div className="pt-2 flex items-center justify-between">
+            {saved && <p className={`text-xs ${saved.includes("fail") ? "text-red-400" : "text-green-400"}`}>{saved}</p>}
+            <button onClick={() => saveGroup("auth")} disabled={saving} className="ml-auto text-xs bg-[#C7E36B] text-black font-bold px-5 py-2 rounded-lg disabled:opacity-60">{saving ? "Saving…" : "Save Auth Settings"}</button>
+          </div>
+        </div>
+      )}
+
+      {tab === "site" && (
+        <div className="space-y-5">
+          <ConfigField configKey="SITE_NAME"/>
+          <ConfigField configKey="SITE_URL"/>
+          <ConfigField configKey="SUPPORT_EMAIL"/>
+          <div className="pt-2 flex items-center justify-between">
+            {saved && <p className={`text-xs ${saved.includes("fail") ? "text-red-400" : "text-green-400"}`}>{saved}</p>}
+            <button onClick={() => saveGroup("site")} disabled={saving} className="ml-auto text-xs bg-[#C7E36B] text-black font-bold px-5 py-2 rounded-lg disabled:opacity-60">{saving ? "Saving…" : "Save Site Settings"}</button>
+          </div>
         </div>
       )}
     </div>
