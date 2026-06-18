@@ -130,7 +130,9 @@ import HireTalent from "./pages/HireTalent";
 import JobsSection from "./pages/JobsSection";
 import PromptLibrary from "./pages/PromptLibrary";
 import Workflow from "./pages/workflow";
+import WorkflowDetail from "./pages/WorkflowDetail";
 import Projects from "./pages/Projects";
+import ProjectDetail from "./pages/ProjectDetail";
 import LearningTips from "./pages/LearningTips";
 import AiDeals from "./pages/AiDeals";
 import ServicesPage from "./pages/ServicesPage";
@@ -177,7 +179,9 @@ function AppShell() {
           <Route path="/jobs" element={<JobsSection />} />
           <Route path="/prompt-library" element={<PromptLibrary />} />
           <Route path="/workflow" element={<Workflow />} />
+          <Route path="/workflow/:id" element={<WorkflowDetail />} />
           <Route path="/projects" element={<Projects />} />
+          <Route path="/projects/:id" element={<ProjectDetail />} />
           <Route path="/learning" element={<LearningTips />} />
           <Route path="/deals" element={<AiDeals />} />
           <Route path="/services" element={<ServicesPage />} />

@@ -500,7 +500,7 @@ function BootcampSection({ token }) {
 
       {/* Tabs */}
       <div className="flex border-b border-white/10 bg-[#0F1112] px-6 shrink-0">
-        {["overview", "curriculum", "projects"].map(t => (
+        {["overview", "curriculum", "projects", "bootcamp"].map(t => (
           <button key={t} onClick={() => setTab(t)}
             className={`capitalize text-sm font-medium px-4 py-3 border-b-2 transition-all ${tab === t ? "border-[#C7E36B] text-[#C7E36B]" : "border-transparent text-gray-400 hover:text-white"}`}>
             {t}
@@ -512,6 +512,54 @@ function BootcampSection({ token }) {
         {tab === "overview" && <BootcampOverview />}
         {tab === "curriculum" && <BootcampCurriculum modules={MODULES} activeLesson={activeLesson} setActiveLesson={setActiveLesson} openModule={openModule} setOpenModule={setOpenModule} />}
         {tab === "projects" && <BootcampProjects projects={PROJECTS} activeProject={activeProject} setActiveProject={setActiveProject} />}
+        {tab === "bootcamp" && <BootcampEnrollTab />}
+      </div>
+    </div>
+  );
+}
+
+function BootcampEnrollTab() {
+  const [enrolled, setEnrolled] = useState(false);
+  const highlights = [
+    { icon:"🎬", label:"12 Weeks", desc:"Structured learning path" },
+    { icon:"🤖", label:"15+ AI Tools", desc:"Hands-on with cutting-edge tools" },
+    { icon:"🎓", label:"Certificate", desc:"Industry-recognised credential" },
+    { icon:"👨‍🏫", label:"Live Mentoring", desc:"Weekly 1-on-1 sessions" },
+    { icon:"📁", label:"Real Projects", desc:"Build a professional portfolio" },
+    { icon:"💼", label:"Job Support", desc:"Career placement assistance" },
+  ];
+  return (
+    <div className="max-w-2xl space-y-6">
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h2 className="text-lg font-bold text-white">AI Filmmaking Bootcamp</h2>
+            <p className="text-sm text-gray-400 mt-1">Batch 3 · 2024 · 24 students enrolled</p>
+          </div>
+          <span className="text-[10px] bg-[#C7E36B]/20 text-[#C7E36B] font-bold px-2 py-1 rounded-full">ENROLLING NOW</span>
+        </div>
+        <p className="text-sm text-gray-400 leading-relaxed mb-6">
+          The most comprehensive AI filmmaking program available. Master every aspect of AI-powered film production, from concept to final cut, with live mentoring and real project work.
+        </p>
+        <button onClick={() => setEnrolled(!enrolled)}
+          className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${enrolled ? "bg-[#C7E36B]/20 border border-[#C7E36B] text-[#C7E36B]" : "bg-[#C7E36B] text-black hover:bg-lime-300"}`}>
+          {enrolled ? "✓ Already Enrolled — You're In!" : "Enrol Now →"}
+        </button>
+        {enrolled && <p className="text-xs text-gray-500 text-center mt-2">Check your email for onboarding details.</p>}
+      </div>
+      <div>
+        <h3 className="text-sm font-bold text-white mb-3">What's Included</h3>
+        <div className="grid grid-cols-2 gap-3">
+          {highlights.map((h, i) => (
+            <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-start gap-3">
+              <span className="text-xl shrink-0">{h.icon}</span>
+              <div>
+                <p className="text-sm font-semibold text-white">{h.label}</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">{h.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -966,8 +1014,11 @@ function VideoCoursesSection({ profile }) {
    CERTIFICATES SECTION
 ════════════════════════════════════════════ */
 function CertificatesSection({ token, profile }) {
-  const [certs, setCerts]   = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [certs, setCerts]       = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [sortOrder, setSortOrder]   = useState("Latest");
+  const [sortOpen, setSortOpen]     = useState(false);
 
   useEffect(() => {
     fetch("/api/certificates/me", { headers:{ Authorization:`Bearer ${token}` } })
@@ -975,33 +1026,68 @@ function CertificatesSection({ token, profile }) {
   }, [token]);
 
   const typeBadge = t => t==="bootcamp"?"bg-blue-500/20 text-blue-400":t==="workshop"?"bg-purple-500/20 text-purple-400":"bg-green-500/20 text-green-400";
+  const typeGrad  = t => t==="bootcamp"?"from-blue-900/60 to-blue-950":t==="workshop"?"from-purple-900/60 to-purple-950":"from-[#1a1a2e] to-[#16213e]";
+
+  const filtered = certs
+    .filter(c => typeFilter==="all" || c.itemType===typeFilter)
+    .sort((a, b) => sortOrder==="Latest" ? new Date(b.issuedAt)-new Date(a.issuedAt) : new Date(a.issuedAt)-new Date(b.issuedAt));
+
+  const STATS = [
+    { icon:"🏆", label:"Total Earned",       value: certs.length },
+    { icon:"🎬", label:"Courses Completed",  value: certs.filter(c=>c.itemType==="course").length },
+    { icon:"⏳", label:"Ongoing Courses",    value: 2 },
+  ];
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-2">
         <div>
           <h1 className="text-xl font-bold text-white">My Certificates</h1>
-          <p className="text-gray-400 text-sm">Certificates earned from your courses and programs</p>
+          <p className="text-gray-400 text-xs mt-0.5">Certificates earned from your courses and programs</p>
+        </div>
+        <div className="flex items-center gap-3">
+          {/* Filter */}
+          <select value={typeFilter} onChange={e=>setTypeFilter(e.target.value)}
+            className="bg-white/5 border border-white/10 text-sm text-white px-3 py-1.5 rounded-lg outline-none">
+            <option value="all">Filter by Type</option>
+            <option value="course">Course</option>
+            <option value="bootcamp">Bootcamp</option>
+            <option value="workshop">Workshop</option>
+          </select>
+          {/* Sort */}
+          <div className="relative">
+            <button onClick={()=>setSortOpen(!sortOpen)} className="flex items-center gap-1.5 bg-white/5 border border-white/10 text-sm text-white px-3 py-1.5 rounded-lg hover:bg-white/10">
+              Sort: {sortOrder} <Ic name="chevron" size={12} className={sortOpen?"rotate-90":""}/>
+            </button>
+            {sortOpen && (
+              <div className="absolute right-0 top-full mt-1 bg-[#1A1D1E] border border-white/10 rounded-xl overflow-hidden z-10 w-[140px]">
+                {["Latest","Oldest"].map(o=>(
+                  <button key={o} onClick={()=>{setSortOrder(o);setSortOpen(false);}}
+                    className={`w-full text-left px-4 py-2.5 text-sm ${sortOrder===o?"text-[#C7E36B] bg-white/5":"text-gray-300 hover:bg-white/5"}`}>{o}</button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        {[
-          { label: "Certificates Earned", value: certs.length },
-          { label: "Course Certificates",   value: certs.filter(c=>c.itemType==="course").length },
-          { label: "Bootcamp Certificates", value: certs.filter(c=>c.itemType==="bootcamp").length },
-        ].map(s => (
-          <div key={s.label} className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-            <p className="text-2xl font-bold text-white">{loading ? "—" : s.value}</p>
-            <p className="text-xs text-gray-400 mt-1">{s.label}</p>
+      <div className="grid grid-cols-3 gap-4 my-5">
+        {STATS.map(s => (
+          <div key={s.label} className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center gap-3">
+            <span className="text-2xl">{s.icon}</span>
+            <div>
+              <p className="text-xl font-bold text-white">{loading ? "—" : s.value}</p>
+              <p className="text-[10px] text-gray-400">{s.label}</p>
+            </div>
           </div>
         ))}
       </div>
 
       {loading ? (
         <p className="text-gray-500 text-sm animate-pulse text-center py-8">Loading certificates...</p>
-      ) : certs.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <div className="text-center py-16">
           <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Ic name="cert" size={28} className="text-gray-600" />
@@ -1011,29 +1097,33 @@ function CertificatesSection({ token, profile }) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {certs.map((c) => (
-            <div key={c._id} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all">
-              <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] p-6 flex items-center justify-center h-[140px]">
+          {filtered.map((c) => (
+            <div key={c._id} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all flex flex-col">
+              {/* Certificate thumbnail */}
+              <div className={`bg-gradient-to-br ${typeGrad(c.itemType)} p-6 flex items-center justify-center h-[140px] relative`}>
                 <div className="text-center">
                   <div className="w-10 h-10 bg-[#C7E36B] rounded-lg flex items-center justify-center mx-auto mb-2">
                     <span className="text-black font-black text-sm">A</span>
                   </div>
-                  <p className="text-[10px] text-gray-400 uppercase font-semibold">{c.title}</p>
+                  <p className="text-[9px] text-gray-400 uppercase font-semibold tracking-wider">{c.title}</p>
                   <p className="text-[11px] text-white font-semibold mt-1">{profile?.name || "Student"}</p>
                 </div>
+                <span className={`absolute top-3 right-3 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase ${typeBadge(c.itemType)}`}>{c.itemType}</span>
               </div>
-              <div className="p-4">
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${typeBadge(c.itemType)}`}>{c.itemType}</span>
-                <p className="text-[10px] text-gray-500 mt-1">Earned on {new Date(c.issuedAt).toLocaleDateString()}</p>
-                <h3 className="text-sm font-semibold text-white mt-2 mb-1">{c.courseTitle}</h3>
-                <p className="text-[10px] text-gray-500 mb-3 font-mono">CERT ID: {c.certificateId}</p>
-                <div className="flex gap-2">
+              {/* Card body */}
+              <div className="p-4 flex flex-col flex-1">
+                <h3 className="text-sm font-bold text-white mb-1">{c.courseTitle}</h3>
+                <p className="text-[10px] text-gray-500 line-clamp-1 mb-3">Awarded on {new Date(c.issuedAt).toLocaleDateString("en",{day:"numeric",month:"short",year:"numeric"})}</p>
+                <div className="border-t border-white/8 pt-3 mb-3">
+                  <p className="text-[10px] text-gray-600 font-mono">CERT ID: {c.certificateId}</p>
+                </div>
+                <div className="flex gap-2 mt-auto">
                   <button onClick={() => { navigator.share ? navigator.share({ title: c.courseTitle, text: `I earned a certificate from AIFA: ${c.courseTitle}` }) : navigator.clipboard.writeText(c.certificateId); }}
-                    className="flex-1 flex items-center justify-center gap-1 text-xs border border-white/20 text-gray-400 py-1.5 rounded-lg hover:bg-white/5 transition-all">
-                    <Ic name="share" size={12} />Share
+                    className="flex items-center justify-center gap-1 text-xs border border-white/20 text-gray-400 py-1.5 px-3 rounded-lg hover:bg-white/5 transition-all">
+                    <Ic name="share" size={12}/>Share
                   </button>
-                  <button className="flex-1 flex items-center justify-center gap-1 text-xs bg-[#C7E36B] text-black font-semibold py-1.5 rounded-lg hover:bg-lime-300 transition-all">
-                    <Ic name="download" size={12} />Download
+                  <button className="flex-1 text-xs text-[#7C3AED] hover:text-purple-400 font-semibold transition-all text-center">
+                    View →
                   </button>
                 </div>
               </div>

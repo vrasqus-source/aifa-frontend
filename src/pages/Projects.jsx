@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Projects() {
   const [category, setCategory] = useState("All");
@@ -94,9 +95,9 @@ export default function Projects() {
 
                 <p className="text-gray-400 text-sm mb-4">{item.desc}</p>
 
-                <button className="text-[#C7E36B] text-sm flex items-center gap-2">
+                <Link to={`/projects/${i + 1}`} className="text-[#C7E36B] text-sm flex items-center gap-2 hover:underline">
                   View Details →
-                </button>
+                </Link>
               </div>
             </div>
           ))}

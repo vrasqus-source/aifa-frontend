@@ -928,7 +928,13 @@ function ResourcesAdmin({ token }) {
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving]     = useState(false);
   const [msg, setMsg]           = useState("");
-  const [form, setForm] = useState({ type:"prompt", title:"", description:"", content:"", category:"", isFeatured:false, allowCopy:true, discount:"", link:"", logo:"" });
+  const [resType, setResType]   = useState("prompt");
+  const [form, setForm]         = useState({ title:"", category:"", subCategory:"", description:"", thumbnail:"", content:"", allowCopy:true, isFeatured:false, discount:"", link:"", logo:"" });
+  const [steps, setSteps]       = useState([{ title:"", description:"" }]);
+  const [tools, setTools]       = useState([]);
+  const [newTool, setNewTool]   = useState("");
+  const [projectFilter, setProjectFilter] = useState("all");
+  const [projectSearch, setProjectSearch] = useState("");
 
   const load = (type) => {
     setLoading(true); setResources([]);
@@ -938,13 +944,24 @@ function ResourcesAdmin({ token }) {
 
   useEffect(() => { load(tab); setShowForm(false); }, [tab]);
 
+  const openAddForm = () => {
+    setResType(tab);
+    setForm({ title:"", category:"", subCategory:"", description:"", thumbnail:"", content:"", allowCopy:true, isFeatured:false, discount:"", link:"", logo:"" });
+    setSteps([{ title:"", description:"" }]);
+    setTools([]);
+    setMsg("");
+    setShowForm(true);
+  };
+
   const handleSave = async () => {
     setSaving(true); setMsg("");
+    const payload = { ...form, type: resType };
+    if (resType === "workflow") payload.content = JSON.stringify(steps);
     try {
       const res = await fetch("/api/resources", {
         method: "POST",
         headers: { "Content-Type":"application/json", Authorization:`Bearer ${token}` },
-        body: JSON.stringify({ ...form, type: tab }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (res.ok) { setMsg("Saved!"); setShowForm(false); load(tab); }
@@ -959,12 +976,186 @@ function ResourcesAdmin({ token }) {
     setResources(rs => rs.filter(r => r._id !== id));
   };
 
+  const TYPE_OPTS = [
+    { key:"prompt",   icon:"📝", label:"Prompt"   },
+    { key:"workflow", icon:"🔄", label:"Workflow"  },
+    { key:"project",  icon:"🎬", label:"Project"   },
+    { key:"tip",      icon:"💡", label:"Tip"       },
+    { key:"deal",     icon:"🏷", label:"Deal"      },
+  ];
+
+  /* ── Split-panel add form ── */
+  if (showForm) {
+    const lt = resType;
+    return (
+      <div className="flex h-full overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-lg font-bold text-white">Add Resource</h1>
+            <div className="flex gap-2">
+              <button onClick={()=>setShowForm(false)} className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg hover:bg-white/5">Cancel</button>
+              <button onClick={handleSave} disabled={saving} className="text-xs border border-[#C7E36B]/40 text-[#C7E36B] font-bold px-4 py-2 rounded-lg hover:bg-[#C7E36B]/10 disabled:opacity-60">Save as Draft</button>
+              <button onClick={handleSave} disabled={saving} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg disabled:opacity-60">{saving?"Saving...":"Publish Resource"}</button>
+            </div>
+          </div>
+          {msg && <p className={`text-xs ${msg==="Saved!"?"text-green-400":"text-red-400"}`}>{msg}</p>}
+
+          {/* Type selector */}
+          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Select Resource Type</p>
+            <div className="flex gap-2 flex-wrap">
+              {TYPE_OPTS.map(t => (
+                <button key={t.key} onClick={()=>setResType(t.key)}
+                  className={`flex flex-col items-center gap-1 px-4 py-3 rounded-xl border transition-all ${resType===t.key?"border-[#C7E36B] bg-[#C7E36B]/10 text-[#C7E36B]":"border-white/15 text-gray-400 hover:border-white/30 hover:text-white"}`}>
+                  <span className="text-xl">{t.icon}</span>
+                  <span className="text-[10px] font-semibold">{t.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Basic info */}
+          <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Basic Information</p>
+            <Fld label="TITLE" value={form.title} onChange={v=>setForm({...form,title:v})} placeholder="Resource title..." />
+            <div className="grid grid-cols-2 gap-3">
+              <Fld label="CATEGORY" value={form.category} onChange={v=>setForm({...form,category:v})} placeholder="e.g. Photography" />
+              <Fld label="SUB-CATEGORY" value={form.subCategory} onChange={v=>setForm({...form,subCategory:v})} placeholder="e.g. Lighting" />
+            </div>
+            <Fld label="SHORT DESCRIPTION" value={form.description} onChange={v=>setForm({...form,description:v})} textarea placeholder="Brief description..." />
+            <Fld label="THUMBNAIL URL" value={form.thumbnail} onChange={v=>setForm({...form,thumbnail:v})} placeholder="https://..." />
+          </div>
+
+          {/* Prompt / Tip content */}
+          {(lt==="prompt"||lt==="tip") && (
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{lt==="prompt"?"Prompt Content":"Tip Content"}</p>
+              <Fld label="CONTENT" value={form.content} onChange={v=>setForm({...form,content:v})} textarea placeholder={lt==="prompt"?"Write the full prompt text...":"Write the learning tip..."} />
+              <div className="flex items-center gap-3"><span className="text-xs text-gray-400">Allow Copy</span><Tog value={form.allowCopy} onChange={v=>setForm({...form,allowCopy:v})}/></div>
+            </div>
+          )}
+
+          {/* Workflow Steps Builder */}
+          {lt==="workflow" && (
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Steps Builder</p>
+                <button onClick={()=>setSteps([...steps,{title:"",description:""}])} className="text-[10px] text-[#C7E36B] border border-dashed border-[#C7E36B]/40 px-2 py-1 rounded-lg hover:bg-[#C7E36B]/10 flex items-center gap-1"><I name="plus" size={10}/>+ Add Step</button>
+              </div>
+              <div className="space-y-3">
+                {steps.map((s,i) => (
+                  <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="w-5 h-5 rounded-full bg-[#C7E36B] text-black text-[10px] font-black flex items-center justify-center shrink-0">{i+1}</span>
+                      <input value={s.title} onChange={e=>setSteps(ss=>ss.map((x,j)=>j===i?{...x,title:e.target.value}:x))}
+                        placeholder={`Step ${i+1} Title`}
+                        className="flex-1 bg-transparent border-0 text-sm text-white outline-none placeholder-gray-600"/>
+                      {steps.length>1 && <button onClick={()=>setSteps(ss=>ss.filter((_,j)=>j!==i))} className="text-gray-600 hover:text-red-400 shrink-0"><I name="trash" size={12}/></button>}
+                    </div>
+                    <textarea value={s.description} onChange={e=>setSteps(ss=>ss.map((x,j)=>j===i?{...x,description:e.target.value}:x))}
+                      placeholder="Step description..." rows={2}
+                      className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-2 py-1.5 text-xs text-gray-300 outline-none focus:border-[#C7E36B]/40 resize-none placeholder-gray-600"/>
+                  </div>
+                ))}
+              </div>
+              <button onClick={()=>setSteps([...steps,{title:"",description:""}])} className="w-full border-2 border-dashed border-white/10 text-gray-500 hover:border-[#C7E36B]/30 hover:text-[#C7E36B] text-xs py-2.5 rounded-xl transition-all flex items-center justify-center gap-1">
+                <I name="plus" size={12}/> + Add Another Step
+              </button>
+            </div>
+          )}
+
+          {/* Project tools */}
+          {lt==="project" && (
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tools & Links</p>
+              <div className="flex flex-wrap gap-1.5">
+                {tools.map(t=>(
+                  <span key={t} className="flex items-center gap-1 text-[10px] bg-white/10 text-gray-400 px-2 py-1 rounded-full">
+                    {t}<button onClick={()=>setTools(ts=>ts.filter(x=>x!==t))} className="text-gray-600 hover:text-red-400">×</button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input value={newTool} onChange={e=>setNewTool(e.target.value)}
+                  onKeyDown={e=>{if(e.key==="Enter"&&newTool.trim()){setTools(ts=>[...ts,newTool.trim()]);setNewTool("");}}}
+                  placeholder="Add tool (e.g. Midjourney)..." className="flex-1 bg-[#1A1D1E] border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white outline-none focus:border-[#C7E36B]/50 min-w-0"/>
+                <button onClick={()=>{if(newTool.trim()){setTools(ts=>[...ts,newTool.trim()]);setNewTool("");}}}
+                  className="text-[10px] border border-dashed border-[#C7E36B]/40 text-[#C7E36B] px-2 py-1.5 rounded-lg">+ Add</button>
+              </div>
+              <Fld label="INTERNAL LINK" value={form.link} onChange={v=>setForm({...form,link:v})} placeholder="/projects/my-project"/>
+            </div>
+          )}
+
+          {/* Deal fields */}
+          {lt==="deal" && (
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Deal Details</p>
+              <div className="grid grid-cols-3 gap-3">
+                <Fld label="LOGO/EMOJI" value={form.logo} onChange={v=>setForm({...form,logo:v})} placeholder="🤖"/>
+                <Fld label="DISCOUNT" value={form.discount} onChange={v=>setForm({...form,discount:v})} placeholder="20% OFF"/>
+                <Fld label="DEAL LINK" value={form.link} onChange={v=>setForm({...form,link:v})} placeholder="https://..."/>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-gray-400">Featured Resource</span>
+            <Tog value={form.isFeatured} onChange={v=>setForm({...form,isFeatured:v})}/>
+          </div>
+        </div>
+
+        {/* Live preview */}
+        <div className="w-[280px] shrink-0 border-l border-white/5 bg-[#0F1112] p-5 overflow-y-auto">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-4">Live Preview</p>
+          {lt==="deal" ? (
+            <div className="bg-white rounded-xl overflow-hidden">
+              <div className="h-[70px] bg-gray-100 flex items-center justify-center text-4xl">{form.logo||"🔧"}</div>
+              <div className="p-4">
+                <h3 className="font-bold text-gray-900">{form.title||"Deal Title"}</h3>
+                <p className="text-xs text-gray-500">{form.description||"Description"}</p>
+                <p className="text-xl font-black text-gray-900 mt-2">{form.discount||"XX% OFF"}</p>
+                <p className="text-[10px] text-[#C7E36B] font-semibold">VIA AIFA</p>
+                <button className="w-full bg-[#C7E36B] text-black text-sm font-bold py-2 rounded-lg mt-3">Get Deal</button>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+              {form.thumbnail ? <img src={form.thumbnail} alt="" className="w-full h-28 object-cover"/> : <div className="w-full h-28 bg-white/5 flex items-center justify-center text-gray-600 text-xs">Thumbnail Preview</div>}
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                  {form.category && <span className="text-[9px] bg-[#C7E36B]/20 text-[#C7E36B] font-bold px-2 py-0.5 rounded-full">{form.category}</span>}
+                  {lt==="workflow" && <span className="text-[9px] bg-white/10 text-gray-400 px-2 py-0.5 rounded-full">SEO Optimized</span>}
+                  {lt==="workflow" && <span className="text-[9px] bg-white/10 text-gray-400 px-2 py-0.5 rounded-full">Mobile Responsive</span>}
+                  {lt==="project" && form.isFeatured && <span className="text-[9px] bg-green-500/20 text-green-400 font-bold px-2 py-0.5 rounded-full">PUBLISHED</span>}
+                </div>
+                <h3 className="text-sm font-bold text-white mb-1">{form.title||"Resource Title"}</h3>
+                <p className="text-[10px] text-gray-400 line-clamp-2">{form.description||"Description will appear here"}</p>
+                {lt==="workflow" && steps.length>0 && (
+                  <div className="mt-3 border-t border-white/5 pt-3">
+                    <p className="text-[9px] text-gray-500 font-semibold mb-1">{steps.length} STEP{steps.length!==1?"S":""}</p>
+                    {steps.slice(0,2).map((s,i)=><p key={i} className="text-[10px] text-gray-400 truncate">· {s.title||`Step ${i+1}`}</p>)}
+                  </div>
+                )}
+                <button className="text-[#C7E36B] text-xs mt-3 flex items-center gap-1">View Details →</button>
+              </div>
+            </div>
+          )}
+          <div className="mt-4 bg-[#C7E36B]/5 border border-[#C7E36B]/20 rounded-xl p-3">
+            <p className="text-[9px] font-bold text-[#C7E36B] mb-1">EDITOR NOTE</p>
+            <p className="text-[10px] text-gray-400">Preview updates as you type. Publish when ready or save as draft to review later.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Normal list view ── */
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">
         <div><h1 className="text-xl font-bold text-white">Resources</h1><p className="text-xs text-gray-400">Manage all learning resources by category</p></div>
-        <button onClick={()=>setShowForm(!showForm)} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5">
-          <I name="plus" size={14}/>{showForm ? "← Back" : "+ Add Resource"}
+        <button onClick={openAddForm} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5">
+          <I name="plus" size={14}/>{tab==="project"?"+ Add Project":"+ Add Resource"}
         </button>
       </div>
 
@@ -975,74 +1166,85 @@ function ResourcesAdmin({ token }) {
         ))}
       </div>
 
-      {/* Add form */}
-      {showForm && (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-5 space-y-3 max-w-2xl">
-          <h3 className="text-sm font-semibold text-white">New {RES_TABS.find(t=>t.key===tab)?.label} Item</h3>
-          {msg && <p className={`text-xs ${msg==="Saved!"?"text-green-400":"text-red-400"}`}>{msg}</p>}
-          <Fld label="Title" value={form.title} onChange={v=>setForm({...form,title:v})} placeholder="Resource title..." />
-          <Fld label="Description" value={form.description} onChange={v=>setForm({...form,description:v})} textarea placeholder="Short description..." />
-          {(tab==="prompt"||tab==="workflow"||tab==="tip") && (
-            <Fld label="Content" value={form.content} onChange={v=>setForm({...form,content:v})} textarea placeholder="Full content or prompt text..." />
-          )}
-          {tab==="deal" && (
-            <div className="grid grid-cols-3 gap-3">
-              <Fld label="Logo/Emoji" value={form.logo} onChange={v=>setForm({...form,logo:v})} placeholder="🤖" />
-              <Fld label="Discount" value={form.discount} onChange={v=>setForm({...form,discount:v})} placeholder="20% OFF" />
-              <Fld label="Link" value={form.link} onChange={v=>setForm({...form,link:v})} placeholder="https://..." />
+      {/* Projects showcase */}
+      {tab==="project" && (
+        <div>
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
+            <div className="flex gap-1 bg-white/5 rounded-xl p-1">
+              {[["all","All Projects"],["published","Published"],["draft","Drafts"]].map(([k,l])=>(
+                <button key={k} onClick={()=>setProjectFilter(k)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${projectFilter===k?"bg-[#C7E36B] text-black":"text-gray-400 hover:text-white"}`}>{l}</button>
+              ))}
             </div>
+            <input value={projectSearch} onChange={e=>setProjectSearch(e.target.value)} placeholder="Search projects..."
+              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-600 outline-none max-w-[240px]"/>
+          </div>
+          {loading ? <p className="text-gray-500 text-sm animate-pulse">Loading...</p> : (
+            resources.length===0 ? (
+              <div className="text-center py-12"><p className="text-gray-500 text-sm">No projects yet</p><button onClick={openAddForm} className="mt-3 text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg">Add First Project</button></div>
+            ) : (
+              <div className="grid grid-cols-3 gap-4">
+                {resources.filter(r=>projectSearch?r.title.toLowerCase().includes(projectSearch.toLowerCase()):true).map(r=>(
+                  <div key={r._id} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden group hover:border-white/20 transition-all">
+                    <div className="relative h-36 overflow-hidden">
+                      {r.thumbnail ? <img src={r.thumbnail} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt=""/> : <div className="w-full h-full bg-white/5 flex items-center justify-center text-gray-600 text-sm">No Image</div>}
+                      <button onClick={()=>handleDelete(r._id)} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-red-500/80 text-white rounded-full w-6 h-6 flex items-center justify-center transition-all"><I name="trash" size={12}/></button>
+                    </div>
+                    <div className="p-3">
+                      <h3 className="text-sm font-semibold text-white mb-1">{r.title}</h3>
+                      <p className="text-[10px] text-gray-400 line-clamp-2 mb-2">{r.description}</p>
+                      <button className="text-[#C7E36B] text-xs">View Details →</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
           )}
-          <Fld label="Category" value={form.category} onChange={v=>setForm({...form,category:v})} placeholder="e.g. Photography" />
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2"><span className="text-xs text-gray-400">Featured</span><Tog value={form.isFeatured} onChange={v=>setForm({...form,isFeatured:v})}/></div>
-            {(tab==="prompt"||tab==="tip") && <div className="flex items-center gap-2"><span className="text-xs text-gray-400">Allow Copy</span><Tog value={form.allowCopy} onChange={v=>setForm({...form,allowCopy:v})}/></div>}
-          </div>
-          <div className="flex gap-2 pt-2">
-            <button onClick={()=>setShowForm(false)} className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg">Cancel</button>
-            <button onClick={handleSave} disabled={saving} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg disabled:opacity-60">{saving?"Saving...":"Publish"}</button>
-          </div>
         </div>
       )}
 
-      {/* Resource list */}
-      {loading ? <p className="text-gray-500 text-sm animate-pulse">Loading...</p> : (
+      {/* Other tabs: list/deal view */}
+      {tab!=="project" && (
         <>
-          {resources.length === 0 && !showForm && (
-            <div className="text-center py-12"><p className="text-gray-500 text-sm">No {RES_TABS.find(t=>t.key===tab)?.label} resources yet</p><button onClick={()=>setShowForm(true)} className="mt-3 text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg">Add First</button></div>
-          )}
-          {tab === "deal" ? (
-            <div className="grid grid-cols-3 gap-4">
-              {resources.map((r) => (
-                <div key={r._id} className="bg-white rounded-xl overflow-hidden shadow-sm relative group">
-                  <div className="h-[70px] bg-gray-50 flex items-center justify-center text-4xl">{r.logo || "🔧"}</div>
-                  <div className="p-4">
-                    <h3 className="text-base font-bold text-gray-900">{r.title}</h3>
-                    <p className="text-xs text-gray-500">{r.description}</p>
-                    <p className="text-xl font-black text-gray-900 mt-2">{r.discount}</p>
-                    <p className="text-[10px] text-[#C7E36B] font-semibold">VIA AIFA</p>
-                    <button className="w-full bg-[#C7E36B] text-black text-sm font-bold py-2 rounded-lg mt-3 hover:bg-lime-300">Get Deal</button>
-                  </div>
-                  <button onClick={()=>handleDelete(r._id)} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-red-500/80 text-white rounded-full w-6 h-6 flex items-center justify-center transition-all"><I name="trash" size={12}/></button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {resources.map((r) => (
-                <div key={r._id} className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-start justify-between hover:border-white/20 transition-all">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      {r.isFeatured && <span className="text-[9px] bg-[#C7E36B]/20 text-[#C7E36B] font-bold px-1.5 py-0.5 rounded">FEATURED</span>}
-                      {r.category && <span className="text-[9px] bg-white/10 text-gray-400 px-1.5 py-0.5 rounded">{r.category}</span>}
+          {loading ? <p className="text-gray-500 text-sm animate-pulse">Loading...</p> : (
+            <>
+              {resources.length===0 && (
+                <div className="text-center py-12"><p className="text-gray-500 text-sm">No {RES_TABS.find(t=>t.key===tab)?.label} resources yet</p><button onClick={openAddForm} className="mt-3 text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg">Add First</button></div>
+              )}
+              {tab==="deal" ? (
+                <div className="grid grid-cols-3 gap-4">
+                  {resources.map((r) => (
+                    <div key={r._id} className="bg-white rounded-xl overflow-hidden shadow-sm relative group">
+                      <div className="h-[70px] bg-gray-50 flex items-center justify-center text-4xl">{r.logo || "🔧"}</div>
+                      <div className="p-4">
+                        <h3 className="text-base font-bold text-gray-900">{r.title}</h3>
+                        <p className="text-xs text-gray-500">{r.description}</p>
+                        <p className="text-xl font-black text-gray-900 mt-2">{r.discount}</p>
+                        <p className="text-[10px] text-[#C7E36B] font-semibold">VIA AIFA</p>
+                        <button className="w-full bg-[#C7E36B] text-black text-sm font-bold py-2 rounded-lg mt-3 hover:bg-lime-300">Get Deal</button>
+                      </div>
+                      <button onClick={()=>handleDelete(r._id)} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-red-500/80 text-white rounded-full w-6 h-6 flex items-center justify-center transition-all"><I name="trash" size={12}/></button>
                     </div>
-                    <h3 className="text-sm font-semibold text-white">{r.title}</h3>
-                    <p className="text-xs text-gray-400 mt-1 line-clamp-1">{r.description}</p>
-                    {r.content && <p className="text-[10px] text-gray-600 mt-1 line-clamp-1 font-mono">{r.content}</p>}
-                  </div>
-                  <button onClick={()=>handleDelete(r._id)} className="text-gray-600 hover:text-red-400 ml-4 shrink-0 transition-all"><I name="trash" size={13}/></button>
+                  ))}
                 </div>
-              ))}
-            </div>
+              ) : (
+                <div className="space-y-3">
+                  {resources.map((r) => (
+                    <div key={r._id} className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-start justify-between hover:border-white/20 transition-all">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          {r.isFeatured && <span className="text-[9px] bg-[#C7E36B]/20 text-[#C7E36B] font-bold px-1.5 py-0.5 rounded">FEATURED</span>}
+                          {r.category && <span className="text-[9px] bg-white/10 text-gray-400 px-1.5 py-0.5 rounded">{r.category}</span>}
+                        </div>
+                        <h3 className="text-sm font-semibold text-white">{r.title}</h3>
+                        <p className="text-xs text-gray-400 mt-1 line-clamp-1">{r.description}</p>
+                        {r.content && <p className="text-[10px] text-gray-600 mt-1 line-clamp-1 font-mono">{r.content}</p>}
+                      </div>
+                      <button onClick={()=>handleDelete(r._id)} className="text-gray-600 hover:text-red-400 ml-4 shrink-0 transition-all"><I name="trash" size={13}/></button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </>
       )}
@@ -1394,8 +1596,91 @@ const MOCK_REPORTS = [
 ];
 
 function CommunityAdmin({ token }) {
-  const [keywords, setKeywords] = useState(["crypto","nft","discount"]);
-  const [newKw, setNewKw]       = useState("");
+  const [keywords, setKeywords]     = useState(["crypto","nft","discount"]);
+  const [newKw, setNewKw]           = useState("");
+  const [showEventForm, setShowEventForm] = useState(false);
+  const [event, setEvent] = useState({ title:"", type:"Workshop", mode:"ONLINE", date:"", startTime:"", duration:"2", capacity:"50", link:"", openRSVP:true, featured:false });
+
+  if (showEventForm) {
+    const previewDate = event.date ? new Date(event.date + "T00:00:00") : null;
+    return (
+      <div className="flex h-full overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div className="flex items-center gap-3 mb-2">
+            <button onClick={()=>setShowEventForm(false)} className="text-xs text-gray-400 hover:text-white border border-white/15 px-3 py-1.5 rounded-lg">← Back</button>
+            <h1 className="text-xl font-bold text-white">Create New Event</h1>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-3">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Basic Info</p>
+            <Fld label="EVENT TITLE" value={event.title} onChange={v=>setEvent({...event,title:v})} placeholder="e.g. AI Filmmaking Masterclass" />
+            <div>
+              <p className="text-[10px] text-gray-400 font-semibold mb-1">EVENT TYPE</p>
+              <select value={event.type} onChange={e=>setEvent({...event,type:e.target.value})} className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#C7E36B]/50">
+                {["Workshop","Webinar","Masterclass","AMA","Hackathon"].map(t=><option key={t}>{t}</option>)}
+              </select>
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-400 font-semibold mb-2">MODE</p>
+              <div className="flex gap-2">
+                {["ONLINE","OFFLINE"].map(m=>(
+                  <button key={m} onClick={()=>setEvent({...event,mode:m})}
+                    className={`flex-1 py-2 text-xs font-bold rounded-lg border transition-all ${event.mode===m?"border-[#C7E36B] bg-[#C7E36B]/10 text-[#C7E36B]":"border-white/15 text-gray-400 hover:border-white/30"}`}>
+                    {m}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-3">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Schedule</p>
+            <div className="grid grid-cols-2 gap-3">
+              <Fld label="DATE" value={event.date} onChange={v=>setEvent({...event,date:v})} placeholder="YYYY-MM-DD" />
+              <Fld label="START TIME" value={event.startTime} onChange={v=>setEvent({...event,startTime:v})} placeholder="e.g. 7:00 PM IST" />
+              <Fld label="DURATION (hrs)" value={event.duration} onChange={v=>setEvent({...event,duration:v})} placeholder="2" />
+              <Fld label="CAPACITY" value={event.capacity} onChange={v=>setEvent({...event,capacity:v})} placeholder="50" />
+            </div>
+            {event.mode==="ONLINE" && <Fld label="MEETING LINK" value={event.link} onChange={v=>setEvent({...event,link:v})} placeholder="https://meet.google.com/..." />}
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-3">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Event Controls</p>
+            <div className="flex items-center justify-between">
+              <div><p className="text-sm text-white">Open RSVP</p><p className="text-[10px] text-gray-400">Allow students to register</p></div>
+              <Tog value={event.openRSVP} onChange={v=>setEvent({...event,openRSVP:v})}/>
+            </div>
+            <div className="flex items-center justify-between">
+              <div><p className="text-sm text-white">Featured Event</p><p className="text-[10px] text-gray-400">Show prominently on homepage</p></div>
+              <Tog value={event.featured} onChange={v=>setEvent({...event,featured:v})}/>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={()=>setShowEventForm(false)} className="text-xs border border-white/20 text-gray-300 px-5 py-2.5 rounded-lg hover:bg-white/5">Cancel</button>
+            <button className="text-xs bg-[#C7E36B] text-black font-bold px-5 py-2.5 rounded-lg hover:bg-lime-300 flex items-center gap-2"><I name="plus" size={14}/> Create Event</button>
+          </div>
+        </div>
+        {/* Live preview */}
+        <div className="w-[280px] shrink-0 border-l border-white/5 bg-[#0F1112] p-5 overflow-y-auto">
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-4">Live Preview</p>
+          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+            <div className="bg-[#C7E36B] text-black px-4 pt-4 pb-3">
+              <p className="text-3xl font-black leading-none">{previewDate ? previewDate.getDate() : "—"}</p>
+              <p className="text-xs font-bold uppercase">{previewDate ? previewDate.toLocaleDateString("en",{month:"long",year:"numeric"}) : "Date TBD"}</p>
+            </div>
+            <div className="p-4 space-y-2">
+              {event.featured && <span className="text-[9px] bg-orange-500/20 text-orange-400 font-bold px-2 py-0.5 rounded-full">FEATURED</span>}
+              <h3 className="text-sm font-bold text-white">{event.title || "Event Title"}</h3>
+              <div className="text-[10px] text-gray-400 space-y-1">
+                <p>🕐 {event.startTime || "Time TBD"} · {event.duration}h</p>
+                <p>📍 {event.mode}</p>
+                <p>👥 {event.capacity} spots</p>
+              </div>
+              {event.openRSVP && <button className="w-full mt-2 bg-[#C7E36B] text-black text-xs font-bold py-2 rounded-lg">RSVP Now →</button>}
+            </div>
+          </div>
+          <p className="text-[9px] text-gray-600 mt-4 text-center">Preview updates in real-time</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-full overflow-hidden">
@@ -1406,9 +1691,14 @@ function CommunityAdmin({ token }) {
             <h1 className="text-xl font-bold text-white">Forum Management</h1>
             <p className="text-xs text-gray-400 mt-0.5">Monitor community discussions and moderate content.</p>
           </div>
-          <button className="bg-[#C7E36B] text-black font-bold text-sm px-4 py-2 rounded-xl hover:opacity-90 flex items-center gap-2">
-            <I name="plus" size={15} /> Create Thread
-          </button>
+          <div className="flex gap-2">
+            <button onClick={()=>setShowEventForm(true)} className="bg-white/10 text-white font-bold text-sm px-4 py-2 rounded-xl hover:bg-white/20 flex items-center gap-2">
+              📅 Create Event
+            </button>
+            <button className="bg-[#C7E36B] text-black font-bold text-sm px-4 py-2 rounded-xl hover:opacity-90 flex items-center gap-2">
+              <I name="plus" size={15} /> Create Thread
+            </button>
+          </div>
         </div>
 
         {/* Filter bar */}
@@ -1649,14 +1939,32 @@ function AdminProfile({ token, profile, onUpdated }) {
 }
 
 /* ── CERTIFICATES ADMIN ── */
+const CERT_NAV = [
+  { key:"templates",  label:"Templates" },
+  { key:"issued",     label:"Issued Certificates" },
+  { key:"settings",   label:"Settings" },
+  { key:"assignments",label:"Assignments" },
+  { key:"live",       label:"Live Classes" },
+  { key:"resources",  label:"Resources" },
+];
+const MOCK_TEMPLATES = [
+  { id:1, name:"Standard Completion Award",  category:"Course Completion",   issued:142, updated:"Oct 12, 2024", grad:"from-[#1a1a2e] to-[#16213e]" },
+  { id:2, name:"Cinematography Bootcamp",    category:"Bootcamp Completion", issued:38,  updated:"Nov 5, 2024",  grad:"from-[#0d1b2a] to-[#1b263b]" },
+];
+
 function CertificatesAdmin({ token }) {
+  const [certTab, setCertTab]   = useState("templates");
   const [certs, setCerts]       = useState([]);
   const [users, setUsers]       = useState([]);
   const [loading, setLoading]   = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving]     = useState(false);
   const [msg, setMsg]           = useState("");
-  const [form, setForm] = useState({ userId:"", title:"Certificate of Achievement", courseTitle:"", itemType:"course" });
+  const [form, setForm]         = useState({ userId:"", title:"Certificate of Achievement", courseTitle:"", itemType:"course" });
+  const [autoIssue, setAutoIssue]       = useState(true);
+  const [manualApproval, setManualApproval] = useState(false);
+  const [idFormat, setIdFormat]         = useState("AIFA-[COURSE_CODE]-[YEAR]-[ID]");
+  const [editingFormat, setEditingFormat] = useState(false);
 
   useEffect(() => {
     const h = { Authorization:`Bearer ${token}` };
@@ -1684,67 +1992,176 @@ function CertificatesAdmin({ token }) {
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-5">
-        <div><h1 className="text-xl font-bold text-white">Certificates</h1><p className="text-xs text-gray-400">Issue and manage student certificates · {certs.length} issued</p></div>
-        <button onClick={()=>setShowForm(!showForm)} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5">
-          <I name="plus" size={14}/>{showForm?"← Back":"+ Issue Certificate"}
-        </button>
+      <div className="mb-4">
+        <h1 className="text-xl font-bold text-white">Certificates</h1>
+        <p className="text-xs text-gray-400">Manage templates, issue, and automate certificates</p>
       </div>
 
-      {showForm && (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-5 max-w-lg space-y-3">
-          <h3 className="text-sm font-semibold text-white">Issue New Certificate</h3>
-          {msg && <p className="text-xs text-red-400">{msg}</p>}
-          <div>
-            <p className="text-[10px] text-gray-400 mb-1 font-semibold">STUDENT</p>
-            <select value={form.userId} onChange={e=>setForm({...form,userId:e.target.value})} className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#C7E36B]/50">
-              <option value="">Select student...</option>
-              {users.map(u=><option key={u._id} value={u._id}>{u.name} ({u.email})</option>)}
-            </select>
+      {/* Tab bar */}
+      <div className="flex gap-0.5 mb-6 border-b border-white/10 overflow-x-auto">
+        {CERT_NAV.map(t => (
+          <button key={t.key} onClick={()=>{ setCertTab(t.key); setShowForm(false); }}
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-all whitespace-nowrap -mb-px ${certTab===t.key?"border-[#C7E36B] text-[#C7E36B]":"border-transparent text-gray-400 hover:text-white"}`}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── TEMPLATES ── */}
+      {certTab === "templates" && (
+        <div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            {MOCK_TEMPLATES.map(tpl => (
+              <div key={tpl.id} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden group hover:border-white/20 transition-all">
+                <div className={`h-32 bg-gradient-to-br ${tpl.grad} flex items-center justify-center relative`}>
+                  <div className="text-center px-4">
+                    <div className="w-8 h-8 bg-[#C7E36B] rounded-lg flex items-center justify-center mx-auto mb-2"><span className="text-black font-black text-sm">A</span></div>
+                    <p className="text-[9px] text-gray-400 uppercase font-semibold">AIFA</p>
+                    <p className="text-xs text-white font-semibold mt-0.5">{tpl.name}</p>
+                  </div>
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-2">
+                    <button className="text-[10px] bg-white text-black font-bold px-2.5 py-1.5 rounded-lg">Edit</button>
+                    <button className="text-[10px] bg-white/20 text-white font-bold px-2.5 py-1.5 rounded-lg">Duplicate</button>
+                    <button className="text-[10px] bg-red-500/80 text-white font-bold px-2.5 py-1.5 rounded-lg">Delete</button>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-1">
+                    <h3 className="text-sm font-semibold text-white">{tpl.name}</h3>
+                    <span className="text-[9px] bg-green-500/20 text-green-400 font-bold px-2 py-0.5 rounded-full">ACTIVE</span>
+                  </div>
+                  <p className="text-[10px] text-gray-500">{tpl.category}</p>
+                  <div className="flex items-center gap-2 mt-2 text-[10px] text-gray-600">
+                    <span>{tpl.issued} issued</span><span>·</span><span>Updated {tpl.updated}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {/* Create New Template */}
+            <button className="border-2 border-dashed border-white/15 rounded-xl h-[200px] flex flex-col items-center justify-center gap-2 hover:border-[#C7E36B]/40 transition-all text-gray-500 hover:text-[#C7E36B]">
+              <div className="w-10 h-10 rounded-full border-2 border-dashed border-current flex items-center justify-center">
+                <I name="plus" size={18}/>
+              </div>
+              <p className="text-sm font-semibold">Create New Template</p>
+              <p className="text-xs">Design a custom certificate</p>
+            </button>
           </div>
-          <Fld label="CERTIFICATE TITLE" value={form.title} onChange={v=>setForm({...form,title:v})} />
-          <Fld label="COURSE / PROGRAM TITLE" value={form.courseTitle} onChange={v=>setForm({...form,courseTitle:v})} placeholder="e.g. AI Filmmaking Bootcamp" />
-          <div>
-            <p className="text-[10px] text-gray-400 mb-1 font-semibold">TYPE</p>
-            <select value={form.itemType} onChange={e=>setForm({...form,itemType:e.target.value})} className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#C7E36B]/50">
-              <option value="course">Course</option>
-              <option value="workshop">Workshop</option>
-              <option value="bootcamp">Bootcamp</option>
-            </select>
-          </div>
-          <div className="flex gap-2 pt-1">
-            <button onClick={()=>setShowForm(false)} className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg">Cancel</button>
-            <button onClick={handleIssue} disabled={saving} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg disabled:opacity-60">{saving?"Issuing...":"Issue Certificate"}</button>
+
+          {/* Issuance Automation */}
+          <h2 className="text-sm font-bold text-white mb-3">⚡ Issuance Automation</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <p className="text-sm font-semibold text-white">Auto-Issue</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">Issue automatically on completion</p>
+                </div>
+                <Tog value={autoIssue} onChange={setAutoIssue}/>
+              </div>
+              {autoIssue && <p className="text-[10px] text-[#C7E36B]">✓ Active — auto-issuing on course completion</p>}
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <p className="text-sm font-semibold text-white">Manual Approval</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">Admin must approve each issuance</p>
+                </div>
+                <Tog value={manualApproval} onChange={setManualApproval}/>
+              </div>
+              {!manualApproval && <p className="text-[10px] text-gray-500">— Auto-approved (no review required)</p>}
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+              <p className="text-sm font-semibold text-white mb-2">Custom ID Format</p>
+              {editingFormat ? (
+                <div className="flex gap-2">
+                  <input value={idFormat} onChange={e=>setIdFormat(e.target.value)}
+                    className="flex-1 bg-[#1A1D1E] border border-white/10 rounded-lg px-2 py-1 text-xs text-white font-mono outline-none focus:border-[#C7E36B]/50"/>
+                  <button onClick={()=>setEditingFormat(false)} className="text-[10px] bg-[#C7E36B] text-black font-bold px-2 py-1 rounded-lg">Save</button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <code className="text-[10px] text-[#C7E36B] font-mono bg-[#C7E36B]/10 px-2 py-1 rounded">{idFormat}</code>
+                  <button onClick={()=>setEditingFormat(true)} className="text-[10px] text-gray-500 hover:text-white underline ml-2">Edit</button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
 
-      {loading ? <p className="text-gray-500 text-sm animate-pulse">Loading...</p> : (
-        <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
-          <table className="w-full">
-            <thead><tr className="text-[11px] text-gray-500 font-semibold uppercase bg-white/5">
-              {["Student","Course / Program","Type","Certificate ID","Issued",""].map(h=><th key={h} className="text-left px-4 py-3">{h}</th>)}
-            </tr></thead>
-            <tbody className="divide-y divide-white/5">
-              {certs.length === 0
-                ? <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-500 text-sm">No certificates issued yet</td></tr>
-                : certs.map((c) => (
-                <tr key={c._id} className="hover:bg-white/5 transition-all">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-[#C7E36B] text-black font-bold text-[11px] flex items-center justify-center">{(c.user?.name||"U")[0]}</div>
-                      <div><p className="text-xs font-semibold text-white">{c.user?.name||"—"}</p><p className="text-[10px] text-gray-500">{c.user?.email}</p></div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{c.courseTitle}</td>
-                  <td className="px-4 py-3"><span className={`text-[10px] font-bold capitalize px-2 py-1 rounded-full ${typeBadge(c.itemType)}`}>{c.itemType}</span></td>
-                  <td className="px-4 py-3 text-[11px] text-gray-400 font-mono">{c.certificateId}</td>
-                  <td className="px-4 py-3 text-sm text-gray-400">{new Date(c.createdAt).toLocaleDateString()}</td>
-                  <td className="px-4 py-3"><button onClick={()=>handleDelete(c._id)} className="text-gray-600 hover:text-red-400 transition-all"><I name="trash" size={13}/></button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* ── ISSUED CERTIFICATES ── */}
+      {certTab === "issued" && (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm text-gray-400">{certs.length} certificates issued</p>
+            <button onClick={()=>setShowForm(!showForm)} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5">
+              <I name="plus" size={14}/>{showForm?"← Back":"+ Issue Certificate"}
+            </button>
+          </div>
+          {showForm && (
+            <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-5 max-w-lg space-y-3">
+              <h3 className="text-sm font-semibold text-white">Issue New Certificate</h3>
+              {msg && <p className="text-xs text-red-400">{msg}</p>}
+              <div>
+                <p className="text-[10px] text-gray-400 mb-1 font-semibold">STUDENT</p>
+                <select value={form.userId} onChange={e=>setForm({...form,userId:e.target.value})} className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#C7E36B]/50">
+                  <option value="">Select student...</option>
+                  {users.map(u=><option key={u._id} value={u._id}>{u.name} ({u.email})</option>)}
+                </select>
+              </div>
+              <Fld label="CERTIFICATE TITLE" value={form.title} onChange={v=>setForm({...form,title:v})} />
+              <Fld label="COURSE / PROGRAM TITLE" value={form.courseTitle} onChange={v=>setForm({...form,courseTitle:v})} placeholder="e.g. AI Filmmaking Bootcamp" />
+              <div>
+                <p className="text-[10px] text-gray-400 mb-1 font-semibold">TYPE</p>
+                <select value={form.itemType} onChange={e=>setForm({...form,itemType:e.target.value})} className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#C7E36B]/50">
+                  <option value="course">Course</option>
+                  <option value="workshop">Workshop</option>
+                  <option value="bootcamp">Bootcamp</option>
+                </select>
+              </div>
+              <div className="flex gap-2 pt-1">
+                <button onClick={()=>setShowForm(false)} className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg">Cancel</button>
+                <button onClick={handleIssue} disabled={saving} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg disabled:opacity-60">{saving?"Issuing...":"Issue Certificate"}</button>
+              </div>
+            </div>
+          )}
+          {loading ? <p className="text-gray-500 text-sm animate-pulse">Loading...</p> : (
+            <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+              <table className="w-full">
+                <thead><tr className="text-[11px] text-gray-500 font-semibold uppercase bg-white/5">
+                  {["Student","Course / Program","Type","Certificate ID","Issued",""].map(h=><th key={h} className="text-left px-4 py-3">{h}</th>)}
+                </tr></thead>
+                <tbody className="divide-y divide-white/5">
+                  {certs.length === 0
+                    ? <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-500 text-sm">No certificates issued yet</td></tr>
+                    : certs.map((c) => (
+                    <tr key={c._id} className="hover:bg-white/5 transition-all">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-[#C7E36B] text-black font-bold text-[11px] flex items-center justify-center">{(c.user?.name||"U")[0]}</div>
+                          <div><p className="text-xs font-semibold text-white">{c.user?.name||"—"}</p><p className="text-[10px] text-gray-500">{c.user?.email}</p></div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-300">{c.courseTitle}</td>
+                      <td className="px-4 py-3"><span className={`text-[10px] font-bold capitalize px-2 py-1 rounded-full ${typeBadge(c.itemType)}`}>{c.itemType}</span></td>
+                      <td className="px-4 py-3 text-[11px] text-gray-400 font-mono">{c.certificateId}</td>
+                      <td className="px-4 py-3 text-sm text-gray-400">{new Date(c.createdAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3"><button onClick={()=>handleDelete(c._id)} className="text-gray-600 hover:text-red-400 transition-all"><I name="trash" size={13}/></button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── OTHER TABS ── */}
+      {!["templates","issued"].includes(certTab) && (
+        <div className="text-center py-16">
+          <p className="text-3xl mb-3">🏗</p>
+          <p className="text-white font-semibold text-sm capitalize">{CERT_NAV.find(t=>t.key===certTab)?.label} — Coming Soon</p>
+          <p className="text-gray-500 text-xs mt-1">This section is under construction.</p>
         </div>
       )}
     </div>
