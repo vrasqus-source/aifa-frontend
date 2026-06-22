@@ -828,7 +828,7 @@ function WorkshopsSection({ token }) {
   const [detailW, setDetailW]     = useState(null);
 
   useEffect(() => {
-    fetch("https://aifa-backend-4an6.onrender.com/api/workshops")
+    fetch("/api/workshops")
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (Array.isArray(d) && d.length > 0) setWorkshops(d); })
       .catch(() => {});
@@ -842,7 +842,7 @@ function WorkshopsSection({ token }) {
     }
     setEnrolling(w._id);
     try {
-      const res  = await fetch(`https://aifa-backend-4an6.onrender.com/api/workshops/${w._id}/register`, { method:"POST", headers:{ Authorization:`Bearer ${token}` } });
+      const res  = await fetch(`/api/workshops/${w._id}/register`, { method:"POST", headers:{ Authorization:`Bearer ${token}` } });
       const data = await res.json();
       if (res.ok) setReserved(prev => new Set([...prev, w._id || w.title]));
       else alert(data.message || "Could not reserve. Try again.");
@@ -966,7 +966,7 @@ function VideoCoursesSection({ profile, onNavigate }) {
   const [detailCourse, setDetailCourse] = useState(null);
 
   useEffect(() => {
-    fetch("https://aifa-backend-4an6.onrender.com/api/courses")
+    fetch("/api/courses")
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (Array.isArray(d) && d.length > 0) {
@@ -982,9 +982,15 @@ function VideoCoursesSection({ profile, onNavigate }) {
       .catch(() => setLoading(false));
   }, []);
 
+  const parseDuration = (d = "") => {
+    const [h = 0, m = 0] = d.replace("h","").replace("m","").split(" ").map(Number);
+    return h * 60 + m;
+  };
+
   const sorted = [...courses].sort((a, b) => {
-    if (sort === "Duration") return (a.duration || "").localeCompare(b.duration || "");
-    return 0;
+    if (sort === "Duration")           return parseDuration(a.duration) - parseDuration(b.duration);
+    if (sort === "Price: Low to High") return (a.price || 0) - (b.price || 0);
+    return 0; // "Newest" — keep API order (already newest-first from backend)
   });
 
   const filtered = sorted.filter(c =>
@@ -1295,7 +1301,7 @@ function JobsSection({ token }) {
   const [applied, setApplied]         = useState(false);
 
   useEffect(() => {
-    fetch("https://aifa-backend-4an6.onrender.com/api/jobs")
+    fetch("/api/jobs")
       .then(r => r.ok ? r.json() : [])
       .then(d => { if (Array.isArray(d)) setJobs(d); setLoading(false); })
       .catch(() => setLoading(false));
