@@ -260,7 +260,7 @@ export default function StudentDashboard() {
               {activePage === "certificates" && <CertificatesSection token={token} profile={profile} />}
               {activePage === "jobs" && <JobsSection token={token} />}
               {activePage === "resources" && <ResourcesSection token={token} />}
-              {activePage === "community" && <CommunitySection token={token} />}
+              {activePage === "community" && <CommunitySection token={token} profile={profile} />}
               {activePage === "hire-talent" && <HireTalentSection token={token} />}
               {activePage === "profile" && <ProfileSection profile={profile} token={token} onUpdated={setProfile} />}
               {activePage === "settings" && <SettingsSection token={token} />}
@@ -279,11 +279,7 @@ export default function StudentDashboard() {
 const TYPE_ICON = { session:"🎬", announcement:"📢", resource:"📚", payment:"💳", general:"🔔" };
 
 const STATIC_NOTIFS = [
-  { _id:"s1", type:"session",      title:"Session 08 Recording Uploaded",  message:"The recording for Session 08 is now available in the session tab.",         createdAt: new Date(Date.now()-120000).toISOString(),   isRead:false },
-  { _id:"s2", type:"resource",     title:"AI Cinematography Guide",         message:"A new resource has been uploaded to the Resources section.",                createdAt: new Date(Date.now()-900000).toISOString(),   isRead:false },
-  { _id:"s3", type:"announcement", title:"Session 12 Starts Tomorrow",      message:"Generative Video with Sora & Midjourney starts tomorrow at 7:00 PM.",      createdAt: new Date(Date.now()-7200000).toISOString(),  isRead:false },
-  { _id:"s4", type:"general",      title:"Workshop Rescheduled",            message:"The Friday mentoring session has been moved to 3:00 PM.",                  createdAt: new Date(Date.now()-18000000).toISOString(), isRead:true  },
-  { _id:"s5", type:"general",      title:"Welcome to Batch #42",            message:"Please join the WhatsApp community and review the syllabus before Session 01.", createdAt: new Date(Date.now()-86400000).toISOString(), isRead:true },
+  { _id:"s1", type:"general", title:"Welcome to AIFA!", message:"Your account is set up. Explore your courses and bootcamp.", createdAt: new Date().toISOString(), isRead:false },
 ];
 
 function timeAgoNotif(dateStr) {
@@ -298,6 +294,7 @@ function timeAgoNotif(dateStr) {
 
 function NotificationDropdown({ notifs, onClose, onMarkRead }) {
   const list = notifs && notifs.length > 0 ? notifs : STATIC_NOTIFS;
+  // Use empty state when API returns empty after loading (not initial state)
   return (
     <div className="absolute right-0 top-full mt-2 w-[340px] bg-white rounded-2xl shadow-2xl z-50 overflow-hidden border border-gray-100">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
@@ -369,11 +366,6 @@ function UserMenuDropdown({ name, email, onProfile, onSettings, onBilling, onLog
 /* ════════════════════════════════════════════
    DASHBOARD HOME
 ════════════════════════════════════════════ */
-const MOCK_COURSES_PROGRESS = [
-  { title: "UI Design Basics: Master the Craft", image: "/courses/v1.png", progress: 60, total: "2/10 lessons" },
-  { title: "AI Filmmaking: Future of Video", image: "/courses/v2.png", progress: 20, total: "2/9 lessons" },
-  { title: "Advanced React Patterns", image: "/courses/v3.png", progress: 40, total: "6/15 lessons" },
-];
 
 const UPCOMING = [
   { mode: "ONLINE", date: "AUG 24, 2024", title: "UX Research: Deep Dive into User Interviews", desc: "Expert-led session on conducting high-quality user interviews." },
@@ -548,6 +540,7 @@ function BootcampSection({ token, profile }) {
   const [tab, setTab] = useState("overview");
   const [showDrawer, setShowDrawer] = useState(false);
   const [showAllAnn, setShowAllAnn] = useState(false);
+  const [watched, setWatched] = useState(false);
 
   /* API data */
   const [bootcampData, setBootcampData] = useState(null);
@@ -700,7 +693,7 @@ function BootcampSection({ token, profile }) {
                 </div>
                 <div className="flex gap-3">
                   <button onClick={()=>window.open(bootcampData?.zoomLink||"https://zoom.us","_blank")} className="bg-[#7C3AED] text-white text-sm font-bold px-5 py-2 rounded-xl hover:bg-purple-600">Join Session Now →</button>
-                  <button className="bg-white/20 text-white text-sm font-semibold px-5 py-2 rounded-xl hover:bg-white/30">Mark as Watched</button>
+                  <button onClick={()=>setWatched(true)} className={`text-sm font-semibold px-5 py-2 rounded-xl transition-all ${watched?"bg-green-500/20 text-green-400 border border-green-500/30":"bg-white/20 text-white hover:bg-white/30"}`}>{watched?"✓ Marked as Watched":"Mark as Watched"}</button>
                 </div>
               </div>
               <div className="bg-white/5 border border-white/10 rounded-xl p-4">
@@ -720,16 +713,12 @@ function BootcampSection({ token, profile }) {
               <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-white">Announcements</h3>
-                  <button onClick={()=>setShowAllAnn(v=>!v)} className="text-xs text-[#7C3AED] hover:underline">{showAllAnn?"Show Less":"View All"}</button>
+                  {announcements.length > 2 && <button onClick={()=>setShowAllAnn(v=>!v)} className="text-xs text-[#7C3AED] hover:underline">{showAllAnn?"Show Less":"View All"}</button>}
                 </div>
-                {(announcements.length > 0 ? announcements : [
-                  {title:"New Resource: AI Cinematography Guide",createdAt:new Date(Date.now()-7200000).toISOString(),content:"The comprehensive guide for Module 5 is now available."},
-                  {title:"Workshop Rescheduled: 1-on-1 Mentoring",createdAt:new Date(Date.now()-86400000).toISOString(),content:"The Friday mentorship slot has been moved to 3:00 PM."},
-                  ...(showAllAnn?[
-                    {title:"Live Recording: Session 10 Available",createdAt:new Date(Date.now()-259200000).toISOString(),content:"Session 10 recording has been uploaded."},
-                    {title:"Project 02 Deadline: Oct 28",createdAt:new Date(Date.now()-345600000).toISOString(),content:"Submit your 30-second Runway Gen-2 short film by Oct 28."},
-                  ]:[])
-                ]).slice(0, showAllAnn ? 99 : 2).map((a,i)=>(
+                {announcements.length === 0 ? (
+                  <div className="text-center py-4"><p className="text-xs text-gray-500">No announcements yet.</p></div>
+                ) : null}
+                {(showAllAnn ? announcements : announcements.slice(0,2)).map((a,i)=>(
                   <div key={i} className="border-b border-white/5 last:border-0 pb-3 last:pb-0 mb-3 last:mb-0">
                     <div className="flex items-center justify-between"><p className="text-xs font-semibold text-white">{a.title}</p><span className="text-[10px] text-gray-500 shrink-0 ml-2">{a.createdAt?timeAgo(a.createdAt):a.time}</span></div>
                     <p className="text-[11px] text-gray-400 mt-1">{a.content||a.desc}</p>
@@ -2240,21 +2229,61 @@ const MOCK_THREADS = [
 ];
 const THREAD_TAG_COLORS = { Tools:"bg-blue-500/20 text-blue-400", Prompts:"bg-purple-500/20 text-purple-400", Workflow:"bg-orange-500/20 text-orange-400", Certificates:"bg-[#7C3AED]/20 text-[#7C3AED]", Resources:"bg-green-500/20 text-green-400", General:"bg-gray-500/20 text-gray-400" };
 
-function CommunitySection({ token }) {
-  const [threads] = useState(MOCK_THREADS);
+function CommunitySection({ token, profile }) {
+  const [threads, setThreads] = useState(MOCK_THREADS);
   const [selected, setSelected] = useState(null);
   const [filterTag, setFilterTag] = useState("All");
   const [search, setSearch] = useState("");
   const [reply, setReply] = useState("");
-  const [replies, setReplies] = useState([]);
+  const [repliesMap, setRepliesMap] = useState({});
+  const [showNewThread, setShowNewThread] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newBody, setNewBody] = useState("");
+  const [newTag, setNewTag] = useState("General");
+  const [posting, setPosting] = useState(false);
 
+  useEffect(() => {
+    fetch("/api/community/threads")
+      .then(r => r.ok ? r.json() : [])
+      .then(d => { if (Array.isArray(d) && d.length > 0) setThreads(d); })
+      .catch(() => {});
+  }, []);
+
+  const currentReplies = repliesMap[selected?._id || selected?.id] || [];
   const tags = ["All", ...new Set(threads.map(t => t.tag))];
   const filtered = threads.filter(t => (filterTag === "All" || t.tag === filterTag) && (!search || t.title.toLowerCase().includes(search.toLowerCase())));
 
-  const submitReply = () => {
+  const submitReply = async () => {
     if (!reply.trim()) return;
-    setReplies(rs => [...rs, { id: Date.now(), text: reply.trim(), time: "Just now", author: "You" }]);
+    const id = selected?._id || selected?.id;
+    const newReply = { id: Date.now(), text: reply.trim(), time: "Just now", author: profile?.name || "You", createdAt: new Date().toISOString() };
+    setRepliesMap(r => ({ ...r, [id]: [...(r[id] || []), newReply] }));
     setReply("");
+    if (selected?._id) {
+      try {
+        await fetch(`/api/community/threads/${selected._id}/reply`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ text: newReply.text, author: profile?.name || "You" }),
+        });
+      } catch { /* local state already updated */ }
+    }
+  };
+
+  const submitThread = async () => {
+    if (!newTitle.trim() || !newBody.trim()) return;
+    setPosting(true);
+    const optimistic = { id: Date.now(), _id: null, title: newTitle.trim(), body: newBody.trim(), tag: newTag, author: profile?.name || "You", replies: 0, views: 0, time: "Just now", createdAt: new Date().toISOString() };
+    try {
+      const res = await fetch("/api/community/threads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title: optimistic.title, body: optimistic.body, tag: optimistic.tag, author: optimistic.author }),
+      });
+      const data = res.ok ? await res.json() : null;
+      setThreads(prev => [data || optimistic, ...prev]);
+    } catch { setThreads(prev => [optimistic, ...prev]); }
+    setShowNewThread(false); setNewTitle(""); setNewBody(""); setPosting(false);
   };
 
   return (
@@ -2264,8 +2293,21 @@ function CommunitySection({ token }) {
         <div className="p-4 border-b border-white/5">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-base font-bold text-white">Community Forum</h1>
-            <span className="text-[10px] bg-[#7C3AED]/20 text-[#7C3AED] font-bold px-2 py-0.5 rounded-full">{threads.length} Threads</span>
+            <button onClick={() => setShowNewThread(v => !v)} className="text-xs bg-[#7C3AED] text-white font-bold px-3 py-1.5 rounded-lg hover:bg-purple-600">+ New Thread</button>
           </div>
+          {showNewThread && (
+            <div className="bg-white/5 border border-white/10 rounded-xl p-3 mb-3 space-y-2">
+              <input value={newTitle} onChange={e => setNewTitle(e.target.value)} placeholder="Thread title..." className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 outline-none"/>
+              <textarea value={newBody} onChange={e => setNewBody(e.target.value)} rows={3} placeholder="What's on your mind?" className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 outline-none resize-none"/>
+              <div className="flex gap-2 items-center">
+                <select value={newTag} onChange={e => setNewTag(e.target.value)} className="text-xs bg-[#1A1D1E] border border-white/10 rounded-lg px-2 py-1.5 text-white outline-none">
+                  {["General","Tools","Prompts","Workflow","Resources","Certificates"].map(t => <option key={t}>{t}</option>)}
+                </select>
+                <button onClick={submitThread} disabled={posting || !newTitle.trim() || !newBody.trim()} className="text-xs bg-[#7C3AED] text-white font-bold px-3 py-1.5 rounded-lg disabled:opacity-40">Post</button>
+                <button onClick={() => setShowNewThread(false)} className="text-xs text-gray-400 hover:text-white">Cancel</button>
+              </div>
+            </div>
+          )}
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search threads..." className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-600 outline-none mb-3"/>
           <div className="flex gap-1 flex-wrap">
             {tags.map(t => (
@@ -2311,17 +2353,17 @@ function CommunitySection({ token }) {
                 <p className="text-sm text-gray-300 leading-relaxed">{selected.body}</p>
               </div>
               <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
-                <span>💬 {selected.replies + replies.length} replies</span>
+                <span>💬 {(selected.replies || 0) + currentReplies.length} replies</span>
                 <span>👁 {selected.views} views</span>
                 <button className="ml-auto text-[#7C3AED] hover:underline">Share</button>
               </div>
             </div>
 
             {/* Existing replies */}
-            {replies.length > 0 && (
+            {currentReplies.length > 0 && (
               <div className="space-y-3">
                 <p className="text-[10px] text-gray-500 font-semibold uppercase">Replies</p>
-                {replies.map(r => (
+                {currentReplies.map(r => (
                   <div key={r.id} className="bg-white/5 border border-white/10 rounded-xl p-3">
                     <div className="flex items-center gap-2 mb-1">
                       <div className="w-6 h-6 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-bold">Y</div>

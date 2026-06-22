@@ -2220,12 +2220,6 @@ function UsersAdmin({ token }) {
 }
 
 /* ── PAYMENTS ADMIN ── */
-const PAY_MOCK = [
-  { id:"#PAY-001", user:"Arjun Sharma",  program:"AI Filmmaking Bootcamp",        type:"Bootcamp", date:"Oct 24, 2023", amount:"₹2,499", status:"Paid"    },
-  { id:"#PAY-002", user:"Priya Patel",   program:"Advanced React Patterns",        type:"Course",   date:"Sep 12, 2023", amount:"₹999",   status:"Paid"    },
-  { id:"#PAY-003", user:"Ravi Kumar",    program:"AI Cinematography Workshop",     type:"Workshop", date:"Aug 05, 2023", amount:"₹1,499", status:"Pending" },
-  { id:"#PAY-004", user:"Sneha Reddy",   program:"UI/UX Design Fundamentals",     type:"Course",   date:"Jul 20, 2023", amount:"₹799",   status:"Paid"    },
-];
 
 function PaymentsAdmin({ token }) {
   const [txs, setTxs] = useState([]);
@@ -2504,6 +2498,11 @@ function CommunityAdmin({ token }) {
   const [newKw, setNewKw]           = useState("");
   const [showEventForm, setShowEventForm] = useState(false);
   const [event, setEvent] = useState({ title:"", type:"Workshop", mode:"ONLINE", date:"", startTime:"", duration:"2", capacity:"50", link:"", openRSVP:true, featured:false });
+  const [eventSuccess, setEventSuccess] = useState(false);
+  const [showAnnForm, setShowAnnForm] = useState(false);
+  const [annTitle, setAnnTitle] = useState("");
+  const [annMsg, setAnnMsg] = useState("");
+  const [annSuccess, setAnnSuccess] = useState(false);
 
   if (showEventForm) {
     const previewDate = event.date ? new Date(event.date + "T00:00:00") : null;
@@ -2558,7 +2557,14 @@ function CommunityAdmin({ token }) {
           </div>
           <div className="flex gap-3">
             <button onClick={()=>setShowEventForm(false)} className="text-xs border border-white/20 text-gray-300 px-5 py-2.5 rounded-lg hover:bg-white/5">Cancel</button>
-            <button className="text-xs bg-[#C7E36B] text-black font-bold px-5 py-2.5 rounded-lg hover:bg-lime-300 flex items-center gap-2"><I name="plus" size={14}/> Create Event</button>
+            <button onClick={async()=>{
+              try {
+                const h={"Content-Type":"application/json",Authorization:`Bearer ${token}`};
+                const res=await fetch("/api/community/events",{method:"POST",headers:h,body:JSON.stringify({...event,date:event.date?new Date(event.date):null,capacity:Number(event.capacity)})});
+                if(res.ok){setShowEventForm(false);setEvent({title:"",type:"Workshop",mode:"ONLINE",date:"",startTime:"",duration:"2",capacity:"50",link:"",openRSVP:true,featured:false});setEventSuccess(true);setTimeout(()=>setEventSuccess(false),3000);}
+                else alert("Failed to create event. Please try again.");
+              } catch { alert("Network error."); }
+            }} className="text-xs bg-[#C7E36B] text-black font-bold px-5 py-2.5 rounded-lg hover:bg-lime-300 flex items-center gap-2"><I name="plus" size={14}/> Create Event</button>
           </div>
         </div>
         {/* Live preview */}
@@ -2599,11 +2605,33 @@ function CommunityAdmin({ token }) {
             <button onClick={()=>setShowEventForm(true)} className="bg-white/10 text-white font-bold text-sm px-4 py-2 rounded-xl hover:bg-white/20 flex items-center gap-2">
               📅 Create Event
             </button>
-            <button className="bg-[#C7E36B] text-black font-bold text-sm px-4 py-2 rounded-xl hover:opacity-90 flex items-center gap-2">
-              <I name="plus" size={15} /> Create Thread
+            <button onClick={()=>setShowAnnForm(v=>!v)} className="bg-[#C7E36B] text-black font-bold text-sm px-4 py-2 rounded-xl hover:opacity-90 flex items-center gap-2">
+              <I name="plus" size={15} /> Post Announcement
             </button>
           </div>
         </div>
+
+        {eventSuccess && <div className="mb-4 bg-green-500/10 border border-green-500/20 rounded-lg px-4 py-2.5 text-green-400 text-xs font-semibold">✓ Event created successfully!</div>}
+        {annSuccess && <div className="mb-4 bg-green-500/10 border border-green-500/20 rounded-lg px-4 py-2.5 text-green-400 text-xs font-semibold">✓ Announcement broadcast to all students!</div>}
+
+        {showAnnForm && (
+          <div className="mb-5 bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
+            <p className="text-xs font-bold text-white uppercase tracking-wide">Broadcast Announcement</p>
+            <Fld label="Title" value={annTitle} onChange={setAnnTitle} placeholder="e.g. New Resource Available"/>
+            <div>
+              <p className="text-[10px] text-gray-400 uppercase font-semibold mb-1">Message</p>
+              <textarea value={annMsg} onChange={e=>setAnnMsg(e.target.value)} rows={3} placeholder="Message to send to all students..." className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[#C7E36B]/50 resize-none placeholder-gray-600"/>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={async()=>{
+                if(!annTitle.trim()) return;
+                await fetch("/api/notifications/broadcast",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${token}`},body:JSON.stringify({title:annTitle,message:annMsg,type:"announcement"})}).catch(()=>{});
+                setShowAnnForm(false);setAnnTitle("");setAnnMsg("");setAnnSuccess(true);setTimeout(()=>setAnnSuccess(false),3000);
+              }} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg">Broadcast to All Students</button>
+              <button onClick={()=>setShowAnnForm(false)} className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg hover:bg-white/5">Cancel</button>
+            </div>
+          </div>
+        )}
 
         {/* Filter bar */}
         <div className="flex items-center gap-3 mb-5 flex-wrap">
@@ -3386,8 +3414,21 @@ function PlatformSettings({ token }) {
     { id: "payment", label: "💳 Payment Gateway" },
     { id: "auth",    label: "🔐 Social Auth"     },
     { id: "site",    label: "🌐 Site Config"     },
-    { id: "coupons", label: "🏷 Coupons"         },
+    { id: "coupons",        label: "🏷 Coupons"         },
+    { id: "notifications",  label: "🔔 Notifications"   },
   ];
+
+  const [notifForm, setNotifForm]         = useState({ title:"", message:"", type:"general", recipientType:"All Students", recipientEmail:"" });
+  const [notifSending, setNotifSending]   = useState(false);
+  const [notifSent, setNotifSent]         = useState(false);
+  const [recentNotifs, setRecentNotifs]   = useState([]);
+
+  useEffect(() => {
+    if (tab === "notifications") {
+      fetch("/api/notifications", { headers:{ Authorization:`Bearer ${token}` } })
+        .then(r => r.ok ? r.json() : []).then(d => { if (Array.isArray(d)) setRecentNotifs(d); }).catch(()=>{});
+    }
+  }, [tab]);
 
   const ConfigField = ({ configKey }) => {
     const c = configs[configKey];
@@ -3624,6 +3665,84 @@ function PlatformSettings({ token }) {
               </table>
             </div>
           )}
+        </div>
+      )}
+
+      {tab === "notifications" && (
+        <div className="space-y-6">
+          {/* Send form */}
+          <div className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4">
+            <h2 className="text-base font-bold text-white">Send Notification</h2>
+            <div>
+              <p className="text-[10px] text-gray-400 uppercase font-semibold mb-1.5">Recipient</p>
+              <select value={notifForm.recipientType} onChange={e=>setNotifForm(f=>({...f,recipientType:e.target.value}))} className="w-full bg-[#1A1D1E] border border-white/15 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#C7E36B]">
+                {["All Students","Bootcamp Students Only","Specific Email"].map(o=><option key={o}>{o}</option>)}
+              </select>
+            </div>
+            {notifForm.recipientType === "Specific Email" && (
+              <Fld label="Email Address" value={notifForm.recipientEmail} onChange={v=>setNotifForm(f=>({...f,recipientEmail:v}))} placeholder="student@example.com"/>
+            )}
+            <Fld label="Title" value={notifForm.title} onChange={v=>setNotifForm(f=>({...f,title:v}))} placeholder="e.g. New session recording uploaded"/>
+            <div>
+              <p className="text-[10px] text-gray-400 uppercase font-semibold mb-1.5">Message</p>
+              <textarea value={notifForm.message} onChange={e=>setNotifForm(f=>({...f,message:e.target.value}))} rows={3} placeholder="Write your notification message..." className="w-full bg-[#1A1D1E] border border-white/10 rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-[#C7E36B]/50 resize-none placeholder-gray-600"/>
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-400 uppercase font-semibold mb-2">Type</p>
+              <div className="flex gap-2 flex-wrap">
+                {[["session","📅 Session"],["announcement","📢 Announcement"],["resource","📚 Resource"],["general","⚠️ General"]].map(([v,l])=>(
+                  <button key={v} onClick={()=>setNotifForm(f=>({...f,type:v}))} className={`text-xs px-3 py-1.5 rounded-lg font-semibold border transition-all ${notifForm.type===v?"bg-[#C7E36B] text-black border-[#C7E36B]":"border-white/20 text-gray-400 hover:border-white/40"}`}>{l}</button>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-3 pt-1">
+              {notifSent && <span className="text-green-400 text-xs font-semibold">✓ Notification sent!</span>}
+              <button onClick={async()=>{
+                if(!notifForm.title.trim()) return;
+                setNotifSending(true);
+                try {
+                  const body = { title:notifForm.title, message:notifForm.message, type:notifForm.type };
+                  if (notifForm.recipientType === "Specific Email" && notifForm.recipientEmail) {
+                    const u = await fetch("/api/users",{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.json());
+                    const found = Array.isArray(u) ? u.find(x=>x.email===notifForm.recipientEmail) : null;
+                    if (found) body.userIds = [found._id];
+                    else { alert("User with that email not found."); setNotifSending(false); return; }
+                  }
+                  await fetch("/api/notifications/broadcast",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${token}`},body:JSON.stringify(body)});
+                  setNotifForm(f=>({...f,title:"",message:""}));
+                  setNotifSent(true); setTimeout(()=>setNotifSent(false),2000);
+                  fetch("/api/notifications",{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.json()).then(d=>{if(Array.isArray(d))setRecentNotifs(d);}).catch(()=>{});
+                } catch { alert("Failed to send notification."); }
+                setNotifSending(false);
+              }} disabled={notifSending || !notifForm.title.trim()} className="ml-auto text-xs bg-[#C7E36B] text-black font-bold px-5 py-2.5 rounded-xl hover:bg-lime-300 disabled:opacity-60">
+                {notifSending ? "Sending..." : "Send Notification"}
+              </button>
+            </div>
+          </div>
+
+          {/* Recent broadcasts */}
+          <div>
+            <h3 className="text-sm font-bold text-white mb-3">Recent Broadcasts</h3>
+            {recentNotifs.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center py-6">No notifications sent yet.</p>
+            ) : (
+              <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
+                <table className="w-full text-xs">
+                  <thead><tr className="border-b border-white/10 text-gray-400">{["Title","Type","Sent To","Date"].map(h=><th key={h} className="text-left px-4 py-3 font-semibold">{h}</th>)}</tr></thead>
+                  <tbody>
+                    {recentNotifs.slice(0,20).map((n,i)=>(
+                      <tr key={n._id||i} className="border-b border-white/5 last:border-0 hover:bg-white/[0.03]">
+                        <td className="px-4 py-3 text-white font-medium max-w-[200px] truncate">{n.title}</td>
+                        <td className="px-4 py-3"><span className="capitalize text-gray-400">{n.type}</span></td>
+                        <td className="px-4 py-3 text-gray-400">{n.user?.email || "All students"}</td>
+                        <td className="px-4 py-3 text-gray-500">{new Date(n.createdAt).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
