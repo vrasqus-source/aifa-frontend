@@ -77,7 +77,7 @@ export default function BootcampEnroll() {
 
   const handleCreateAccount = async () => {
     try {
-      const res  = await fetch("https://aifa-backend-4an6.onrender.com/api/auth/signup", {
+      const res  = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: form.name, email: form.email, phone: form.phone, password }),
@@ -85,7 +85,7 @@ export default function BootcampEnroll() {
       const data = await res.json();
       if (data.token) {
         localStorage.setItem("aifa_token", data.token);
-        localStorage.setItem("aifa_user", JSON.stringify(data.user || {}));
+        localStorage.setItem("aifa_user", JSON.stringify({ _id: data._id, name: data.name, role: data.role || "student" }));
       }
     } catch { /* ignore */ }
     navigate("/dashboard");
