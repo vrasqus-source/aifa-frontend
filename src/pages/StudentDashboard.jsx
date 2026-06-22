@@ -496,6 +496,7 @@ function BootcampSection({ token }) {
   const [activeSession, setActiveSession] = useState(BC_SESSION_LIST[0]);
   const [activeProject, setActiveProject] = useState(BC_PROJECT_LIST[0]);
   const [showDrawer, setShowDrawer] = useState(false);
+  const [showAllAnn, setShowAllAnn] = useState(false);
 
   if (!enrolled) return (
     <div className="flex-1 overflow-y-auto bg-[#0B0F10]">
@@ -599,7 +600,7 @@ function BootcampSection({ token }) {
                   <span>📅 Today, 7:00 PM IST</span><span>⏳ Starts in 2h 45m</span>
                 </div>
                 <div className="flex gap-3">
-                  <button className="bg-[#7C3AED] text-white text-sm font-bold px-5 py-2 rounded-xl hover:bg-purple-600">Join Session Now →</button>
+                  <button onClick={()=>window.open("https://zoom.us","_blank")} className="bg-[#7C3AED] text-white text-sm font-bold px-5 py-2 rounded-xl hover:bg-purple-600">Join Session Now →</button>
                   <button className="bg-white/20 text-white text-sm font-semibold px-5 py-2 rounded-xl hover:bg-white/30">Mark as Watched</button>
                 </div>
               </div>
@@ -620,9 +621,16 @@ function BootcampSection({ token }) {
               <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-white">Announcements</h3>
-                  <button className="text-xs text-[#7C3AED] hover:underline">View All</button>
+                  <button onClick={()=>setShowAllAnn(v=>!v)} className="text-xs text-[#7C3AED] hover:underline">{showAllAnn?"Show Less":"View All"}</button>
                 </div>
-                {[{title:"New Resource: AI Cinematography Guide",time:"2h ago",desc:"I've just uploaded the comprehensive guide for Module 5. Please review it before today's live session."},{title:"Workshop Rescheduled: 1-on-1 Mentoring",time:"Yesterday",desc:"The Friday mentorship slot has been moved to 3:00 PM EST. Check the Mentorship tab for updates."}].map((a,i)=>(
+                {[
+                  {title:"New Resource: AI Cinematography Guide",time:"2h ago",desc:"I've just uploaded the comprehensive guide for Module 5. Please review it before today's live session."},
+                  {title:"Workshop Rescheduled: 1-on-1 Mentoring",time:"Yesterday",desc:"The Friday mentorship slot has been moved to 3:00 PM EST. Check the Mentorship tab for updates."},
+                  ...(showAllAnn?[
+                    {title:"Live Recording: Session 10 Available",time:"3 days ago",desc:"Session 10 recording has been uploaded. Watch at 1.5x speed for revision."},
+                    {title:"Project 02 Deadline: Oct 28",time:"4 days ago",desc:"Submit your 30-second Runway Gen-2 short film by Oct 28, 11:59 PM IST."},
+                  ]:[])
+                ].map((a,i)=>(
                   <div key={i} className="border-b border-white/5 last:border-0 pb-3 last:pb-0 mb-3 last:mb-0">
                     <div className="flex items-center justify-between"><p className="text-xs font-semibold text-white">{a.title}</p><span className="text-[10px] text-gray-500 shrink-0 ml-2">{a.time}</span></div>
                     <p className="text-[11px] text-gray-400 mt-1">{a.desc}</p>
@@ -636,7 +644,7 @@ function BootcampSection({ token }) {
                 {["Filmmaking Syllabus.pdf","Resource Engineering.zip","Weekly Reading List.pdf"].map((r,i)=>(
                   <div key={i} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                     <span className="text-[10px] text-gray-300 truncate flex-1 mr-1">📄 {r}</span>
-                    <button className="text-gray-400 hover:text-[#7C3AED] shrink-0"><Ic name="download" size={13}/></button>
+                    <button onClick={()=>alert(`Downloading ${r}...`)} className="text-gray-400 hover:text-[#7C3AED] shrink-0"><Ic name="download" size={13}/></button>
                   </div>
                 ))}
                 <button onClick={() => setShowDrawer(true)} className="text-xs text-[#7C3AED] hover:underline mt-2">View All Files</button>
@@ -649,7 +657,7 @@ function BootcampSection({ token }) {
                       <div className="w-7 h-7 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-bold">{m.name[0]}</div>
                       <div><p className="text-[10px] font-semibold text-white">{m.name}</p><p className="text-[9px] text-gray-500">{m.role}</p></div>
                     </div>
-                    <button className="text-gray-400 hover:text-[#7C3AED]"><Ic name="message" size={13}/></button>
+                    <button onClick={()=>alert("Messaging feature coming soon! Reach your mentor via Discord for now.")} className="text-gray-400 hover:text-[#7C3AED]"><Ic name="message" size={13}/></button>
                   </div>
                 ))}
               </div>
@@ -1110,6 +1118,7 @@ function JobsSection({ token }) {
   const [budgetFilter, setBudget]     = useState("All");
   const [timelineFilter, setTimeline] = useState("All");
   const [detailJob, setDetailJob]     = useState(null);
+  const [applied, setApplied]         = useState(false);
 
   useEffect(() => {
     fetch("https://aifa-backend-4an6.onrender.com/api/jobs")
@@ -1136,7 +1145,7 @@ function JobsSection({ token }) {
     <div className="p-6">
       {/* View Details Modal */}
       {detailJob && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={() => setDetailJob(null)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={() => { setDetailJob(null); setApplied(false); }}>
           <div className="bg-[#0F1112] border border-white/10 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between mb-4">
               <div>
@@ -1144,7 +1153,7 @@ function JobsSection({ token }) {
                 <h2 className="text-lg font-bold text-white mt-2">{detailJob.title}</h2>
                 <p className="text-xs text-gray-500 uppercase font-semibold mt-0.5">{detailJob.type}</p>
               </div>
-              <button onClick={() => setDetailJob(null)} className="text-gray-400 hover:text-white text-xl leading-none">✕</button>
+              <button onClick={() => { setDetailJob(null); setApplied(false); }} className="text-gray-400 hover:text-white text-xl leading-none">✕</button>
             </div>
             <p className="text-sm text-gray-300 leading-relaxed mb-4">{detailJob.description}</p>
             {detailJob.skills?.length > 0 && (
@@ -1163,7 +1172,14 @@ function JobsSection({ token }) {
               <p className="text-xs font-bold text-purple-300 mb-1">How to Apply</p>
               <p className="text-xs text-gray-400">Submit your portfolio and a brief introduction via the AIFA platform. Shortlisted candidates will be contacted within 5 business days.</p>
             </div>
-            <button className="w-full bg-[#7C3AED] hover:bg-[#6d28d9] text-white font-bold py-3 rounded-xl transition-all text-sm">Apply Now</button>
+            {applied ? (
+              <div className="w-full bg-green-500/10 border border-green-500/30 rounded-xl py-3 text-center">
+                <p className="text-green-400 font-bold text-sm">✓ Application Submitted!</p>
+                <p className="text-green-300 text-xs mt-1">We'll contact you within 5 business days.</p>
+              </div>
+            ) : (
+              <button onClick={()=>setApplied(true)} className="w-full bg-[#7C3AED] hover:bg-[#6d28d9] text-white font-bold py-3 rounded-xl transition-all text-sm">Apply Now</button>
+            )}
           </div>
         </div>
       )}

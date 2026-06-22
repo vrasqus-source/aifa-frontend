@@ -58,6 +58,8 @@ export default function BootcampEnroll() {
   const [confirmPw, setConfirmPw]       = useState("");
   const [showPw, setShowPw]             = useState(false);
   const [showCPw, setShowCPw]           = useState(false);
+  const [upiId, setUpiId]               = useState("");
+  const [upiVerified, setUpiVerified]   = useState(false);
 
   const ORIGINAL = 14000;
   const DISCOUNT = couponApplied ? 700 : 0;
@@ -183,8 +185,17 @@ export default function BootcampEnroll() {
                         ))}
                       </div>
                       <div className="flex gap-2">
-                        <input placeholder="example@upi" className="flex-1 bg-[#1A1D1E] border border-white/20 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#C7E36B] placeholder-gray-600" />
-                        <button className="text-xs bg-white/10 text-white px-3 py-2 rounded-lg hover:bg-white/20 font-semibold">Verify</button>
+                        <input
+                          value={upiId}
+                          onChange={e=>{setUpiId(e.target.value);setUpiVerified(false);}}
+                          placeholder="example@upi"
+                          className={`flex-1 bg-[#1A1D1E] border rounded-lg px-3 py-2 text-sm text-white outline-none placeholder-gray-600 transition-colors ${upiVerified?"border-green-500/50":"border-white/20 focus:border-[#C7E36B]"}`}
+                        />
+                        {upiVerified ? (
+                          <span className="text-xs bg-green-500/20 text-green-400 font-bold px-3 py-2 rounded-lg border border-green-500/30">✓ Verified</span>
+                        ) : (
+                          <button onClick={()=>{if(!upiId.includes("@")){alert("Enter a valid UPI ID (e.g. name@upi)")}else{setUpiVerified(true)}}} className="text-xs bg-white/10 text-white px-3 py-2 rounded-lg hover:bg-white/20 font-semibold">Verify</button>
+                        )}
                       </div>
                     </div>
                   )}
@@ -340,7 +351,7 @@ export default function BootcampEnroll() {
             <h2 className="text-xl font-bold text-white">Complete Your AIFA Account</h2>
             <p className="text-gray-400 text-sm">Your seat has already been reserved.</p>
 
-            <button className="w-full border border-white/20 text-white font-semibold py-3 rounded-xl hover:bg-white/5 flex items-center justify-center gap-3 transition-all text-sm">
+            <button onClick={()=>alert("Google sign-in is currently unavailable. Please create a password below.")} className="w-full border border-white/20 text-white font-semibold py-3 rounded-xl hover:bg-white/5 flex items-center justify-center gap-3 transition-all text-sm">
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
