@@ -473,11 +473,11 @@ const BC_SESSION_LIST = [
   { no:12, title:"Generative Video with Sora & Midjourney", tag:"Advanced", locked:true },
 ];
 const BC_PROJECT_LIST = [
-  { no:"PROJECT 01", title:"AI-Generated Cinematic Storyboard", desc:"Create a 10-frame storyboard using Midjourney or DALL-E 3.", req:[{done:true,text:"10 story frames minimum"},{done:true,text:"Consistent character design"},{done:false,text:"Export as high-resolution PDF"},{done:false,text:"Include prompt annotations"}], res:["Storyboard_Template.pdf","Reference_Guide.zip","Style_Board.pdf"] },
-  { no:"PROJECT 02", title:"Generative Video Short (30s)", desc:"Produce a 30-second short film using Runway Gen-2 or Pika Labs.", req:[{done:true,text:"30 seconds minimum runtime"},{done:false,text:"At least 3 distinct scenes"},{done:false,text:"Original AI-generated audio"},{done:false,text:"Submit as MP4 1080p"}], res:["Video_Spec_Sheet.pdf","Audio_Guidelines.pdf"] },
-  { no:"PROJECT 03", title:"AI Soundscapes & Scoring", desc:"Compose an original score for your short film using Udio or Suno AI.", req:[{done:false,text:"Minimum 2-minute composition"},{done:false,text:"3 distinct emotional shifts"},{done:false,text:"MP3 or WAV (320kbps)"}], res:["Music_Brief.pdf"] },
-  { no:"PROJECT 04", title:"Character Arc Visual Narrative", desc:"Create a character visual narrative using AI image generation.", req:[{done:false,text:"5 character state images"},{done:false,text:"Consistent visual style"},{done:false,text:"Clear story progression"}], res:["Character_Sheet.pdf","Style_Reference.zip"] },
-  { no:"PROJECT 05", title:"Final AI Film Portfolio", desc:"A 3-minute capstone film integrating all bootcamp skills.", req:[{done:false,text:"Minimum 3 minutes runtime"},{done:false,text:"All techniques integrated"},{done:false,text:"Original score required"},{done:false,text:"Professional color grade"}], res:["Portfolio_Rubric.pdf","Submission_Guide.pdf"] },
+  { no:"PROJECT 01", title:"AI-Generated Cinematic Storyboard", desc:"Create a 10-frame storyboard using Midjourney or DALL-E 3.", req:[{done:true,text:"10 story frames minimum"},{done:true,text:"Consistent character design"},{done:false,text:"Export as high-resolution PDF"},{done:false,text:"Include prompt annotations"}], res:["Storyboard_Template.pdf","Reference_Guide.zip","Style_Board.pdf","Prompt_Sheet.pdf"] },
+  { no:"PROJECT 02", title:"Generative Video Short (30s)", desc:"Produce a 30-second short film using Runway Gen-2 or Pika Labs.", req:[{done:true,text:"30 seconds minimum runtime"},{done:false,text:"At least 3 distinct scenes"},{done:false,text:"Original AI-generated audio"},{done:false,text:"Submit as MP4 1080p"}], res:["Video_Spec_Sheet.pdf","Audio_Guidelines.pdf","Shot_List.pdf","Export_Guide.zip"] },
+  { no:"PROJECT 03", title:"AI Soundscapes & Scoring", desc:"Compose an original score for your short film using Udio or Suno AI.", req:[{done:false,text:"Minimum 2-minute composition"},{done:false,text:"3 distinct emotional shifts"},{done:false,text:"MP3 or WAV (320kbps)"},{done:false,text:"Sync to video timeline"}], res:["Music_Brief.pdf","Suno_Guide.pdf","Udio_Prompts.pdf","Audio_Template.zip"] },
+  { no:"PROJECT 04", title:"Character Arc Visual Narrative", desc:"Create a character visual narrative using AI image generation.", req:[{done:false,text:"5 character state images"},{done:false,text:"Consistent visual style"},{done:false,text:"Clear story progression"},{done:false,text:"Include mood board"}], res:["Character_Sheet.pdf","Style_Reference.zip","Midjourney_Tips.pdf","Mood_Board.pdf"] },
+  { no:"PROJECT 05", title:"Final AI Film Portfolio", desc:"A 3-minute capstone film integrating all bootcamp skills.", req:[{done:false,text:"Minimum 3 minutes runtime"},{done:false,text:"All techniques integrated"},{done:false,text:"Original score required"},{done:false,text:"Professional color grade"}], res:["Portfolio_Rubric.pdf","Submission_Guide.pdf","Color_LUTs.zip","Final_Checklist.pdf"] },
 ];
 
 const BC_FILES = [
@@ -498,30 +498,72 @@ function BootcampSection({ token }) {
   const [showDrawer, setShowDrawer] = useState(false);
 
   if (!enrolled) return (
-    <div className="flex items-center justify-center min-h-full p-6">
-      <div className="max-w-xl w-full">
-        <div className="bg-[#0F1112] border border-white/10 rounded-2xl overflow-hidden">
-          <div className="relative h-44 bg-gradient-to-br from-[#4C1D95] via-[#7C3AED]/60 to-[#1e1b4b] flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-5xl mb-3">🎬</div>
-              <span className="text-[11px] bg-[#7C3AED] text-white font-bold px-3 py-1 rounded-full tracking-wide">BATCH 3 · 2024</span>
+    <div className="flex-1 overflow-y-auto bg-[#0B0F10]">
+      <div className="max-w-4xl mx-auto px-6 py-10">
+        {/* Header */}
+        <div className="mb-8">
+          <span className="text-[10px] bg-[#7C3AED] text-white font-bold px-3 py-1 rounded-full tracking-wider">BATCH 3 · 2024</span>
+          <h1 className="text-3xl font-black text-white mt-4 mb-2 leading-tight">Build AI-Powered Films<br/>from Script to Screen</h1>
+          <p className="text-gray-400 text-sm leading-relaxed max-w-lg">Transform your storytelling with cutting-edge AI tools. No prior filmmaking experience needed — just your imagination.</p>
+        </div>
+
+        <div className="grid md:grid-cols-[1fr_320px] gap-6">
+          {/* Left: bullets + CTA */}
+          <div>
+            <div className="bg-[#0F1112] border border-white/10 rounded-2xl p-5 mb-5">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">What's Included</p>
+              <div className="space-y-3">
+                {[
+                  ["🎯", "Beginner Friendly — No prior experience needed"],
+                  ["⏱", "22 Hours of live + recorded content"],
+                  ["📋", "20 Hands-on Assignments"],
+                  ["🎬", "5 Full Project builds"],
+                  ["📥", "Downloadable Resources & Prompt Packs"],
+                  ["🎓", "Certificate of Completion"],
+                  ["👥", "Lifetime AIFA Community Access"],
+                  ["🤝", "1-on-1 Portfolio Mentorship sessions"],
+                  ["🔴", "Session Recordings — rewatch anytime"],
+                ].map(([icon, text]) => (
+                  <div key={text} className="flex items-start gap-3">
+                    <span className="text-lg shrink-0 mt-0.5">{icon}</span>
+                    <p className="text-sm text-gray-300">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Video preview placeholder */}
+            <div className="relative bg-black rounded-2xl overflow-hidden aspect-video border border-white/10 cursor-pointer group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#4C1D95]/60 via-[#7C3AED]/40 to-[#1e1b4b]/80 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Ic name="play" size={28} className="text-white ml-1"/>
+                </div>
+              </div>
+              <div className="absolute bottom-4 left-4">
+                <p className="text-white font-bold text-sm">Watch Bootcamp Preview</p>
+                <p className="text-white/60 text-xs">2 min overview</p>
+              </div>
             </div>
           </div>
-          <div className="p-6">
-            <h1 className="text-2xl font-black text-white mb-2">Build AI-Powered Films</h1>
-            <p className="text-sm text-gray-400 leading-relaxed mb-5">Transform your storytelling with cutting-edge AI tools. Learn to create cinematic masterpieces from script to screen — no prior filmmaking experience needed.</p>
-            <div className="grid grid-cols-3 gap-3 mb-6">
-              {[{icon:"🎯",label:"Beginner",desc:"Friendly"},{icon:"⏱",label:"22 Hours",desc:"of Content"},{icon:"📋",label:"20",desc:"Assignments"},{icon:"📥",label:"Downloadable",desc:"Content"},{icon:"🎓",label:"Certificate",desc:"on Completion"},{icon:"🎬",label:"Project-Based",desc:"Learning"}].map((f,i)=>(
-                <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
-                  <div className="text-xl mb-1">{f.icon}</div>
-                  <p className="text-[11px] font-bold text-white">{f.label}</p>
-                  <p className="text-[10px] text-gray-500">{f.desc}</p>
-                </div>
-              ))}
+
+          {/* Right: price card + CTA */}
+          <div>
+            <div className="bg-[#0F1112] border border-white/10 rounded-2xl p-5 sticky top-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-3xl font-black text-white">₹14,000</span>
+                <span className="text-gray-400 line-through text-base">₹19,000</span>
+              </div>
+              <p className="text-[#C7E36B] text-xs font-bold mb-4">Save ₹5,000 — Limited seats</p>
+              <div className="space-y-2 mb-5 text-xs text-gray-400">
+                {["1 Month Intensive Program","Lifetime AIFA Membership (Worth ₹40,000)","Certificate of Completion","20 Assignments + 5 Projects"].map(t=>(
+                  <div key={t} className="flex items-center gap-2"><span className="text-[#C7E36B] font-bold">✓</span>{t}</div>
+                ))}
+              </div>
+              <button onClick={()=>setEnrolled(true)} className="w-full bg-[#7C3AED] hover:bg-purple-600 text-white font-bold py-3 rounded-xl text-sm transition-all mb-3">
+                ENROLL NOW →
+              </button>
+              <p className="text-center text-gray-500 text-[11px]">🔒 Secure payment via Razorpay</p>
             </div>
-            <button onClick={()=>setEnrolled(true)} className="w-full bg-[#7C3AED] hover:bg-purple-600 text-white font-bold py-3 rounded-xl text-sm transition-all">
-              ENROLL NOW →
-            </button>
           </div>
         </div>
       </div>
@@ -625,9 +667,8 @@ function BootcampSection({ token }) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={`text-[11px] font-semibold truncate ${activeSession?.no===s.no&&!s.locked?"text-[#7C3AED]":"text-white"}`}>Session {s.no}</p>
-                    <p className="text-[10px] text-gray-500 truncate">{s.title}</p>
+                    <p className="text-[10px] text-gray-500 truncate">{s.tag}</p>
                   </div>
-                  <span className="text-[9px] bg-white/10 text-gray-400 px-1.5 py-0.5 rounded shrink-0">{s.tag}</span>
                 </button>
               ))}
             </div>

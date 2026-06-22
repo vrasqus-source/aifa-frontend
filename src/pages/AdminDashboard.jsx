@@ -362,6 +362,63 @@ function AdminOverview({ token, onNavigate }) {
   );
 }
 
+/* ── BOOTCAMP LIST SUB-COMPONENT ── */
+function ListBootcampAdmin({ onSelect }) {
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [sortBy, setSortBy]             = useState("Default");
+
+  const filtered = BC_CARDS
+    .filter(b => statusFilter === "All" || b.status === statusFilter)
+    .sort((a,b) => sortBy === "Name A-Z" ? a.title.localeCompare(b.title) : sortBy === "Students" ? b.students - a.students : 0);
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className="px-6 pt-5 pb-4 border-b border-white/5 flex items-center justify-between">
+        <div><h1 className="text-xl font-bold text-white">Bootcamps</h1><p className="text-xs text-gray-400">Manage and monitor all bootcamp programs.</p></div>
+        <button className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5"><I name="plus" size={14}/>Create Bootcamp</button>
+      </div>
+      <div className="p-6 grid grid-cols-4 gap-4 border-b border-white/5">
+        {[{icon:"users",label:"TOTAL STUDENTS",val:"35"},{icon:"payments",label:"TOTAL REVENUE",val:"₹1,82,900"},{icon:"bootcamp",label:"TOTAL BOOTCAMPS",val:"3"},{icon:"check",label:"ACTIVE BOOTCAMPS",val:"1"}].map(s=>(
+          <div key={s.label} className="bg-[#0F1112] border border-white/10 rounded-xl p-4">
+            <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center mb-3"><I name={s.icon} size={18} className="text-gray-400"/></div>
+            <p className="text-[10px] text-gray-400 uppercase tracking-wider">{s.label}</p>
+            <p className="text-2xl font-bold text-white mt-1">{s.val}</p>
+          </div>
+        ))}
+      </div>
+      <div className="flex-1 overflow-y-auto p-6">
+        {/* Gap 2: Status + Sort filters */}
+        <div className="flex items-center gap-3 mb-5">
+          <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} className="bg-[#0F1112] border border-white/10 text-gray-400 text-xs rounded-lg px-3 py-1.5 outline-none hover:border-white/20">
+            {["All","ACTIVE","COMPLETED","COMING SOON"].map(o=><option key={o}>{o}</option>)}
+          </select>
+          <select value={sortBy} onChange={e=>setSortBy(e.target.value)} className="bg-[#0F1112] border border-white/10 text-gray-400 text-xs rounded-lg px-3 py-1.5 outline-none hover:border-white/20">
+            {["Default","Name A-Z","Students"].map(o=><option key={o}>{o}</option>)}
+          </select>
+          <span className="text-[10px] text-gray-600">{filtered.length} of {BC_CARDS.length} bootcamps</span>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          {filtered.map(b=>(
+            <div key={b._id} onClick={()=>onSelect(b)} className="bg-[#0F1112] border border-white/10 rounded-xl p-5 cursor-pointer hover:border-[#C7E36B]/40 transition-all">
+              <div className="flex items-start justify-between mb-3">
+                <span className="text-[10px] bg-white/10 text-gray-400 font-bold px-2 py-0.5 rounded">{b.code}</span>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${BC_ST[b.status]||"bg-gray-500/20 text-gray-400"}`}>{b.status}</span>
+              </div>
+              <h3 className="text-sm font-bold text-white mb-1">{b.title}</h3>
+              <p className="text-[11px] text-gray-400 mb-4 line-clamp-2">{b.desc}</p>
+              <div className="grid grid-cols-3 gap-2 border-t border-white/5 pt-3">
+                {[["Students",b.students],["Price",b.price],["Duration",b.duration]].map(([l,v])=>(
+                  <div key={l}><p className="text-[10px] text-gray-500 uppercase">{l}</p><p className="text-xs font-bold text-white mt-0.5">{v}</p></div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── BOOTCAMP ADMIN ── */
 const BC_ST={ACTIVE:"bg-green-500/20 text-green-400",COMPLETED:"bg-blue-500/20 text-blue-400",CANCELLED:"bg-red-500/20 text-red-400","COMING SOON":"bg-yellow-500/20 text-yellow-400",DROPPED:"bg-red-500/20 text-red-400",PUBLISHED:"bg-green-500/20 text-green-400",SCHEDULED:"bg-yellow-500/20 text-yellow-400",DRAFT:"bg-gray-500/20 text-gray-400"};
 const BC_CARDS=[
@@ -431,40 +488,7 @@ function BootcampAdmin({ token }) {
   const TABS=["Overview","Sessions","Students","Projects","Announcement","Resources","Settings"];
 
   if(view==="list") return(
-    <div className="flex flex-col h-full">
-      <div className="px-6 pt-5 pb-4 border-b border-white/5 flex items-center justify-between">
-        <div><h1 className="text-xl font-bold text-white">Bootcamps</h1><p className="text-xs text-gray-400">Manage and monitor all bootcamp programs.</p></div>
-        <button className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5"><I name="plus" size={14}/>Create Bootcamp</button>
-      </div>
-      <div className="p-6 grid grid-cols-4 gap-4 border-b border-white/5">
-        {[{icon:"users",label:"TOTAL STUDENTS",val:"35"},{icon:"payments",label:"TOTAL REVENUE",val:"₹1,82,900"},{icon:"bootcamp",label:"TOTAL BOOTCAMPS",val:"3"},{icon:"check",label:"ACTIVE BOOTCAMPS",val:"1"}].map(s=>(
-          <div key={s.label} className="bg-[#0F1112] border border-white/10 rounded-xl p-4">
-            <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center mb-3"><I name={s.icon} size={18} className="text-gray-400"/></div>
-            <p className="text-[10px] text-gray-400 uppercase tracking-wider">{s.label}</p>
-            <p className="text-2xl font-bold text-white mt-1">{s.val}</p>
-          </div>
-        ))}
-      </div>
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="grid grid-cols-3 gap-4">
-          {BC_CARDS.map(b=>(
-            <div key={b._id} onClick={()=>{setSel(b);setTab("overview");setView("detail");}} className="bg-[#0F1112] border border-white/10 rounded-xl p-5 cursor-pointer hover:border-[#C7E36B]/40 transition-all">
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-[10px] bg-white/10 text-gray-400 font-bold px-2 py-0.5 rounded">{b.code}</span>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${BC_ST[b.status]||"bg-gray-500/20 text-gray-400"}`}>{b.status}</span>
-              </div>
-              <h3 className="text-sm font-bold text-white mb-1">{b.title}</h3>
-              <p className="text-[11px] text-gray-400 mb-4 line-clamp-2">{b.desc}</p>
-              <div className="grid grid-cols-3 gap-2 border-t border-white/5 pt-3">
-                {[["Students",b.students],["Price",b.price],["Duration",b.duration]].map(([l,v])=>(
-                  <div key={l}><p className="text-[10px] text-gray-500 uppercase">{l}</p><p className="text-xs font-bold text-white mt-0.5">{v}</p></div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+    <ListBootcampAdmin onSelect={(b)=>{setSel(b);setTab("overview");setView("detail");}} />
   );
 
   return(
@@ -709,7 +733,7 @@ function BootcampAdmin({ token }) {
             <div className="w-[260px] shrink-0 space-y-2">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-white">Announcements</h3>
-                <button onClick={()=>{setSelAnn(null);setAnnF({title:"",content:"",status:"DRAFT"});}} className="text-xs bg-[#C7E36B] text-black font-bold px-2.5 py-1 rounded-lg flex items-center gap-1"><I name="plus" size={12}/>New</button>
+                <button onClick={()=>{setSelAnn(null);setAnnF({title:"",content:"",status:"DRAFT"});}} className="text-xs bg-[#C7E36B] text-black font-bold px-2.5 py-1 rounded-lg flex items-center gap-1"><I name="plus" size={12}/>Create Announcement</button>
               </div>
               <div className="relative mb-2">
                 <I name="search" size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"/>
@@ -744,6 +768,23 @@ function BootcampAdmin({ token }) {
                 <button className="flex-1 border border-white/20 text-gray-300 text-xs font-semibold py-2 rounded-lg hover:bg-white/5">Save Draft</button>
                 <button className="flex-1 bg-[#C7E36B] text-black text-xs font-bold py-2 rounded-lg hover:bg-lime-300">Publish Now</button>
               </div>
+              {/* Gap 3: Preview Panel */}
+              {(annF.title||annF.content)&&(
+                <div className="border border-white/10 rounded-xl overflow-hidden">
+                  <div className="bg-white/5 px-4 py-2 border-b border-white/10 flex items-center gap-2">
+                    <I name="eye" size={12} className="text-gray-500"/>
+                    <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide">Preview</p>
+                  </div>
+                  <div className="p-4 bg-[#0F1112]">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[9px] font-bold bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded-full">{annF.status||"DRAFT"}</span>
+                      <span className="text-[10px] text-gray-500">Preview</span>
+                    </div>
+                    {annF.title&&<p className="text-sm font-bold text-white mb-1">{annF.title}</p>}
+                    {annF.content&&<p className="text-xs text-gray-400 leading-relaxed whitespace-pre-wrap">{annF.content}</p>}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
