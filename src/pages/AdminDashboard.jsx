@@ -881,6 +881,10 @@ function BootcampAdmin({ token }) {
                         };
                         await fetch(`/api/bootcamps/${sel._id}/sessions/${editSession._id}`, { method:"PUT", headers:{...h,"Content-Type":"application/json"}, body:JSON.stringify(payload) });
                         setSessions(prev=>prev.map(s=>s._id===editSession._id?{...s,...payload}:s));
+                        /* Notify students if recording URL was added */
+                        if(payload.recordingUrl && payload.recordingUrl !== editSession.recordingUrl) {
+                          fetch("/api/notifications/broadcast",{method:"POST",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify({title:`Session ${editSession.no} Recording Uploaded`,message:`The recording for "${editSession.name}" is now available in the Sessions tab.`,type:"session",bootcampId:sel._id})}).catch(()=>{});
+                        }
                       }
                       setEditSession(null);
                     }} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300">SAVE & UPDATE</button>
@@ -1095,6 +1099,8 @@ function BootcampAdmin({ token }) {
                   const body={title:annF.title,content:annF.content,status:"PUBLISHED"};
                   if(selAnn?._id){const r=await fetch(`/api/bootcamps/${sel._id}/announcements/${selAnn._id}`,{method:"PUT",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify(body)});if(r.ok)setAnns(prev=>prev.map(a=>a._id===selAnn._id?{...a,...body}:a));}
                   else{const r=await fetch(`/api/bootcamps/${sel._id}/announcements`,{method:"POST",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify(body)});if(r.ok){const d=await r.json();setAnns(prev=>[d,...prev]);setSelAnn(d);}}
+                  /* Broadcast notification to all enrolled students */
+                  if(annF.title) fetch("/api/notifications/broadcast",{method:"POST",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify({title:annF.title,message:annF.content||"New announcement from AIFA.",type:"announcement",bootcampId:sel._id})}).catch(()=>{});
                 }} className="flex-1 bg-[#C7E36B] text-black text-xs font-bold py-2 rounded-lg hover:bg-lime-300">Publish Now</button>
               </div>
               {/* Gap 3: Preview Panel */}

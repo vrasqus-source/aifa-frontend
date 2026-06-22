@@ -71,7 +71,8 @@ export default function StudentDashboard() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showNotif, setShowNotif] = useState(false);
-  const [notifCount, setNotifCount] = useState(5);
+  const [notifCount, setNotifCount] = useState(0);
+  const [notifs, setNotifs] = useState([]);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [invoiceItem, setInvoiceItem] = useState(null);
   const navigate = useNavigate();
@@ -86,6 +87,22 @@ export default function StudentDashboard() {
       .then(d => { setProfile(d); setLoading(false); })
       .catch(() => setLoading(false));
   }, [navigate, token]);
+
+  /* Fetch real notifications */
+  useEffect(() => {
+    if (!token) return;
+    const h = { Authorization: `Bearer ${token}` };
+    const load = () => {
+      fetch("/api/notifications/me", { headers: h })
+        .then(r => r.ok ? r.json() : [])
+        .then(d => { if (Array.isArray(d)) { setNotifs(d); setNotifCount(d.filter(n => !n.isRead).length); } })
+        .catch(() => {});
+    };
+    load();
+    // Refresh every 60s for near-realtime updates
+    const interval = setInterval(load, 60000);
+    return () => clearInterval(interval);
+  }, [token]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -191,7 +208,17 @@ export default function StudentDashboard() {
                   </span>
                 )}
               </button>
-              {showNotif && <NotificationDropdown onClose={() => setShowNotif(false)} onMarkRead={() => setNotifCount(0)} />}
+              {showNotif && (
+                <NotificationDropdown
+                  notifs={notifs}
+                  onClose={() => setShowNotif(false)}
+                  onMarkRead={async () => {
+                    await fetch("/api/notifications/read", { method:"PUT", headers:{ Authorization:`Bearer ${token}` } });
+                    setNotifCount(0);
+                    setNotifs(prev => prev.map(n => ({ ...n, isRead: true })));
+                  }}
+                />
+              )}
             </div>
 
             {/* Avatar */}
@@ -249,15 +276,28 @@ export default function StudentDashboard() {
 /* ════════════════════════════════════════════
    NOTIFICATION DROPDOWN
 ════════════════════════════════════════════ */
-const NOTIFS = [
-  { icon: "🎬", title: "Session 08 Recording Uploaded",         desc: "The Recording for Session 08 is now available in the session tab.",                                               time: "2m ago"   },
-  { icon: "📚", title: "AI Cinematography Guide",               desc: "A new resource has been uploaded to the Resources section.",                                                       time: "15m ago"  },
-  { icon: "📅", title: "Session 12 Starts Tomorrow",            desc: "Generative Video with Sora & Midjourney starts tomorrow at 7:00 PM.",                                             time: "2h ago"   },
-  { icon: "⚠️", title: "Workshop Rescheduled",                  desc: "The Friday mentoring session has been moved to 3:00 PM.",                                                         time: "5h ago"   },
-  { icon: "🎉", title: "Welcome to Batch #42",                  desc: "Please join the WhatsApp community and review the syllabus before Session 01.",                                   time: "Yesterday"},
+const TYPE_ICON = { session:"🎬", announcement:"📢", resource:"📚", payment:"💳", general:"🔔" };
+
+const STATIC_NOTIFS = [
+  { _id:"s1", type:"session",      title:"Session 08 Recording Uploaded",  message:"The recording for Session 08 is now available in the session tab.",         createdAt: new Date(Date.now()-120000).toISOString(),   isRead:false },
+  { _id:"s2", type:"resource",     title:"AI Cinematography Guide",         message:"A new resource has been uploaded to the Resources section.",                createdAt: new Date(Date.now()-900000).toISOString(),   isRead:false },
+  { _id:"s3", type:"announcement", title:"Session 12 Starts Tomorrow",      message:"Generative Video with Sora & Midjourney starts tomorrow at 7:00 PM.",      createdAt: new Date(Date.now()-7200000).toISOString(),  isRead:false },
+  { _id:"s4", type:"general",      title:"Workshop Rescheduled",            message:"The Friday mentoring session has been moved to 3:00 PM.",                  createdAt: new Date(Date.now()-18000000).toISOString(), isRead:true  },
+  { _id:"s5", type:"general",      title:"Welcome to Batch #42",            message:"Please join the WhatsApp community and review the syllabus before Session 01.", createdAt: new Date(Date.now()-86400000).toISOString(), isRead:true },
 ];
 
-function NotificationDropdown({ onClose, onMarkRead }) {
+function timeAgoNotif(dateStr) {
+  const d = new Date(dateStr); const now = new Date();
+  const diff = Math.floor((now - d) / 1000);
+  if (diff < 60) return "just now";
+  if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+  if (diff < 172800) return "Yesterday";
+  return new Date(dateStr).toLocaleDateString("en-IN",{day:"numeric",month:"short"});
+}
+
+function NotificationDropdown({ notifs, onClose, onMarkRead }) {
+  const list = notifs && notifs.length > 0 ? notifs : STATIC_NOTIFS;
   return (
     <div className="absolute right-0 top-full mt-2 w-[340px] bg-white rounded-2xl shadow-2xl z-50 overflow-hidden border border-gray-100">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
@@ -268,20 +308,24 @@ function NotificationDropdown({ onClose, onMarkRead }) {
         </div>
       </div>
       <div className="divide-y divide-gray-50 max-h-[400px] overflow-y-auto">
-        {NOTIFS.map((n, i) => (
-          <div key={i} className="px-4 py-3 hover:bg-gray-50 transition-all cursor-pointer">
+        {list.map((n, i) => (
+          <div key={n._id || i} className={`px-4 py-3 hover:bg-gray-50 transition-all cursor-pointer ${!n.isRead ? "bg-orange-50/40" : ""}`}>
             <div className="flex gap-3">
-              <span className="text-lg shrink-0 mt-0.5">{n.icon}</span>
+              <span className="text-lg shrink-0 mt-0.5">{TYPE_ICON[n.type] || "🔔"}</span>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-xs font-bold text-gray-900 leading-snug">{n.title}</p>
-                  <span className="text-[10px] text-gray-400 shrink-0 mt-0.5">{n.time}</span>
+                  <p className={`text-xs leading-snug ${!n.isRead ? "font-bold text-gray-900" : "font-medium text-gray-700"}`}>{n.title}</p>
+                  <span className="text-[10px] text-gray-400 shrink-0 mt-0.5">{timeAgoNotif(n.createdAt)}</span>
                 </div>
-                <p className="text-[11px] text-gray-500 mt-1 leading-snug">{n.desc}</p>
+                <p className="text-[11px] text-gray-500 mt-1 leading-snug">{n.message}</p>
+                {!n.isRead && <span className="inline-block w-1.5 h-1.5 rounded-full bg-orange-400 mt-1.5"/>}
               </div>
             </div>
           </div>
         ))}
+        {list.length === 0 && (
+          <div className="px-4 py-8 text-center text-gray-400 text-sm">No notifications yet</div>
+        )}
       </div>
       <div className="px-4 py-2.5 text-center border-t border-gray-100">
         <button className="text-xs text-orange-500 font-semibold hover:underline">View all notifications →</button>
