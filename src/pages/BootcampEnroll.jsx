@@ -78,9 +78,10 @@ export default function BootcampEnroll() {
   const SUBTOTAL = ORIGINAL - DISCOUNT;
   const GST      = couponApplied ? 170 : 0;
   const TOTAL    = SUBTOTAL + GST;
-  const ORDER    = "ORD-89241";
+  const ORDER    = orderId || "ORD-89241";
 
-  const [paying, setPaying] = useState(false);
+  const [paying, setPaying]     = useState(false);
+  const [orderId, setOrderId]   = useState("");
 
   const loadRazorpay = () => new Promise(resolve => {
     if (window.Razorpay) { resolve(true); return; }
@@ -109,6 +110,7 @@ export default function BootcampEnroll() {
       });
       const orderData = await orderRes.json();
       if (!orderRes.ok) { alert(orderData.message || "Could not create order. Try again."); setPaying(false); return; }
+      setOrderId(orderData.orderId || "");
 
       const options = {
         key: orderData.keyId || "rzp_live_T4dSvrjNOoRdif",
