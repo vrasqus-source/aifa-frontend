@@ -2283,7 +2283,13 @@ function CommunitySection({ token, profile }) {
       .catch(() => { setThreads([]); });
   }, []);
 
-  const currentReplies = repliesMap[selected?._id || selected?.id] || [];
+  /* Merge DB replies (from selected.replies array) with locally-added replies from repliesMap */
+  const dbReplies = Array.isArray(selected?.replies) ? selected.replies : [];
+  const localReplies = repliesMap[selected?._id || selected?.id] || [];
+  const currentReplies = [
+    ...dbReplies.map(r => ({ id: r._id || r.createdAt, text: r.text, author: r.author, time: r.createdAt ? new Date(r.createdAt).toLocaleDateString() : "" })),
+    ...localReplies,
+  ];
   const displayThreads = threads ?? MOCK_THREADS; // null=loading → show mock; []= empty from API
   const tags = ["All", ...new Set(displayThreads.map(t => t.tag))];
   const filtered = displayThreads.filter(t => (filterTag === "All" || t.tag === filterTag) && (!search || t.title.toLowerCase().includes(search.toLowerCase())));
@@ -2327,7 +2333,10 @@ function CommunitySection({ token, profile }) {
       <div className="w-[340px] shrink-0 border-r border-white/5 overflow-y-auto">
         <div className="p-4 border-b border-white/5">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-base font-bold text-white">Community Forum</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-base font-bold text-white">Community Forum</h1>
+              {threads !== null && <span className="text-[10px] bg-[#7C3AED]/20 text-[#7C3AED] font-bold px-2 py-0.5 rounded-full">{displayThreads.length} Threads</span>}
+            </div>
             <button onClick={() => setShowNewThread(v => !v)} className="text-xs bg-[#7C3AED] text-white font-bold px-3 py-1.5 rounded-lg hover:bg-purple-600">+ New Thread</button>
           </div>
           {showNewThread && (
@@ -2355,7 +2364,8 @@ function CommunitySection({ token, profile }) {
             <div className="p-6 text-center text-gray-500 text-sm">No threads yet. Be the first to post!</div>
           )}
           {filtered.map(t => (
-            <button key={t._id || t.id} onClick={() => setSelected(t)} className={`w-full text-left p-4 hover:bg-white/5 transition-all ${selected?.id === t.id ? "border-l-2 border-[#7C3AED] bg-white/5" : ""}`}>
+            <button key={t._id || t.id} onClick={() => setSelected(t)}
+              className={`w-full text-left p-4 hover:bg-white/5 transition-all ${(selected?._id && selected._id === t._id) || (!selected?._id && selected?.id && selected.id === t.id) ? "border-l-2 border-[#7C3AED] bg-white/5" : ""}`}>
               <div className="flex items-start gap-2 mb-1">
                 <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5 ${THREAD_TAG_COLORS[t.tag] || THREAD_TAG_COLORS.General}`}>{t.tag}</span>
                 <p className="text-sm font-semibold text-white line-clamp-2 leading-snug">{t.title}</p>
@@ -2363,9 +2373,9 @@ function CommunitySection({ token, profile }) {
               <div className="flex items-center gap-3 mt-1.5">
                 <span className="text-[10px] text-gray-500">{t.author}</span>
                 <span className="text-[10px] text-gray-600">·</span>
-                <span className="text-[10px] text-gray-500">💬 {t.replies}</span>
-                <span className="text-[10px] text-gray-500">👁 {t.views}</span>
-                <span className="text-[10px] text-gray-600 ml-auto">{t.time}</span>
+                <span className="text-[10px] text-gray-500">💬 {Array.isArray(t.replies) ? t.replies.length : (t.replies || 0)}</span>
+                <span className="text-[10px] text-gray-500">👁 {t.views || 0}</span>
+                <span className="text-[10px] text-gray-600 ml-auto">{t.time || (t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "")}</span>
               </div>
             </button>
           ))}
@@ -2391,9 +2401,16 @@ function CommunitySection({ token, profile }) {
                 <p className="text-sm text-gray-300 leading-relaxed">{selected.body}</p>
               </div>
               <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
-                <span>💬 {(selected.replies || 0) + currentReplies.length} replies</span>
-                <span>👁 {selected.views} views</span>
-                <button className="ml-auto text-[#7C3AED] hover:underline">Share</button>
+                <span>💬 {currentReplies.length} {currentReplies.length === 1 ? "reply" : "replies"}</span>
+                <span>👁 {selected.views || 0} views</span>
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/dashboard#community`;
+                    if (navigator.share) navigator.share({ title: selected.title, url });
+                    else { navigator.clipboard.writeText(url); alert("Thread link copied to clipboard!"); }
+                  }}
+                  className="ml-auto text-[#7C3AED] hover:underline"
+                >Share</button>
               </div>
             </div>
 
@@ -2404,7 +2421,7 @@ function CommunitySection({ token, profile }) {
                 {currentReplies.map(r => (
                   <div key={r.id} className="bg-white/5 border border-white/10 rounded-xl p-3">
                     <div className="flex items-center gap-2 mb-1">
-                      <div className="w-6 h-6 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-bold">Y</div>
+                      <div className="w-6 h-6 rounded-full bg-[#7C3AED] flex items-center justify-center text-white text-[10px] font-bold">{(r.author || "?")[0].toUpperCase()}</div>
                       <span className="text-xs font-semibold text-white">{r.author}</span>
                       <span className="text-[10px] text-gray-500 ml-auto">{r.time}</span>
                     </div>
