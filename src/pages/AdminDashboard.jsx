@@ -552,7 +552,7 @@ function ListBootcampAdmin({ onSelect, token }) {
     .sort((a,b) => sortBy === "Name A-Z" ? a.title.localeCompare(b.title) : sortBy === "Students" ? b.students - a.students : 0);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col">
       {/* A: Create Bootcamp Modal */}
       {showCreateModal&&(
         <div className="fixed inset-0 bg-black/70 z-50 flex items-start justify-center pt-16 px-4" onClick={()=>setShowCreateModal(false)}>
@@ -631,7 +631,7 @@ function ListBootcampAdmin({ onSelect, token }) {
           </div>
         ))}
       </div>
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="p-6">
         {/* Gap 2: Status + Sort filters */}
         <div className="flex items-center gap-3 mb-5">
           <select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} className="bg-[#0F1112] border border-white/10 text-gray-400 text-xs rounded-lg px-3 py-1.5 outline-none hover:border-white/20">
