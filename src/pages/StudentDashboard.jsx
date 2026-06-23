@@ -2230,7 +2230,7 @@ const MOCK_THREADS = [
 const THREAD_TAG_COLORS = { Tools:"bg-blue-500/20 text-blue-400", Prompts:"bg-purple-500/20 text-purple-400", Workflow:"bg-orange-500/20 text-orange-400", Certificates:"bg-[#7C3AED]/20 text-[#7C3AED]", Resources:"bg-green-500/20 text-green-400", General:"bg-gray-500/20 text-gray-400" };
 
 function CommunitySection({ token, profile }) {
-  const [threads, setThreads] = useState(MOCK_THREADS);
+  const [threads, setThreads] = useState(null); // null = loading; [] = empty from API
   const [selected, setSelected] = useState(null);
   const [filterTag, setFilterTag] = useState("All");
   const [search, setSearch] = useState("");
@@ -2245,13 +2245,14 @@ function CommunitySection({ token, profile }) {
   useEffect(() => {
     fetch("/api/community/threads")
       .then(r => r.ok ? r.json() : [])
-      .then(d => { if (Array.isArray(d) && d.length > 0) setThreads(d); })
-      .catch(() => {});
+      .then(d => { setThreads(Array.isArray(d) ? d : []); })
+      .catch(() => { setThreads([]); });
   }, []);
 
   const currentReplies = repliesMap[selected?._id || selected?.id] || [];
-  const tags = ["All", ...new Set(threads.map(t => t.tag))];
-  const filtered = threads.filter(t => (filterTag === "All" || t.tag === filterTag) && (!search || t.title.toLowerCase().includes(search.toLowerCase())));
+  const displayThreads = threads ?? MOCK_THREADS; // null=loading → show mock; []= empty from API
+  const tags = ["All", ...new Set(displayThreads.map(t => t.tag))];
+  const filtered = displayThreads.filter(t => (filterTag === "All" || t.tag === filterTag) && (!search || t.title.toLowerCase().includes(search.toLowerCase())));
 
   const submitReply = async () => {
     if (!reply.trim()) return;
@@ -2316,8 +2317,11 @@ function CommunitySection({ token, profile }) {
           </div>
         </div>
         <div className="divide-y divide-white/5">
+          {threads !== null && threads.length === 0 && filtered.length === 0 && (
+            <div className="p-6 text-center text-gray-500 text-sm">No threads yet. Be the first to post!</div>
+          )}
           {filtered.map(t => (
-            <button key={t.id} onClick={() => setSelected(t)} className={`w-full text-left p-4 hover:bg-white/5 transition-all ${selected?.id === t.id ? "border-l-2 border-[#7C3AED] bg-white/5" : ""}`}>
+            <button key={t._id || t.id} onClick={() => setSelected(t)} className={`w-full text-left p-4 hover:bg-white/5 transition-all ${selected?.id === t.id ? "border-l-2 border-[#7C3AED] bg-white/5" : ""}`}>
               <div className="flex items-start gap-2 mb-1">
                 <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 mt-0.5 ${THREAD_TAG_COLORS[t.tag] || THREAD_TAG_COLORS.General}`}>{t.tag}</span>
                 <p className="text-sm font-semibold text-white line-clamp-2 leading-snug">{t.title}</p>
