@@ -75,14 +75,13 @@ export default function BootcampEnroll() {
     fetch("/api/bootcamps").then(r => r.ok ? r.json() : []).then(d => { if (Array.isArray(d) && d.length > 0) setBootcamp(d[0]); }).catch(() => {});
   }, []);
 
-  /* ── Derived constants after all hooks ── */
-  const ORIGINAL   = bootcamp?.price || 14000;
-  const ORIG_PRICE = bootcamp?.originalPrice || 19000;
-  const DISCOUNT   = (() => {
-    if (!couponApplied || !couponData) return 0;
-    if (couponData.discountType === "percent") return Math.round(ORIGINAL * couponData.discountValue / 100);
-    return couponData.discountValue;
-  })();
+  /* ── Derived values (no IIFE — plain expressions only) ── */
+  const ORIGINAL   = (bootcamp && bootcamp.price)         ? bootcamp.price         : 14000;
+  const ORIG_PRICE = (bootcamp && bootcamp.originalPrice) ? bootcamp.originalPrice : 19000;
+  const DISCOUNT   = (!couponApplied || !couponData)      ? 0
+    : couponData.discountType === "percent"
+      ? Math.round(ORIGINAL * couponData.discountValue / 100)
+      : couponData.discountValue;
   const SUBTOTAL = ORIGINAL - DISCOUNT;
   const GST      = couponApplied ? 170 : 0;
   const TOTAL    = SUBTOTAL + GST;
