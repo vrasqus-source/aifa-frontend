@@ -1270,6 +1270,10 @@ function CertificatesSection({ token, profile }) {
       {viewCert && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={() => setViewCert(null)}>
           <div className="bg-[#0F1112] border border-white/10 rounded-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
+            {/* ✕ close button top-right */}
+            <div className="relative">
+              <button onClick={() => setViewCert(null)} className="absolute top-3 right-3 w-8 h-8 bg-black/40 rounded-full flex items-center justify-center text-white hover:bg-black/70 text-lg z-10">✕</button>
+            </div>
             {/* Certificate preview */}
             <div className={`bg-gradient-to-br ${typeGrad(viewCert.itemType)} p-8 flex flex-col items-center border-b border-white/10`}>
               <div className="w-12 h-12 bg-[#C7E36B] rounded-xl flex items-center justify-center mb-3">
