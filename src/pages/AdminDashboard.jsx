@@ -4130,8 +4130,20 @@ function JobsAdmin({ token }) {
           </div>
           <Fld label="DESCRIPTION" value={form.description} onChange={v=>setForm({...form,description:v})} textarea placeholder="Job description..." />
           <div className="grid grid-cols-2 gap-3">
-            <Fld label="BUDGET" value={form.budget} onChange={v=>setForm({...form,budget:v})} placeholder="e.g. ₹10,000 fixed" />
-            <Fld label="TIMELINE" value={form.timeline} onChange={v=>setForm({...form,timeline:v})} placeholder="e.g. 3 days" />
+            <div>
+              <p className="text-[10px] text-gray-400 font-semibold mb-1 uppercase">Budget</p>
+              <select value={form.budget} onChange={e=>setForm({...form,budget:e.target.value})} className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#C7E36B]/50">
+                <option value="">Select budget...</option>
+                {["< ₹50/hr","₹50-100/hr","₹100-200/hr","₹200+/hr"].map(b=><option key={b}>{b}</option>)}
+              </select>
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-400 font-semibold mb-1 uppercase">Timeline</p>
+              <select value={form.timeline} onChange={e=>setForm({...form,timeline:e.target.value})} className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#C7E36B]/50">
+                <option value="">Select timeline...</option>
+                {["Immediate","Within 2 Weeks","1 Month+","Flexible"].map(t=><option key={t}>{t}</option>)}
+              </select>
+            </div>
           </div>
           <Fld label="SKILLS (comma-separated)" value={form.skills} onChange={v=>setForm({...form,skills:v})} placeholder="Runway, Midjourney, Pika" />
           <div className="flex gap-2 pt-1">

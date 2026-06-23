@@ -1409,7 +1409,7 @@ function CertificatesSection({ token, profile }) {
 const TAG_COLORS = { "AI Film": "bg-[#C7E36B] text-black", "AI Ads": "bg-orange-400 text-black", "AI Story": "bg-pink-400 text-black", "AI Editing": "bg-blue-400 text-black", "AI Voice": "bg-purple-400 text-white", "AI Avatar": "bg-teal-400 text-black", "AI Music": "bg-indigo-400 text-white" };
 
 const JOB_CATEGORIES = ["Cinematography","Video Editing","Sound Design","Directing","Production Design"];
-const JOB_BUDGETS    = ["< ₹50/hr","₹50–100/hr","₹100–200/hr","₹200+/hr"];
+const JOB_BUDGETS    = ["< ₹50/hr","₹50-100/hr","₹100-200/hr","₹200+/hr"];
 const JOB_TIMELINES  = ["Immediate","Within 2 Weeks","1 Month+","Flexible"];
 const JOB_TAG_COLORS = { "AI Film":"bg-[#C7E36B]/20 text-[#C7E36B]","AI Story":"bg-purple-500/20 text-purple-300","AI Editing":"bg-blue-500/20 text-blue-300","AI Ads":"bg-orange-500/20 text-orange-300","AI Music":"bg-pink-500/20 text-pink-300" };
 
@@ -1457,7 +1457,7 @@ function JobsSection({ token }) {
               </div>
               <button onClick={() => { setDetailJob(null); setApplied(false); }} className="text-gray-400 hover:text-white text-xl leading-none">✕</button>
             </div>
-            <p className="text-sm text-gray-300 leading-relaxed mb-4">{detailJob.description}</p>
+            <p className="text-sm text-gray-300 leading-relaxed mb-4">{detailJob.description || "Exciting opportunity to work with cutting-edge AI filmmaking tools. Apply now to be part of the AIFA talent network."}</p>
             {detailJob.skills?.length > 0 && (
               <div className="mb-4">
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Required Skills</p>
