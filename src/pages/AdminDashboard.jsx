@@ -417,17 +417,24 @@ function ProjTab({ selProj, setSelProj, localProj, setLocalProj, projSaved, setP
   const h = { Authorization:`Bearer ${token}` };
   useEffect(() => { setLocalProj(selProj); }, [selProj]);
 
+  const [addingProj, setAddingProj] = useState(false);
   const handleAdd = async () => {
+    if (addingProj) return; // prevent double-click
+    setAddingProj(true);
     const no = `PROJECT ${String((projects.length || 0) + 1).padStart(2,"0")}`;
-    const res = await fetch(`/api/bootcamps/${bootcampId}/projects`, {
-      method:"POST", headers:{...h,"Content-Type":"application/json"},
-      body: JSON.stringify({ no, title:"New Project", desc:"", requirements:[], resources:[] }),
-    });
-    if (res.ok) {
-      const d = await res.json();
-      const mapped = { ...d, req: [], res: [] };
-      setProjects(prev=>[...prev, mapped]);
-      setSelProj(mapped);
+    try {
+      const res = await fetch(`/api/bootcamps/${bootcampId}/projects`, {
+        method:"POST", headers:{...h,"Content-Type":"application/json"},
+        body: JSON.stringify({ no, title:"New Project", desc:"", requirements:[], resources:[] }),
+      });
+      if (res.ok) {
+        const d = await res.json();
+        const mapped = { ...d, req: [], res: [] };
+        setProjects(prev=>[...prev, mapped]);
+        setSelProj(mapped);
+      }
+    } finally {
+      setAddingProj(false);
     }
   };
 
@@ -453,7 +460,7 @@ function ProjTab({ selProj, setSelProj, localProj, setLocalProj, projSaved, setP
       <div className="w-[260px] shrink-0 space-y-2">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-white">Projects <span className="text-gray-600 text-[10px]">({displayList.length})</span></h3>
-          <button onClick={handleAdd} className="text-xs bg-[#C7E36B] text-black font-bold px-2.5 py-1 rounded-lg flex items-center gap-1"><I name="plus" size={12}/>Add</button>
+          <button onClick={handleAdd} disabled={addingProj} className="text-xs bg-[#C7E36B] text-black font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed">{addingProj ? "Adding..." : <><I name="plus" size={12}/>Add</>}</button>
         </div>
         {displayList.length === 0 ? (
           <p className="text-gray-600 text-xs text-center py-6">No projects yet. Click "+ Add" to create one.</p>
