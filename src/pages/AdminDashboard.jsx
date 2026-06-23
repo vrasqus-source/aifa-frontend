@@ -415,7 +415,15 @@ function AdminOverview({ token, onNavigate }) {
 /* ── PROJECTS TAB (extracted to avoid hook-inside-render issues) ── */
 function ProjTab({ selProj, setSelProj, localProj, setLocalProj, projSaved, setProjSaved, projFileRef, projects, setProjects, bootcampId, token }) {
   const h = { Authorization:`Bearer ${token}` };
-  useEffect(() => { setLocalProj(selProj); }, [selProj]);
+  /* Map DB field names (requirements/resources) to local keys (req/res) */
+  useEffect(() => {
+    if (!selProj) { setLocalProj(null); return; }
+    setLocalProj({
+      ...selProj,
+      req: selProj.requirements || selProj.req || [],
+      res: selProj.resources   || selProj.res || [],
+    });
+  }, [selProj?._id]);
 
   const [addingProj, setAddingProj] = useState(false);
   const handleAdd = async () => {
@@ -792,9 +800,11 @@ function BootcampAdmin({ token }) {
       fetch(`/api/bootcamps/${sel._id}/projects`, { headers:h })
         .then(r=>r.ok?r.json():[])
         .then(d=>{
-          if (Array.isArray(d) && d.length > 0) {
-            setProjects(d);
-            setSelProj(d[0]);
+          /* Normalise DB field names to local keys */
+          const mapped = Array.isArray(d) ? d.map(p=>({...p, req:p.requirements||p.req||[], res:p.resources||p.res||[] })) : [];
+          if (mapped.length > 0) {
+            setProjects(mapped);
+            setSelProj(mapped[0]);
           } else {
             setProjects([]);
             setSelProj(null);
@@ -858,7 +868,10 @@ function BootcampAdmin({ token }) {
           </div>
           <div className="flex gap-2">
             <button onClick={()=>window.open("/dashboard","_blank")} className="text-xs border border-white/20 text-gray-300 px-4 py-2 rounded-lg hover:bg-white/5">PREVIEW STUDENT VIEW</button>
-            <button onClick={()=>save(setSavedBatch)} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5"><I name="check" size={14}/>{savedBatch?"✓ SAVED":"SAVE CHANGES"}</button>
+            <button onClick={()=>{
+              if(tab==="settings") save(setSavedBatch);
+              else alert("Use the tab-specific save button below (e.g. 'Save Project', 'Save Change', 'Publish Now') to save changes in the current tab.");
+            }} className="text-xs bg-[#C7E36B] text-black font-bold px-4 py-2 rounded-lg hover:bg-lime-300 flex items-center gap-1.5"><I name="check" size={14}/>{savedBatch?"✓ SAVED":"SAVE CHANGES"}</button>
           </div>
         </div>
         <div className="flex gap-0">
