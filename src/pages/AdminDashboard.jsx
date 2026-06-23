@@ -465,10 +465,25 @@ function ProjTab({ selProj, setSelProj, localProj, setLocalProj, projSaved, setP
         {displayList.length === 0 ? (
           <p className="text-gray-600 text-xs text-center py-6">No projects yet. Click "+ Add" to create one.</p>
         ) : displayList.map((p,i)=>(
-          <div key={p._id||i} onClick={()=>setSelProj(p)} className={`p-3 border rounded-xl cursor-pointer transition-all ${selProj?._id===p._id||selProj?.no===p.no?"border-[#C7E36B]/50 bg-[#C7E36B]/5":"border-white/10 bg-[#0F1112] hover:border-white/20"}`}>
+          <div key={p._id||i} onClick={()=>setSelProj(p)} className={`p-3 border rounded-xl cursor-pointer transition-all relative group ${selProj?._id===p._id||selProj?.no===p.no?"border-[#C7E36B]/50 bg-[#C7E36B]/5":"border-white/10 bg-[#0F1112] hover:border-white/20"}`}>
             <p className="text-[10px] text-gray-400 font-semibold uppercase">{p.no}</p>
-            <p className="text-xs font-bold text-white mt-0.5">{p.title}</p>
+            <p className="text-xs font-bold text-white mt-0.5 pr-6">{p.title}</p>
             <p className="text-[10px] text-gray-500 mt-1 line-clamp-2">{p.desc}</p>
+            {p._id && (
+              <button
+                onClick={async e => {
+                  e.stopPropagation();
+                  if (!window.confirm("Delete this project?")) return;
+                  await fetch(`/api/bootcamps/${bootcampId}/projects/${p._id}`, { method:"DELETE", headers:{ Authorization:`Bearer ${token}` } });
+                  setProjects(prev => prev.filter(x => x._id !== p._id));
+                  if (selProj?._id === p._id) setSelProj(null);
+                }}
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 transition-all"
+                title="Delete project"
+              >
+                <I name="trash" size={13}/>
+              </button>
+            )}
           </div>
         ))}
       </div>
