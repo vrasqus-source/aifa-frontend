@@ -47,36 +47,38 @@ function LeftCard({ step, couponApplied, subtotal }) {
 
 export default function BootcampEnroll() {
   const navigate = useNavigate();
-  const [step, setStep]     = useState(1);
-  const [form, setForm]     = useState({ name: "", email: "", phone: "" });
-  const [errors, setErrors] = useState({});
+
+  /* ── ALL useState hooks together (must be before useEffect and derived consts) ── */
+  const [step, setStep]           = useState(1);
+  const [form, setForm]           = useState({ name: "", email: "", phone: "" });
+  const [errors, setErrors]       = useState({});
   const [payMethod, setPayMethod] = useState("upi");
   const [coupon, setCoupon]       = useState("");
   const [couponApplied, setCouponApplied] = useState(false);
   const [couponData, setCouponData]       = useState(null);
   const [couponMsg, setCouponMsg]         = useState("");
-  const [showSummary, setShowSummary] = useState(false);
-  const [password, setPassword]         = useState("");
-  const [confirmPw, setConfirmPw]       = useState("");
-  const [showPw, setShowPw]             = useState(false);
-  const [showCPw, setShowCPw]           = useState(false);
-  const [upiId, setUpiId]               = useState("");
-  const [upiVerified, setUpiVerified]   = useState(false);
-  const [bootcamp, setBootcamp]         = useState(null);
-  /* auto-auth: account created silently before payment */
-  const [authToken, setAuthToken]       = useState(() => localStorage.getItem("aifa_token") || "");
-  const [tempPw, setTempPw]             = useState("");
+  const [showSummary, setShowSummary]     = useState(false);
+  const [password, setPassword]           = useState("");
+  const [confirmPw, setConfirmPw]         = useState("");
+  const [showPw, setShowPw]               = useState(false);
+  const [showCPw, setShowCPw]             = useState(false);
+  const [upiId, setUpiId]                 = useState("");
+  const [upiVerified, setUpiVerified]     = useState(false);
+  const [bootcamp, setBootcamp]           = useState(null);
+  const [authToken, setAuthToken]         = useState(() => localStorage.getItem("aifa_token") || "");
+  const [tempPw, setTempPw]               = useState("");
+  const [paying, setPaying]               = useState(false);
+  const [orderId, setOrderId]             = useState("");
 
+  /* ── useEffect after all useState ── */
   useEffect(() => {
     fetch("/api/bootcamps").then(r => r.ok ? r.json() : []).then(d => { if (Array.isArray(d) && d.length > 0) setBootcamp(d[0]); }).catch(() => {});
   }, []);
 
-  const [paying, setPaying]     = useState(false);
-  const [orderId, setOrderId]   = useState("");
-
-  const ORIGINAL  = bootcamp?.price || 14000;
+  /* ── Derived constants after all hooks ── */
+  const ORIGINAL   = bootcamp?.price || 14000;
   const ORIG_PRICE = bootcamp?.originalPrice || 19000;
-  const DISCOUNT = (() => {
+  const DISCOUNT   = (() => {
     if (!couponApplied || !couponData) return 0;
     if (couponData.discountType === "percent") return Math.round(ORIGINAL * couponData.discountValue / 100);
     return couponData.discountValue;
