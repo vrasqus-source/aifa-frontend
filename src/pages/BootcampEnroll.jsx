@@ -12,7 +12,10 @@ const CHECKLIST = [
   "Session Recordings",
 ];
 
-function LeftCard({ step, couponApplied, subtotal }) {
+/* LeftCard receives all values as props — no closure references to outer component vars */
+function LeftCard({ step, couponApplied, subtotal, original, origPrice, couponCode }) {
+  const price    = original  || 14000;
+  const oldPrice = origPrice || 19000;
   return (
     <div className="bg-[#0F1112] border border-white/10 rounded-2xl p-6 space-y-4">
       <p className="text-[#C7E36B] text-[10px] uppercase font-bold tracking-wider">
@@ -23,13 +26,13 @@ function LeftCard({ step, couponApplied, subtotal }) {
         <p className="text-white font-bold text-sm">AI Filmmaking Bootcamp</p>
       </div>
       <div className="flex items-baseline gap-3">
-        <span className="text-3xl font-bold text-white">₹{ORIGINAL.toLocaleString("en-IN")}</span>
-        <span className="text-gray-400 line-through text-sm">₹{ORIG_PRICE.toLocaleString("en-IN")}</span>
+        <span className="text-3xl font-bold text-white">₹{price.toLocaleString("en-IN")}</span>
+        <span className="text-gray-400 line-through text-sm">₹{oldPrice.toLocaleString("en-IN")}</span>
       </div>
       {step === 2 && couponApplied ? (
         <div className="bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3">
-          <p className="text-green-400 text-sm font-bold">Total Payable: ₹{subtotal.toLocaleString()}</p>
-          <p className="text-green-300 text-xs mt-0.5">Coupon {couponData?.code || "applied"}</p>
+          <p className="text-green-400 text-sm font-bold">Total Payable: ₹{(subtotal || 0).toLocaleString()}</p>
+          <p className="text-green-300 text-xs mt-0.5">Coupon {couponCode || ""} applied</p>
         </div>
       ) : (
         <div className="space-y-2 pt-2">
@@ -48,7 +51,7 @@ function LeftCard({ step, couponApplied, subtotal }) {
 export default function BootcampEnroll() {
   const navigate = useNavigate();
 
-  /* ── ALL useState hooks together (must be before useEffect and derived consts) ── */
+  /* ── ALL useState hooks together ── */
   const [step, setStep]           = useState(1);
   const [form, setForm]           = useState({ name: "", email: "", phone: "" });
   const [errors, setErrors]       = useState({});
@@ -75,7 +78,7 @@ export default function BootcampEnroll() {
     fetch("/api/bootcamps").then(r => r.ok ? r.json() : []).then(d => { if (Array.isArray(d) && d.length > 0) setBootcamp(d[0]); }).catch(() => {});
   }, []);
 
-  /* ── Derived values (no IIFE — plain expressions only) ── */
+  /* ── Derived values — plain expressions, no IIFE ── */
   const ORIGINAL   = (bootcamp && bootcamp.price)         ? bootcamp.price         : 14000;
   const ORIG_PRICE = (bootcamp && bootcamp.originalPrice) ? bootcamp.originalPrice : 19000;
   const DISCOUNT   = (!couponApplied || !couponData)      ? 0
@@ -99,7 +102,6 @@ export default function BootcampEnroll() {
   const handleRazorpay = async () => {
     setPaying(true);
     try {
-      /* ── 1. Ensure the user has an auth token before hitting protected endpoints ── */
       let token = authToken;
       if (!token) {
         const pw = "AIFA_" + Math.random().toString(36).slice(2, 10) + "!1";
@@ -115,7 +117,7 @@ export default function BootcampEnroll() {
           localStorage.setItem("aifa_user", JSON.stringify({ _id: sd._id, name: sd.name, role: sd.role || "student" }));
           setAuthToken(token);
           setTempPw(pw);
-        } else if (sd.message?.includes("already exists")) {
+        } else if (sd.message && sd.message.includes("already exists")) {
           alert("An account with this email already exists. Please log in first at /dashboard.");
           setPaying(false); return;
         } else {
@@ -124,20 +126,18 @@ export default function BootcampEnroll() {
         }
       }
 
-      const h = { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+      const h = { "Content-Type": "application/json", "Authorization": "Bearer " + token };
 
-      /* ── 2. Load Razorpay SDK ── */
       const loaded = await loadRazorpay();
       if (!loaded) { alert("Payment gateway failed to load. Please check your connection."); setPaying(false); return; }
 
-      /* ── 3. Create order (authenticated) ── */
       const orderRes = await fetch("/api/payments/create-order", {
         method: "POST", headers: h,
         body: JSON.stringify({
           amount: TOTAL,
           itemType: "bootcamp",
-          itemTitle: bootcamp?.title || "AI Filmmaking Bootcamp",
-          itemId: bootcamp?._id,
+          itemTitle: (bootcamp && bootcamp.title) ? bootcamp.title : "AI Filmmaking Bootcamp",
+          itemId: bootcamp ? bootcamp._id : null,
         }),
       });
       const orderData = await orderRes.json();
@@ -149,13 +149,12 @@ export default function BootcampEnroll() {
         amount: orderData.amount,
         currency: "INR",
         name: "AIFA Film Academy",
-        description: bootcamp?.title || "AI Filmmaking Bootcamp",
+        description: (bootcamp && bootcamp.title) ? bootcamp.title : "AI Filmmaking Bootcamp",
         order_id: orderData.orderId,
         prefill: { name: form.name, email: form.email, contact: form.phone },
         theme: { color: "#C7E36B" },
         handler: async (response) => {
           try {
-            /* ── 4. Verify payment (authenticated) — also enrolls user in bootcamp ── */
             const verifyRes = await fetch("/api/payments/verify", {
               method: "POST", headers: h,
               body: JSON.stringify({
@@ -206,14 +205,12 @@ export default function BootcampEnroll() {
     const token = authToken || localStorage.getItem("aifa_token");
     try {
       if (token && tempPw && password) {
-        /* Account was auto-created before payment — update to user's chosen password */
         await fetch("/api/users/me/password", {
           method: "PUT",
-          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
           body: JSON.stringify({ currentPassword: tempPw, newPassword: password }),
         });
       } else if (!token) {
-        /* Fallback: user was already logged in before visiting enroll — just signup if no account */
         const res = await fetch("/api/auth/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -225,7 +222,7 @@ export default function BootcampEnroll() {
           localStorage.setItem("aifa_user", JSON.stringify({ _id: data._id, name: data.name, role: data.role || "student" }));
         }
       }
-    } catch { /* ignore — navigate regardless */ }
+    } catch { /* ignore */ }
     navigate("/dashboard");
   };
 
@@ -234,11 +231,11 @@ export default function BootcampEnroll() {
     <div className="min-h-screen bg-[#0B0F10] py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="grid md:grid-cols-[320px_1fr] gap-6">
-          <LeftCard step={1} couponApplied={false} subtotal={SUBTOTAL} />
+          <LeftCard step={1} couponApplied={false} subtotal={SUBTOTAL} original={ORIGINAL} origPrice={ORIG_PRICE} couponCode={couponData ? couponData.code : ""} />
 
           <div className="bg-[#0F1112] border border-white/10 rounded-2xl p-6">
             <h2 className="text-2xl font-bold text-white mb-1">Reserve Your Seat</h2>
-            <p className="text-gray-400 text-sm mb-6">You're one step away from joining the AI Filmmaking Bootcamp.</p>
+            <p className="text-gray-400 text-sm mb-6">You are one step away from joining the AI Filmmaking Bootcamp.</p>
 
             <div className="space-y-4">
               {[
@@ -253,7 +250,7 @@ export default function BootcampEnroll() {
                     value={form[key]}
                     onChange={e => setForm({ ...form, [key]: e.target.value })}
                     placeholder={placeholder}
-                    className={`w-full bg-[#1A1D1E] border rounded-xl px-4 py-3 text-white text-sm outline-none transition-colors placeholder-gray-600 ${errors[key] ? "border-red-500" : "border-white/20 focus:border-[#C7E36B]"}`}
+                    className={"w-full bg-[#1A1D1E] border rounded-xl px-4 py-3 text-white text-sm outline-none transition-colors " + (errors[key] ? "border-red-500" : "border-white/20 focus:border-[#C7E36B]")}
                   />
                   {errors[key] && <p className="text-red-400 text-xs mt-1">{errors[key]}</p>}
                 </div>
@@ -267,7 +264,7 @@ export default function BootcampEnroll() {
               CONTINUE TO PAYMENT →
             </button>
 
-            <div className="flex items-center justify-center gap-5 mt-4 text-gray-500 text-[11px]">
+            <div className="flex items-center justify-center gap-4 text-gray-500 text-[11px] mt-4">
               <span>🔒 Secure Payment</span>
               <span>🛡 Razorpay Secure</span>
               <span>🔒 SSL Protected</span>
@@ -284,58 +281,43 @@ export default function BootcampEnroll() {
     <div className="min-h-screen bg-[#0B0F10] py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="grid md:grid-cols-[320px_1fr] gap-6">
-          <LeftCard step={2} couponApplied={couponApplied} subtotal={SUBTOTAL} />
+          <LeftCard step={2} couponApplied={couponApplied} subtotal={SUBTOTAL} original={ORIGINAL} origPrice={ORIG_PRICE} couponCode={couponData ? couponData.code : ""} />
 
           <div className="bg-[#0F1112] border border-white/10 rounded-2xl p-6 space-y-5">
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-1">Complete Your Enrollment</h2>
-              <p className="text-gray-400 text-sm">Choose your preferred payment method to reserve your seat.</p>
-            </div>
+            <h2 className="text-xl font-bold text-white">Complete Your Enrollment</h2>
+            <p className="text-gray-400 text-sm">Choose your preferred payment method to reserve your seat.</p>
 
-            {/* Payment Methods */}
+            {/* Payment method */}
             <div className="space-y-2">
               {[
-                { id: "upi",        label: "UPI",                   badge: "Instant Confirmation", sub: null },
-                { id: "card",       label: "Credit / Debit Cards",   badge: null, sub: "VISA • Mastercard" },
-                { id: "netbanking", label: "Net Banking & Wallets",  badge: null, sub: "🏦" },
-                { id: "bnpl",       label: "Buy Now Pay Later",      badge: null, sub: null },
+                { id:"upi",  label:"UPI", badge:"Recommended", extra:"Instant Confirmation" },
+                { id:"card", label:"Credit / Debit Cards" },
+                { id:"nb",   label:"Net Banking & Wallets" },
+                { id:"bnpl", label:"Buy Now Pay Later" },
               ].map(pm => (
                 <div key={pm.id} onClick={() => setPayMethod(pm.id)}
-                  className={`border rounded-xl px-4 py-3 cursor-pointer transition-all ${payMethod === pm.id ? "border-[#C7E36B]/50 bg-[#C7E36B]/5" : "border-white/10 hover:border-white/20"}`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${payMethod === pm.id ? "border-[#C7E36B]" : "border-gray-500"}`}>
-                        {payMethod === pm.id && <div className="w-2 h-2 rounded-full bg-[#C7E36B]" />}
-                      </div>
-                      <span className="text-white text-sm font-medium">{pm.label}</span>
-                      {pm.sub && <span className="text-gray-400 text-xs">{pm.sub}</span>}
+                  className={"border rounded-xl p-4 cursor-pointer transition-all " + (payMethod === pm.id ? "border-[#C7E36B]/60 bg-[#C7E36B]/5" : "border-white/10 hover:border-white/20")}>
+                  <div className="flex items-center gap-3">
+                    <div className={"w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 " + (payMethod === pm.id ? "border-[#C7E36B]" : "border-white/30")}>
+                      {payMethod === pm.id && <span className="w-2 h-2 rounded-full bg-[#C7E36B]" />}
                     </div>
-                    {pm.badge && <span className="text-[10px] bg-green-500/20 text-green-400 font-bold px-2 py-0.5 rounded-full">{pm.badge}</span>}
+                    <span className="text-sm text-white font-medium">{pm.label}</span>
+                    {pm.badge && <span className="text-[10px] bg-[#C7E36B]/20 text-[#C7E36B] font-bold px-2 py-0.5 rounded-full ml-auto">{pm.badge}</span>}
                   </div>
-
                   {pm.id === "upi" && payMethod === "upi" && (
-                    <div className="mt-3 pl-7">
-                      <div className="flex gap-2 mb-3">
-                        {["GPay", "PhonePe", "Paytm", "BHIM"].map(app => (
-                          <span key={app} className="text-[10px] bg-white/10 text-gray-300 px-2.5 py-1 rounded-lg font-medium">{app}</span>
-                        ))}
-                      </div>
-                      <div className="flex gap-2">
-                        <input
-                          value={upiId}
-                          onChange={e=>{setUpiId(e.target.value);setUpiVerified(false);}}
-                          placeholder="example@upi"
-                          className={`flex-1 bg-[#1A1D1E] border rounded-lg px-3 py-2 text-sm text-white outline-none placeholder-gray-600 transition-colors ${upiVerified?"border-green-500/50":"border-white/20 focus:border-[#C7E36B]"}`}
-                        />
-                        {upiVerified ? (
-                          <span className="text-xs bg-green-500/20 text-green-400 font-bold px-3 py-2 rounded-lg border border-green-500/30">✓ Verified</span>
-                        ) : (
-                          <button onClick={()=>{if(!upiId.includes("@")){alert("Enter a valid UPI ID (e.g. name@upi)")}else{setUpiVerified(true)}}} className="text-xs bg-white/10 text-white px-3 py-2 rounded-lg hover:bg-white/20 font-semibold">Verify</button>
-                        )}
-                      </div>
+                    <div className="mt-3 pl-7 flex gap-2">
+                      <input
+                        value={upiId}
+                        onChange={e => { setUpiId(e.target.value); setUpiVerified(false); }}
+                        placeholder="example@upi"
+                        className={"flex-1 bg-[#1A1D1E] border rounded-lg px-3 py-2 text-sm text-white outline-none transition-colors " + (upiVerified ? "border-green-500/50" : "border-white/20 focus:border-[#C7E36B]")}
+                      />
+                      {upiVerified
+                        ? <span className="text-xs bg-green-500/20 text-green-400 font-bold px-3 py-2 rounded-lg border border-green-500/30">✓ Verified</span>
+                        : <button onClick={() => { if (!upiId.includes("@")) { alert("Enter a valid UPI ID (e.g. name@upi)"); } else { setUpiVerified(true); } }} className="text-xs bg-white/10 text-white px-3 py-2 rounded-lg hover:bg-white/20 font-semibold">Verify</button>
+                      }
                     </div>
                   )}
-
                   {pm.id === "bnpl" && payMethod === "bnpl" && (
                     <div className="mt-3 pl-7 grid grid-cols-2 gap-2">
                       {[{ name: "LazyPay", desc: "Pay in easy monthly installments" }, { name: "SimplPay", desc: "Pay later with one-click checkout" }].map(b => (
@@ -370,18 +352,18 @@ export default function BootcampEnroll() {
                 </div>
               ) : (
                 <div className="bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3 space-y-1.5">
-                  <p className="text-green-400 text-sm font-bold">✓ You will save ₹700.00 on this order</p>
-                  <div className="text-xs space-y-1 pt-1">
-                    {couponMsg && <p className="text-red-400 text-xs">{couponMsg}</p>}
-                    <div className="flex justify-between text-gray-400"><span>Original Price</span><span>₹{ORIGINAL.toLocaleString("en-IN")}</span></div>
-                    <div className="flex justify-between text-green-400"><span>Coupon Discount</span><span>-₹700</span></div>
-                    <div className="flex justify-between text-white font-bold pt-1 border-t border-white/10"><span>Final Amount</span><span>₹13,300</span></div>
+                  <p className="text-green-400 text-sm font-bold">✓ You will save ₹{DISCOUNT.toLocaleString()} on this order</p>
+                  <div className="text-xs space-y-1">
+                    <div className="flex justify-between text-gray-400"><span>Original Price</span><span>₹{ORIGINAL.toLocaleString()}</span></div>
+                    <div className="flex justify-between text-green-400"><span>Coupon Discount</span><span>-₹{DISCOUNT.toLocaleString()}</span></div>
+                    <div className="flex justify-between text-white font-bold pt-1 border-t border-white/10"><span>Final Amount</span><span>₹{SUBTOTAL.toLocaleString()}</span></div>
                   </div>
                 </div>
               )}
+              {couponMsg && <p className="text-red-400 text-xs mt-2">{couponMsg}</p>}
             </div>
 
-            {/* Order Summary card (step 2C) */}
+            {/* Order Summary */}
             {showSummary && (
               <div className="bg-[#1A1D1E] border border-white/10 rounded-2xl p-5">
                 <div className="flex items-center justify-between mb-4">
@@ -389,27 +371,26 @@ export default function BootcampEnroll() {
                   <span className="text-[10px] bg-white/10 text-gray-400 font-mono px-2 py-0.5 rounded">{ORDER}</span>
                 </div>
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between"><span className="text-gray-400">Original Price (1 item)</span><span className="text-white">₹{ORIGINAL.toLocaleString("en-IN")}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-400">Original Price (1 item)</span><span className="text-white">₹{ORIGINAL.toLocaleString()}</span></div>
                   {couponApplied && (
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Coupon Code <span className="text-[#C7E36B]">[{couponData?.code||"COUPON"}]</span> ✓</span>
-                      <span className="text-red-400">-₹700</span>
+                      <span className="text-gray-400">Coupon Code <span className="text-[#C7E36B]">[{couponData ? couponData.code : ""}]</span> ✓</span>
+                      <span className="text-red-400">-₹{DISCOUNT.toLocaleString()}</span>
                     </div>
                   )}
                   <div className="border-t border-white/10 pt-2 flex justify-between"><span className="text-gray-400">Subtotal</span><span className="text-white">₹{SUBTOTAL.toLocaleString()}</span></div>
-                  {couponApplied && <div className="flex justify-between"><span className="text-gray-400">Tax (GST)</span><span className="text-white">₹170</span></div>}
+                  {couponApplied && <div className="flex justify-between"><span className="text-gray-400">Tax (GST)</span><span className="text-white">₹{GST}</span></div>}
                   <div className="border-t border-white/10 pt-2 flex justify-between font-bold text-base">
                     <span className="text-white">Total Payable</span>
                     <span className="text-[#C7E36B]">₹{TOTAL.toLocaleString()}</span>
                   </div>
                 </div>
                 <button onClick={handleRazorpay} disabled={paying} className="w-full bg-[#C7E36B] text-black font-bold py-3 rounded-xl mt-4 hover:bg-lime-300 transition-all disabled:opacity-60">
-                  {paying ? "Opening payment..." : "Proceed to pay"}
+                  {paying ? "Processing..." : "Proceed to pay"}
                 </button>
               </div>
             )}
 
-            {/* Main CTA */}
             {!showSummary && (
               <button onClick={() => setShowSummary(true)} className="w-full bg-[#C7E36B] text-black font-bold py-3 rounded-xl hover:bg-lime-300 transition-all">
                 Pay ₹{(couponApplied ? SUBTOTAL : ORIGINAL).toLocaleString()} SECURELY
@@ -421,9 +402,7 @@ export default function BootcampEnroll() {
               <span>🛡 256-bit SSL Encryption</span>
               <span>⚡ Instant Enrollment</span>
             </div>
-            <p className="text-center text-gray-600 text-[11px]">
-              By Proceeding, you agree to Aifa's Terms &amp; Conditions and Refund Policy.
-            </p>
+            <p className="text-center text-gray-400 text-[10px]">By Proceeding, you agree to Aifa Terms &amp; Conditions and Refund Policy.</p>
           </div>
         </div>
       </div>
@@ -456,7 +435,7 @@ export default function BootcampEnroll() {
               <span className="text-white font-bold">₹{ORIGINAL.toLocaleString("en-IN")}</span>
             </div>
             <div className="flex justify-between items-center py-2">
-              <span className="text-gray-300">Coupon code Applied {couponApplied ? `[${couponData?.code||""}]` : ""}</span>
+              <span className="text-gray-300">Coupon code Applied {couponApplied && couponData ? "[" + couponData.code + "]" : ""}</span>
               <span className="text-red-400">-₹{DISCOUNT}</span>
             </div>
             <div className="flex justify-between items-center py-2">
@@ -473,7 +452,7 @@ export default function BootcampEnroll() {
         <button onClick={() => setStep(4)} className="w-full bg-[#C7E36B] text-black font-bold py-3 rounded-xl hover:bg-lime-300 transition-all mb-3">
           CREATE MY AIFA ACCOUNT
         </button>
-        <p className="text-center text-gray-500 text-xs">We'll use your enrollment email to set up your account.</p>
+        <p className="text-center text-gray-500 text-xs">We will use your enrollment email to set up your account.</p>
       </div>
     </div>
   );
@@ -483,12 +462,11 @@ export default function BootcampEnroll() {
     <div className="min-h-screen bg-[#0B0F10] py-12 px-4">
       <div className="max-w-3xl mx-auto">
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Left: account form */}
           <div className="bg-[#0F1112] border border-white/10 rounded-2xl p-6 space-y-4">
             <h2 className="text-xl font-bold text-white">Complete Your AIFA Account</h2>
             <p className="text-gray-400 text-sm">Your seat has already been reserved.</p>
 
-            <button onClick={()=>alert("Google sign-in is currently unavailable. Please create a password below.")} className="w-full border border-white/20 text-white font-semibold py-3 rounded-xl hover:bg-white/5 flex items-center justify-center gap-3 transition-all text-sm">
+            <button onClick={() => alert("Google sign-in is currently unavailable. Please create a password below.")} className="w-full border border-white/20 text-white font-semibold py-3 rounded-xl hover:bg-white/5 flex items-center justify-center gap-3 transition-all text-sm">
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -526,7 +504,6 @@ export default function BootcampEnroll() {
             </button>
           </div>
 
-          {/* Right: account benefits */}
           <div className="bg-[#1A1D1E] border border-white/10 rounded-2xl p-6">
             <h3 className="text-white font-bold mb-5">Your AIFA Account Includes:</h3>
             <div className="space-y-4">
