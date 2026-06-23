@@ -920,7 +920,18 @@ function WorkshopsSection({ token }) {
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (Array.isArray(d) && d.length > 0) setWorkshops(d); })
       .catch(() => {});
-  }, []);
+    /* Pre-populate reserved from user profile so state persists across navigation */
+    if (token) {
+      fetch("/api/users/me", { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.ok ? r.json() : null)
+        .then(u => {
+          if (u?.enrolledWorkshops?.length > 0) {
+            setReserved(new Set(u.enrolledWorkshops.map(id => String(id))));
+          }
+        })
+        .catch(() => {});
+    }
+  }, [token]);
 
   const handleReserve = async (w) => {
     if (!w._id || w._id?.startsWith?.("m")) {
@@ -932,8 +943,11 @@ function WorkshopsSection({ token }) {
     try {
       const res  = await fetch(`/api/workshops/${w._id}/register`, { method:"POST", headers:{ Authorization:`Bearer ${token}` } });
       const data = await res.json();
-      if (res.ok) setReserved(prev => new Set([...prev, w._id || w.title]));
-      else alert(data.message || "Could not reserve. Try again.");
+      if (res.ok || data.message === "Already registered") {
+        setReserved(prev => new Set([...prev, w._id || w.title]));
+      } else {
+        alert(data.message || "Could not reserve. Try again.");
+      }
     } catch { alert("Network error. Please try again."); }
     setEnrolling(null);
     setDetailW(null);
