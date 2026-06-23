@@ -740,6 +740,8 @@ function BootcampAdmin({ token }) {
   const [showFolderInput,setShowFolderInput]=useState(false);
   const [folderName,setFolderName]=useState("");
   const [folderSaved,setFolderSaved]=useState(false);
+  /* Resources list for the Resources tab */
+  const [resources,setResources]=useState([]);
   const h = { Authorization:`Bearer ${token}` };
 
   /* Sync modal fields whenever a session is opened for editing */
@@ -770,6 +772,10 @@ function BootcampAdmin({ token }) {
           if (Array.isArray(d)) { setAnns(d); if(d.length>0){setSelAnn(d[0]);setAnnF({title:d[0].title,content:d[0].content,status:d[0].status});} }
           setAnnsLoading(false);
         }).catch(()=>setAnnsLoading(false));
+    }
+    if (tab === "resources") {
+      fetch("/api/resources", { headers:h })
+        .then(r=>r.ok?r.json():[]).then(d=>{ if(Array.isArray(d)) setResources(d); }).catch(()=>{});
     }
     if (tab === "projects") {
       fetch(`/api/bootcamps/${sel._id}/projects`, { headers:h })
