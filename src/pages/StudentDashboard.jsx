@@ -1072,21 +1072,41 @@ function VideoCoursesSection({ profile, onNavigate }) {
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (Array.isArray(d) && d.length > 0) {
-          setCourses(d.map(c => ({
-            ...c,
-            image: c.thumbnail || c.image || "/courses/v1.png",
-            duration: c.duration || "—",
-            status: "all",
-          })));
+          const enrolledIds  = new Set((profile?.enrolledCourses  || []).map(x => String(x?._id || x)));
+          const progressMap  = {};
+          (profile?.courseProgress || []).forEach(p => {
+            progressMap[String(p.course)] = p.percentComplete || 0;
+          });
+          setCourses(d.map(c => {
+            const id       = String(c._id);
+            const pct      = progressMap[id];
+            const enrolled = enrolledIds.has(id) || pct !== undefined;
+            const done     = pct === 100;
+            return {
+              ...c,
+              image:    c.thumbnail || c.image || "/courses/v1.png",
+              duration: c.duration || "—",
+              status:   done ? "completed" : enrolled ? "mine" : "all",
+              progress: enrolled && !done ? (pct || 0) : undefined,
+            };
+          }));
         }
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, []);
+  }, [profile]);
 
   const parseDuration = (d = "") => {
-    const [h = 0, m = 0] = d.replace("h","").replace("m","").split(" ").map(Number);
-    return h * 60 + m;
+    /* handles: "1h 30m", "6 Hours", "35 HOURS", "2h 00m", "90 min" */
+    const lower = d.toLowerCase();
+    const hMatch = lower.match(/(\d+\.?\d*)\s*h/);
+    const mMatch = lower.match(/(\d+\.?\d*)\s*m(?!o)/); // "m" not followed by "o" (month)
+    if (hMatch || mMatch) {
+      return (hMatch ? parseFloat(hMatch[1]) * 60 : 0) + (mMatch ? parseFloat(mMatch[1]) : 0);
+    }
+    /* plain number = hours (e.g. "6 Hours") */
+    const numMatch = lower.match(/(\d+\.?\d*)/);
+    return numMatch ? parseFloat(numMatch[1]) * 60 : 0;
   };
 
   const sorted = [...courses].sort((a, b) => {
