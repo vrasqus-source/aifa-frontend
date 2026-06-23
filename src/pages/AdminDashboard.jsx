@@ -504,7 +504,7 @@ function ProjTab({ selProj, setSelProj, localProj, setLocalProj, projSaved, setP
           <div>
             <div className="flex items-center justify-between mb-2">
               <p className="text-[10px] text-gray-400 font-semibold uppercase">Requirements</p>
-              <button onClick={()=>setLocalProj(p=>({...p,req:[...(p.req||[]),"New requirement..."]}))} className="text-[10px] text-[#C7E36B] flex items-center gap-1"><I name="plus" size={11}/>Add Requirement</button>
+              <button onClick={()=>setLocalProj(p=>({...p,req:[...(p.req||[]),""]}))} className="text-[10px] text-[#C7E36B] flex items-center gap-1"><I name="plus" size={11}/>Add Requirement</button>
             </div>
             <div className="space-y-2">
               {(localProj.req||[]).map((r,i)=>(
