@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://aifa-backend-4an6.onrender.com/api/:path*"
+      "destination": "https://aifa-backend-j2ze.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
