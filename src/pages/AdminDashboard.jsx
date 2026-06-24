@@ -73,6 +73,25 @@ export default function AdminDashboard() {
   const [showNotifPanel, setShowNotifPanel] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [adminNotifs, setAdminNotifs] = useState([]);
+  const [adminNotifCount, setAdminNotifCount] = useState(0);
+
+  useEffect(() => {
+    if (!token || user.role !== "admin") return;
+    const load = () => {
+      fetch("/api/notifications", { headers: { Authorization: `Bearer ${token}` } })
+        .then(r => r.ok ? r.json() : [])
+        .then(d => {
+          if (Array.isArray(d)) {
+            setAdminNotifs(d.slice(0, 8));
+            setAdminNotifCount(d.filter(n => !n.isRead).length);
+          }
+        })
+        .catch(() => {});
+    };
+    load();
+    const interval = setInterval(load, 60000);
+    return () => clearInterval(interval);
+  }, [token]);
   const navigate = useNavigate();
   const token = localStorage.getItem("aifa_token");
   const user = JSON.parse(localStorage.getItem("aifa_user") || "{}");
@@ -141,10 +160,21 @@ export default function AdminDashboard() {
             {/* Bell icon with dropdown */}
             <div className="relative">
               <button onClick={()=>{ setShowNotifPanel(v=>!v); setShowProfileMenu(false);
-                if(!showNotifPanel) fetch("/api/notifications",{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.json()).then(d=>{ if(Array.isArray(d)) setAdminNotifs(d.slice(0,8)); }).catch(()=>{});
+                if(!showNotifPanel) {
+                  fetch("/api/notifications",{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.json()).then(d=>{
+                    if(Array.isArray(d)) {
+                      setAdminNotifs(d.slice(0,8));
+                      setAdminNotifCount(0);
+                    }
+                  }).catch(()=>{});
+                }
               }} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 relative transition-all">
                 <I name="bell" size={16} className="text-gray-400" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                {adminNotifCount > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-red-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center px-0.5">
+                    {adminNotifCount}
+                  </span>
+                )}
               </button>
               {showNotifPanel && (
                 <div className="absolute right-0 top-full mt-2 w-[340px] bg-[#0F1112] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden">
@@ -560,6 +590,14 @@ function ListBootcampAdmin({ onSelect, token }) {
   const [statusFilter, setStatusFilter] = useState("All");
   const [sortBy, setSortBy]             = useState("Default");
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setShowCreateModal(false);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
   const [createSuccess, setCreateSuccess]     = useState(false);
   const [newBC, setNewBC] = useState({name:"",code:"",price:"",duration:"",status:"ACTIVE"});
   const [bootcamps, setBootcamps] = useState([]);
@@ -719,6 +757,19 @@ function BootcampAdmin({ token }) {
   const [newMentor,setNewMentor]=useState("");
   /* Feature 5: sessions modal + search */
   const [editSession,setEditSession]=useState(null);
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") {
+        setEditSession(null);
+        setShowAddSession(false);
+        setViewStudent(null);
+        setEditStudent(null);
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
   const [sessSearch,setSessSearch]=useState("");
   /* Feature 7A: students filter/sort */
   const [studStatus,setStudStatus]=useState("All Status");
@@ -1037,7 +1088,7 @@ function BootcampAdmin({ token }) {
                     ) : sessions.filter(s=>!sessSearch||s.name.toLowerCase().includes(sessSearch.toLowerCase())).map(s=>(
                       <tr key={s._id||s.no} className="border-b border-white/5 last:border-0 hover:bg-white/[0.03]">
                         <td className="px-4 py-3 text-gray-400">{String(s.no).padStart(2,"0")}</td>
-                        <td className="px-4 py-3 text-white font-medium">{s.name}</td>
+                        <td className="px-4 py-3 text-white font-medium truncate max-w-xs" title={s.name}>{s.name}</td>
                         <td className="px-4 py-3"><span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${BC_ST[s.status]||"bg-gray-500/20 text-gray-400"}`}>{s.status}</span></td>
                         <td className="px-4 py-3"><button onClick={()=>setEditSession(s)} className="text-[#C7E36B] hover:underline text-xs">Edit Details</button></td>
                         <td className="px-4 py-3">{s.status==="COMING SOON"?<span className="text-gray-600">—</span>:<button onClick={()=>s.recordingUrl?window.open(s.recordingUrl,"_blank"):alert("Recording URL not configured for this session. Use Edit Details to add one.")} className="text-blue-400 hover:underline text-xs">View Recording</button>}</td>
@@ -2333,6 +2384,14 @@ function UsersAdmin({ token }) {
   const [uRole, setURole]     = useState("All");
   const [uSort, setUSort]     = useState("Newest");
   const [viewUser, setViewUser] = useState(null);
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setViewUser(null);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
   const adminId = JSON.parse(localStorage.getItem("aifa_user")||"{}") ._id;
 
   useEffect(() => {
@@ -3626,6 +3685,14 @@ function PlatformSettings({ token }) {
 
   const [coupons, setCoupons]               = useState([]);
   const [showCouponModal, setShowCouponModal] = useState(false);
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setShowCouponModal(false);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
   const [couponForm, setCouponForm]           = useState({ code:"", discountType:"flat", discountValue:"", maxUses:"0", expiresAt:"" });
   const [couponSaving, setCouponSaving]       = useState(false);
 

@@ -110,13 +110,6 @@ export default function BootcampEnroll() {
     }).catch(() => setChecking(false));
   }, []);
 
-  /* ── Show loading until enrollment check completes — prevents Step 1 flash ── */
-  if (checking) return (
-    <div className="min-h-screen bg-[#0B0F10] flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-[#C7E36B] border-t-transparent rounded-full animate-spin" />
-    </div>
-  );
-
   /* ── Derived values — plain expressions, no IIFE ── */
   const ORIGINAL   = (bootcamp && bootcamp.price)         ? bootcamp.price         : 14000;
   const ORIG_PRICE = (bootcamp && bootcamp.originalPrice) ? bootcamp.originalPrice : 19000;
@@ -264,6 +257,12 @@ export default function BootcampEnroll() {
     } catch { /* ignore */ }
     navigate("/dashboard");
   };
+  /* ── Show loading until enrollment check completes — prevents Step 1 flash ── */
+  if (checking) return (
+    <div className="min-h-screen bg-[#0B0F10] flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-[#C7E36B] border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
 
   /* ── STEP 1 ── */
   if (step === 1) return (

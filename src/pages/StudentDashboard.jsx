@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 /* ─── ICONS (inline SVG keeps bundle tiny) ─── */
@@ -542,6 +542,14 @@ function BootcampSection({ token, profile }) {
   const [showAllAnn, setShowAllAnn] = useState(false);
   const [watched, setWatched] = useState(false);
 
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setShowDrawer(false);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
+
   /* API data */
   const [bootcampData, setBootcampData] = useState(null);
   const [sessions, setSessions]         = useState([]);
@@ -916,6 +924,14 @@ function WorkshopsSection({ token }) {
   const [detailW, setDetailW]     = useState(null);
 
   useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setDetailW(null);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
+
+  useEffect(() => {
     fetch("/api/workshops")
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (Array.isArray(d) && d.length > 0) setWorkshops(d); })
@@ -1066,6 +1082,14 @@ function VideoCoursesSection({ profile, onNavigate }) {
   const [sort, setSort]       = useState("Newest");
   const [sortOpen, setSortOpen] = useState(false);
   const [detailCourse, setDetailCourse] = useState(null);
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setDetailCourse(null);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
 
   useEffect(() => {
     fetch("/api/courses")
@@ -1245,6 +1269,14 @@ function CertificatesSection({ token, profile }) {
   const [sortOrder, setSortOrder]   = useState("Latest");
   const [sortOpen, setSortOpen]     = useState(false);
   const [viewCert, setViewCert]     = useState(null);
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setViewCert(null);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
 
   useEffect(() => {
     fetch("/api/certificates/me", { headers:{ Authorization:`Bearer ${token}` } })
@@ -1427,6 +1459,14 @@ function JobsSection({ token }) {
   const [applied, setApplied]         = useState(false);
 
   useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") { setDetailJob(null); setApplied(false); }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
+
+  useEffect(() => {
     fetch("/api/jobs")
       .then(r => r.ok ? r.json() : [])
       .then(d => { if (Array.isArray(d)) setJobs(d); setLoading(false); })
@@ -1577,8 +1617,8 @@ function BillingSection({ onViewInvoice, profile }) {
   }, [token]);
 
   return (
-    <div className="p-6 bg-[#F5F7FA] min-h-full">
-      <h1 className="text-xl font-bold text-gray-900 mb-6">Billing & Payments</h1>
+    <div className="p-6 bg-[#0B0F10] min-h-full">
+      <h1 className="text-xl font-bold text-white mb-6">Billing & Payments</h1>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-6">
@@ -1587,52 +1627,52 @@ function BillingSection({ onViewInvoice, profile }) {
           { icon: "🛒", label: "Total Purchases", value: loading ? "—" : String(purchases.length) },
           { icon: "📅", label: "Last Payment Date", value: purchases.length > 0 ? purchases[0].date : "—" },
         ].map(s => (
-          <div key={s.label} className="bg-white rounded-xl p-4 shadow-sm">
-            <p className="text-sm text-gray-500 flex items-center gap-2"><span>{s.icon}</span>{s.label}</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">{s.value}</p>
+          <div key={s.label} className="bg-[#0F1112] border border-white/10 rounded-xl p-4">
+            <p className="text-xs text-gray-400 flex items-center gap-2"><span>{s.icon}</span>{s.label}</p>
+            <p className="text-2xl font-bold text-white mt-1">{s.value}</p>
           </div>
         ))}
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <h2 className="text-base font-bold text-gray-900 px-6 py-4 border-b border-gray-100">Purchase History</h2>
+      <div className="bg-[#0F1112] border border-white/10 rounded-xl overflow-hidden">
+        <h2 className="text-sm font-bold text-white px-6 py-4 border-b border-white/5">Purchase History</h2>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="text-[11px] text-gray-500 font-semibold uppercase bg-gray-50">
+              <tr className="text-[11px] text-gray-400 font-semibold uppercase bg-white/5 border-b border-white/5">
                 {["Purchase ID", "Program Name", "Type", "Purchase Date", "Amount", "Status", "Actions"].map(h => (
                   <th key={h} className="text-left px-6 py-3">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-white/5">
               {loading && <tr><td colSpan={7} className="px-6 py-6 text-center text-gray-400 text-sm animate-pulse">Loading transactions...</td></tr>}
-              {!loading && purchases.length === 0 && <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-400 text-sm">No transactions yet.</td></tr>}
+              {!loading && purchases.length === 0 && <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-500 text-sm">No transactions yet.</td></tr>}
               {purchases.map((p, i) => (
-                <tr key={i} className="hover:bg-gray-50 transition-all">
-                  <td className="px-6 py-4 text-sm font-semibold text-gray-700">{p.id}</td>
-                  <td className="px-6 py-4 text-sm text-gray-800">{p.name}</td>
+                <tr key={i} className="hover:bg-white/[0.03] transition-all">
+                  <td className="px-6 py-4 text-sm font-semibold text-gray-300">{p.id}</td>
+                  <td className="px-6 py-4 text-sm text-white font-medium">{p.name}</td>
                   <td className="px-6 py-4">
-                    <span className={`text-xs font-semibold ${p.type === "Bootcamp" ? "text-blue-500" : p.type === "Workshop" ? "text-purple-500" : "text-green-500"}`}>{p.type}</span>
+                    <span className={`text-xs font-semibold ${p.type === "Bootcamp" ? "text-blue-400" : p.type === "Workshop" ? "text-purple-400" : "text-green-400"}`}>{p.type}</span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{p.date}</td>
-                  <td className="px-6 py-4 text-sm font-semibold text-gray-800">{p.amount}</td>
+                  <td className="px-6 py-4 text-sm text-gray-400">{p.date}</td>
+                  <td className="px-6 py-4 text-sm font-semibold text-white">{p.amount}</td>
                   <td className="px-6 py-4">
-                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${p.status === "Paid" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${p.status === "Paid" ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"}`}>
                       {p.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 relative">
-                    <button onClick={() => setOpenMenu(openMenu === i ? null : i)} className="text-gray-400 hover:text-gray-700">
+                    <button onClick={() => setOpenMenu(openMenu === i ? null : i)} className="text-gray-400 hover:text-white">
                       <Ic name="more" size={18} />
                     </button>
                     {openMenu === i && (
-                      <div ref={menuRef} className="absolute right-6 top-8 bg-white border border-gray-100 rounded-xl shadow-lg z-10 overflow-hidden w-[160px]">
-                        <button onClick={() => { onViewInvoice(p); setOpenMenu(null); }} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
+                      <div ref={menuRef} className="absolute right-6 top-8 bg-[#0F1112] border border-white/10 rounded-xl shadow-2xl z-10 overflow-hidden w-[160px]">
+                        <button onClick={() => { onViewInvoice(p); setOpenMenu(null); }} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white text-left">
                           <Ic name="eye" size={14} className="text-gray-400" />View Invoice
                         </button>
-                        <button onClick={() => { alert("Invoice PDF download coming soon!"); setOpenMenu(null); }} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
+                        <button onClick={() => { alert("Invoice PDF download coming soon!"); setOpenMenu(null); }} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/5 hover:text-white text-left">
                           <Ic name="download" size={14} className="text-gray-400" />Download Invoice
                         </button>
                       </div>
@@ -1650,76 +1690,82 @@ function BillingSection({ onViewInvoice, profile }) {
 
 /* ─── INVOICE VIEW ─── */
 function InvoiceView({ item, onBack, profile }) {
+  useEffect(() => {
+    const handleEsc = (e) => { if (e.key === "Escape") onBack(); };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [onBack]);
+
   return (
-    <div className="p-6 bg-[#F5F7FA] min-h-full">
+    <div className="p-6 bg-[#0B0F10] min-h-full">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800">
+          <button onClick={onBack} className="flex items-center gap-1 text-sm text-gray-400 hover:text-white">
             <Ic name="back" size={16} />Back to Billing
           </button>
-          <h1 className="text-lg font-bold text-gray-900">Invoice {item.id}</h1>
-          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${item.status === "Paid" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>{item.status}</span>
+          <h1 className="text-lg font-bold text-white">Invoice {item.id}</h1>
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${item.status === "Paid" ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"}`}>{item.status}</span>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => window.print()} className="flex items-center gap-2 text-sm border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100">
+          <button onClick={() => window.print()} className="flex items-center gap-2 text-xs border border-white/10 text-gray-300 px-4 py-2 rounded-xl hover:bg-white/5">
             <Ic name="print" size={14} />Print
           </button>
-          <button onClick={() => alert("PDF download coming soon!")} className="flex items-center gap-2 text-sm bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800">
+          <button onClick={() => alert("PDF download coming soon!")} className="flex items-center gap-2 text-xs bg-white/10 text-white px-4 py-2 rounded-xl hover:bg-white/20">
             <Ic name="download" size={14} />Download PDF
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm p-8 max-w-2xl mx-auto">
+      <div className="bg-[#0F1112] border border-white/10 rounded-xl p-8 max-w-2xl mx-auto text-white">
         <div className="flex items-start justify-between mb-8">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center"><span className="text-white font-bold text-xs">A</span></div>
-              <span className="text-lg font-black text-gray-900">AIFA</span>
+              <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center"><span className="text-white font-bold text-xs">A</span></div>
+              <span className="text-lg font-black text-white">AIFA</span>
             </div>
-            <p className="text-xs text-gray-500">AIFA Learning Platform Inc.</p>
-            <p className="text-xs text-gray-500">123 Tech Avenue, Suite 400</p>
-            <p className="text-xs text-gray-500">San Francisco, CA 94105</p>
-            <p className="text-xs text-blue-500">billing@aifa.edu</p>
+            <p className="text-xs text-gray-400">AIFA Learning Platform Inc.</p>
+            <p className="text-xs text-gray-400">123 Tech Avenue, Suite 400</p>
+            <p className="text-xs text-gray-400">San Francisco, CA 94105</p>
+            <p className="text-xs text-[#C7E36B]">billing@aifa.edu</p>
           </div>
           <div className="text-right">
-            <h2 className="text-3xl font-black text-gray-200 tracking-widest">INVOICE</h2>
+            <h2 className="text-3xl font-black text-white/10 tracking-widest">INVOICE</h2>
             <div className="mt-2 space-y-1">
-              <div className="flex justify-end gap-8 text-xs"><span className="text-gray-500">Invoice Number:</span><span className="font-semibold">{item.id}</span></div>
-              <div className="flex justify-end gap-8 text-xs"><span className="text-gray-500">Date of Issue:</span><span className="font-semibold">{item.date}</span></div>
-              <div className="flex justify-end gap-8 text-xs"><span className="text-gray-500">Payment Method:</span><span className="font-semibold">•••• 4242</span></div>
+              <div className="flex justify-end gap-8 text-xs"><span className="text-gray-400">Invoice Number:</span><span className="font-semibold">{item.id}</span></div>
+              <div className="flex justify-end gap-8 text-xs"><span className="text-gray-400">Date of Issue:</span><span className="font-semibold">{item.date}</span></div>
+              <div className="flex justify-end gap-8 text-xs"><span className="text-gray-400">Payment Method:</span><span className="font-semibold">•••• 4242</span></div>
             </div>
           </div>
         </div>
 
         <div className="mb-6">
-          <p className="text-[10px] text-gray-400 font-semibold uppercase mb-1">BILLED TO</p>
-          <p className="text-sm font-bold text-gray-900">{profile?.name || "Student"}</p>
-          <p className="text-xs text-blue-500">{profile?.email || "—"}</p>
-          <p className="text-xs text-gray-500">Student ID: STU-{String(profile?._id || "000000").slice(-6).toUpperCase()}</p>
+          <p className="text-[10px] text-gray-500 font-semibold uppercase mb-1">BILLED TO</p>
+          <p className="text-sm font-bold text-white">{profile?.name || "Student"}</p>
+          <p className="text-xs text-[#C7E36B]">{profile?.email || "—"}</p>
+          <p className="text-xs text-gray-400">Student ID: STU-{String(profile?._id || "000000").slice(-6).toUpperCase()}</p>
         </div>
 
         <table className="w-full mb-4">
-          <thead><tr className="text-[10px] text-gray-400 uppercase border-b border-gray-100">
+          <thead><tr className="text-[10px] text-gray-400 uppercase border-b border-white/10">
             {["Description", "Type", "Qty", "Unit Price", "Amount"].map(h => (
               <th key={h} className={`py-2 font-semibold ${h === "Description" ? "text-left" : "text-right"}`}>{h}</th>
             ))}
           </tr></thead>
-          <tbody><tr className="border-b border-gray-50">
-            <td className="py-3 text-sm text-gray-800">{item.name}<br /><span className="text-xs text-gray-400">12-week intensive online program</span></td>
-            <td className="py-3 text-sm text-gray-500 text-right">{item.type}</td>
-            <td className="py-3 text-sm text-gray-800 text-right">1</td>
-            <td className="py-3 text-sm text-gray-800 text-right">{item.amount}</td>
-            <td className="py-3 text-sm font-semibold text-gray-800 text-right">{item.amount}</td>
+          <tbody><tr className="border-b border-white/5">
+            <td className="py-3 text-sm text-white">{item.name}<br /><span className="text-xs text-gray-400">12-week intensive online program</span></td>
+            <td className="py-3 text-sm text-gray-400 text-right">{item.type}</td>
+            <td className="py-3 text-sm text-white text-right">1</td>
+            <td className="py-3 text-sm text-white text-right">{item.amount}</td>
+            <td className="py-3 text-sm font-semibold text-white text-right">{item.amount}</td>
           </tr></tbody>
         </table>
 
-        <div className="space-y-1 ml-auto w-48">
-          <div className="flex justify-between text-sm text-gray-500"><span>Subtotal</span><span>{item.amount}</span></div>
-          <div className="flex justify-between text-sm text-gray-500"><span>Tax (0%)</span><span>₹0</span></div>
-          <div className="flex justify-between text-base font-bold text-gray-900 border-t border-gray-200 pt-2 mt-2"><span>Total</span><span>{item.amount}</span></div>
-          <div className="flex justify-between text-sm text-green-600"><span>Amount Paid</span><span>-{item.amount}</span></div>
-          <div className="flex justify-between text-sm font-bold text-gray-900"><span>Balance Due</span><span>₹0</span></div>
+        <div className="space-y-1 ml-auto w-48 text-xs">
+          <div className="flex justify-between text-gray-400"><span>Subtotal</span><span>{item.amount}</span></div>
+          <div className="flex justify-between text-gray-400"><span>Tax (0%)</span><span>₹0</span></div>
+          <div className="flex justify-between text-sm font-bold text-white border-t border-white/10 pt-2 mt-2"><span>Total</span><span>{item.amount}</span></div>
+          <div className="flex justify-between text-gray-400 text-green-400"><span>Amount Paid</span><span>-{item.amount}</span></div>
+          <div className="flex justify-between text-sm font-bold text-white"><span>Balance Due</span><span>₹0</span></div>
         </div>
       </div>
     </div>
@@ -1776,14 +1822,14 @@ function ProfileSection({ profile, token, onUpdated }) {
   const initial = (profile?.name || "A")[0].toUpperCase();
 
   return (
-    <div className="p-6 bg-[#F5F7FA] min-h-full">
+    <div className="p-6 bg-[#0B0F10] min-h-full text-white">
       {/* Personal Info Card */}
-      <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+      <div className="bg-[#0F1112] border border-white/10 rounded-xl p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-bold text-gray-900">Personal Information</h2>
+          <h2 className="text-base font-bold text-white">Personal Information</h2>
           {!editing && (
             <button onClick={() => { setName(profile?.name||""); setPhone(profile?.phone||""); setLinkedin(profile?.socialLinks?.linkedin||""); setInstagram(profile?.socialLinks?.instagram||""); setPortfolio(profile?.socialLinks?.portfolio||""); setEditing(true); }}
-              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800">
+              className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-all">
               <Ic name="edit" size={14} />Edit
             </button>
           )}
@@ -1801,52 +1847,52 @@ function ProfileSection({ profile, token, onUpdated }) {
                 {uploading && <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center"><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"/></div>}
               </div>
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
-              <button onClick={() => fileRef.current?.click()} disabled={uploading} className="text-sm bg-[#C7E36B] text-black font-semibold px-4 py-1.5 rounded-lg hover:bg-lime-300 disabled:opacity-60">
+              <button onClick={() => fileRef.current?.click()} disabled={uploading} className="text-xs bg-[#C7E36B] text-black font-semibold px-4 py-1.5 rounded-lg hover:bg-lime-300 disabled:opacity-60">
                 {uploading ? "Uploading..." : "Change Photo"}
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">Full Name</label>
+                <label className="text-xs text-gray-400 mb-1 block">Full Name</label>
                 <input value={name} onChange={e => setName(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:border-[#7C3AED]" />
+                  className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#7C3AED]" />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">Email Address</label>
+                <label className="text-xs text-gray-400 mb-1 block">Email Address</label>
                 <input value={profile?.email} disabled
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-400 bg-gray-50 cursor-not-allowed" />
+                  className="w-full bg-white/5 border border-white/5 rounded-lg px-3 py-2 text-sm text-gray-500 cursor-not-allowed" />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">Mobile Number</label>
+                <label className="text-xs text-gray-400 mb-1 block">Mobile Number</label>
                 <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91..."
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:border-[#7C3AED]" />
+                  className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#7C3AED]" />
               </div>
             </div>
 
             {/* Social links */}
             <div className="grid grid-cols-3 gap-3 mb-4">
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">LinkedIn URL</label>
+                <label className="text-xs text-gray-400 mb-1 block">LinkedIn URL</label>
                 <input value={linkedin} onChange={e => setLinkedin(e.target.value)} placeholder="linkedin.com/in/..."
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:border-[#7C3AED]" />
+                  className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#7C3AED]" />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">Instagram</label>
+                <label className="text-xs text-gray-400 mb-1 block">Instagram</label>
                 <input value={instagram} onChange={e => setInstagram(e.target.value)} placeholder="@username"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:border-[#7C3AED]" />
+                  className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#7C3AED]" />
               </div>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">Portfolio URL</label>
+                <label className="text-xs text-gray-400 mb-1 block">Portfolio URL</label>
                 <input value={portfolio} onChange={e => setPortfolio(e.target.value)} placeholder="https://..."
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:border-[#7C3AED]" />
+                  className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#7C3AED]" />
               </div>
             </div>
 
-            {msg && <p className={`text-sm mb-3 ${msg === "Saved!" ? "text-green-600" : "text-red-500"}`}>{msg}</p>}
+            {msg && <p className={`text-xs mb-3 ${msg === "Saved!" ? "text-green-400" : "text-red-400"}`}>{msg}</p>}
             <div className="flex justify-end gap-3">
-              <button onClick={() => setEditing(false)} className="px-5 py-2 text-sm border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50">Cancel</button>
-              <button onClick={handleSave} disabled={saving} className="px-5 py-2 text-sm bg-[#C7E36B] text-black font-semibold rounded-lg hover:bg-lime-300 disabled:opacity-60">
+              <button onClick={() => setEditing(false)} className="px-5 py-2 text-xs border border-white/10 text-gray-300 rounded-lg hover:bg-white/5">Cancel</button>
+              <button onClick={handleSave} disabled={saving} className="px-5 py-2 text-xs bg-[#C7E36B] text-black font-semibold rounded-lg hover:bg-lime-300 disabled:opacity-60 font-bold">
                 {saving ? "Saving..." : "Save Changes"}
               </button>
             </div>
@@ -1859,24 +1905,24 @@ function ProfileSection({ profile, token, onUpdated }) {
             }
             <div className="grid grid-cols-2 gap-6 flex-1">
               <div>
-                <p className="text-xs text-[#7C3AED] font-semibold mb-1">Full Name</p>
-                <p className="text-sm font-semibold text-gray-800">{profile?.name}</p>
+                <p className="text-xs text-gray-500 mb-1 font-semibold">Full Name</p>
+                <p className="text-sm font-semibold text-white">{profile?.name}</p>
               </div>
               <div>
-                <p className="text-xs text-[#7C3AED] font-semibold mb-1">Email Address</p>
-                <p className="text-sm text-gray-800">{profile?.email}</p>
+                <p className="text-xs text-gray-500 mb-1 font-semibold">Email Address</p>
+                <p className="text-sm text-white">{profile?.email}</p>
               </div>
               <div>
-                <p className="text-xs text-[#7C3AED] font-semibold mb-1">Mobile Number</p>
-                <p className="text-sm text-gray-800">{profile?.phone || "—"}</p>
+                <p className="text-xs text-gray-500 mb-1 font-semibold">Mobile Number</p>
+                <p className="text-sm text-white">{profile?.phone || "—"}</p>
               </div>
               {(profile?.socialLinks?.linkedin || profile?.socialLinks?.instagram || profile?.socialLinks?.portfolio) && (
                 <div>
-                  <p className="text-xs text-[#7C3AED] font-semibold mb-1">Social Links</p>
+                  <p className="text-xs text-gray-500 mb-1 font-semibold">Social Links</p>
                   <div className="flex gap-3">
-                    {profile.socialLinks.linkedin  && <a href={profile.socialLinks.linkedin}  target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">LinkedIn</a>}
-                    {profile.socialLinks.instagram && <a href={`https://instagram.com/${profile.socialLinks.instagram.replace("@","")}`} target="_blank" rel="noreferrer" className="text-xs text-pink-500 hover:underline">Instagram</a>}
-                    {profile.socialLinks.portfolio  && <a href={profile.socialLinks.portfolio}  target="_blank" rel="noreferrer" className="text-xs text-gray-600 hover:underline">Portfolio</a>}
+                    {profile.socialLinks.linkedin  && <a href={profile.socialLinks.linkedin}  target="_blank" rel="noreferrer" className="text-xs text-[#C7E36B] hover:underline">LinkedIn</a>}
+                    {profile.socialLinks.instagram && <a href={`https://instagram.com/${profile.socialLinks.instagram.replace("@","")}`} target="_blank" rel="noreferrer" className="text-xs text-[#C7E36B] hover:underline">Instagram</a>}
+                    {profile.socialLinks.portfolio  && <a href={profile.socialLinks.portfolio}  target="_blank" rel="noreferrer" className="text-xs text-[#C7E36B] hover:underline">Portfolio</a>}
                   </div>
                 </div>
               )}
@@ -1887,22 +1933,22 @@ function ProfileSection({ profile, token, onUpdated }) {
 
       {/* Account Info */}
       <div>
-        <h2 className="text-base font-bold text-gray-900 mb-4">Account Information</h2>
+        <h2 className="text-base font-bold text-white mb-4">Account Information</h2>
         <div className="flex items-center gap-10">
           <div>
-            <p className="text-[10px] text-gray-400 font-semibold uppercase mb-1">Member ID</p>
-            <p className="text-sm font-semibold text-gray-800">{memberId}</p>
+            <p className="text-[10px] text-gray-500 font-semibold uppercase mb-1">Member ID</p>
+            <p className="text-sm font-semibold text-gray-300">{memberId}</p>
           </div>
           <div>
-            <p className="text-[10px] text-gray-400 font-semibold uppercase mb-1">Member Since</p>
-            <p className="text-sm font-semibold text-gray-800">
+            <p className="text-[10px] text-gray-500 font-semibold uppercase mb-1">Member Since</p>
+            <p className="text-sm font-semibold text-gray-300">
               {new Date(profile?.createdAt || "2023-10-12").toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
             </p>
           </div>
           <div>
-            <p className="text-[10px] text-gray-400 font-semibold uppercase mb-1">Account Status</p>
-            <span className="flex items-center gap-1.5 text-sm font-semibold text-gray-800 bg-green-50 border border-green-200 px-3 py-1 rounded-full w-fit">
-              <span className="w-2 h-2 rounded-full bg-green-500" />Active
+            <p className="text-[10px] text-gray-500 font-semibold uppercase mb-1">Account Status</p>
+            <span className="flex items-center gap-1.5 text-xs font-semibold text-green-400 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full w-fit">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400" />Active
             </span>
           </div>
         </div>
@@ -1950,14 +1996,14 @@ function SettingsSection({ token, profile }) {
   };
 
   return (
-    <div className="p-6 bg-[#F5F7FA] min-h-full">
-      <h1 className="text-lg font-bold text-gray-900 mb-6">Settings</h1>
+    <div className="p-6 bg-[#0B0F10] min-h-full text-white">
+      <h1 className="text-lg font-bold text-white mb-6">Settings</h1>
       <div className="flex gap-6">
         {/* Sidebar tabs */}
         <div className="w-[180px] shrink-0">
           {[["password", "Change Password"], ["notifications", "Notifications"]].map(([id, label]) => (
             <button key={id} onClick={() => setTab(id)}
-              className={`w-full flex items-center justify-between px-4 py-2.5 text-sm rounded-lg mb-1 transition-all ${tab === id ? "bg-[#7C3AED] text-white font-semibold" : "text-gray-600 hover:bg-gray-100"}`}>
+              className={`w-full flex items-center justify-between px-4 py-2.5 text-xs rounded-lg mb-1 transition-all ${tab === id ? "bg-[#7C3AED] text-white font-semibold" : "text-gray-400 hover:bg-white/5 hover:text-white"}`}>
               {label} {tab === id && <Ic name="chevron" size={14} />}
             </button>
           ))}
@@ -1966,38 +2012,38 @@ function SettingsSection({ token, profile }) {
         {/* Content */}
         <div className="flex-1 space-y-4">
           {tab === "password" && (
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-base font-bold text-gray-900 mb-1">Change Password</h2>
-              <p className="text-sm text-gray-500 mb-6">Update your password to keep your account secure.</p>
+            <div className="bg-[#0F1112] border border-white/10 rounded-xl p-6">
+              <h2 className="text-sm font-bold text-white mb-1">Change Password</h2>
+              <p className="text-xs text-gray-400 mb-6">Update your password to keep your account secure.</p>
               <div className="space-y-4 max-w-md">
                 <div>
-                  <label className="text-sm text-gray-600 font-medium mb-1.5 block">Current Password</label>
+                  <label className="text-xs text-gray-400 font-medium mb-1.5 block">Current Password</label>
                   <div className="relative">
                     <input type={showCurrent ? "text" : "password"} value={current} onChange={e => setCurrent(e.target.value)}
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#7C3AED]" />
-                    <button onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                      className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#7C3AED]" />
+                    <button onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
                       <Ic name="eye" size={16} />
                     </button>
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-600 font-medium mb-1.5 block">New Password</label>
+                  <label className="text-xs text-gray-400 font-medium mb-1.5 block">New Password</label>
                   <div className="relative">
                     <input type={showNew ? "text" : "password"} value={newPwd} onChange={e => setNewPwd(e.target.value)} placeholder="Enter new password"
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#7C3AED]" />
-                    <button onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                      className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#7C3AED]" />
+                    <button onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
                       <Ic name="eye" size={16} />
                     </button>
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-600 font-medium mb-1.5 block">Confirm New Password</label>
+                  <label className="text-xs text-gray-400 font-medium mb-1.5 block">Confirm New Password</label>
                   <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="Confirm new password"
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#7C3AED]" />
+                    className="w-full bg-[#1A1D1E] border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-[#7C3AED]" />
                 </div>
-                {msg && <p className={`text-sm ${msg.includes("success") ? "text-green-600" : "text-red-500"}`}>{msg}</p>}
+                {msg && <p className={`text-xs ${msg.includes("success") ? "text-green-400" : "text-red-400"}`}>{msg}</p>}
                 <button onClick={handlePwdUpdate} disabled={saving}
-                  className="bg-gray-900 text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-gray-800 disabled:opacity-60">
+                  className="bg-[#C7E36B] text-black font-bold text-xs px-5 py-2.5 rounded-lg hover:bg-lime-300 disabled:opacity-60">
                   {saving ? "Updating..." : "Update Password"}
                 </button>
               </div>
@@ -2005,9 +2051,9 @@ function SettingsSection({ token, profile }) {
           )}
 
           {tab === "notifications" && (
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-base font-bold text-gray-900 mb-1">Notifications</h2>
-              <p className="text-sm text-gray-500 mb-6">Manage how you receive updates and alerts.</p>
+            <div className="bg-[#0F1112] border border-white/10 rounded-xl p-6">
+              <h2 className="text-sm font-bold text-white mb-1">Notifications</h2>
+              <p className="text-xs text-gray-400 mb-6">Manage how you receive updates and alerts.</p>
               <div className="space-y-4 max-w-md">
                 {[
                   { key: "newCourses",     label: "New Course Alerts",    desc: "Get notified when new courses are published" },
@@ -2072,6 +2118,14 @@ function ResourcesSection({ token }) {
   const [search, setSearch]   = useState("");
   const [copied, setCopied]   = useState(null);
   const [detail, setDetail]   = useState(null);
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setDetail(null);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
 
   useEffect(() => {
     setLoading(true); setRes([]);
@@ -2478,6 +2532,14 @@ function HireTalentSection({ token }) {
   const [inqMsg, setInqMsg] = useState("");
   const [sent, setSent] = useState(false);
   const [toast, setToast] = useState(""); // top-right toast: talent name
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setInquiry(null);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
 
   useEffect(() => {
     fetch("/api/talent")
