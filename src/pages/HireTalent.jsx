@@ -30,7 +30,7 @@ export default function HireTalent() {
   const [inquirySent, setInquirySent] = useState(null);
 
   useEffect(() => {
-    fetch("https://aifa-backend-j2ze.onrender.com/api/talent")
+    fetch("/api/talent")
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (Array.isArray(data) && data.length > 0) setTalents(data); })
       .catch(() => {});
@@ -39,7 +39,7 @@ export default function HireTalent() {
   const sendInquiry = async (talent) => {
     try {
       const token = localStorage.getItem("aifa_token");
-      await fetch("https://aifa-backend-j2ze.onrender.com/api/service-requests", {
+      await fetch("/api/service-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ talentName: talent.name, type: "hire-talent" }),
