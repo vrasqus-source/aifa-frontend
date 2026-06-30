@@ -8,6 +8,18 @@ function saveUser(data) {
   localStorage.setItem("aifa_user", JSON.stringify({ name: data.name, _id: data._id, role: data.role }));
 }
 
+// Defined outside the component so React never remounts children on re-render (fixes focus loss bug)
+function Backdrop({ onClose, children }) {
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
+      <div className="w-full max-w-lg bg-[#0B0F10] rounded-2xl p-6 md:p-8 relative border border-white/10">
+        <button onClick={onClose} className="absolute top-4 right-4 text-white text-xl">✕</button>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 // views: email-login | phone-login | phone-otp | forgot-email | forgot-otp | forgot-newpass
 export default function LoginModal({ onClose, onSwitchToSignup }) {
   const [view, setView]               = useState("email-login");
@@ -76,6 +88,7 @@ export default function LoginModal({ onClose, onSwitchToSignup }) {
   const handleEmailLogin = async () => {
     setError("");
     if (!email || !password) { setError("Please enter email and password."); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("Please enter a valid email address."); return; }
     if (turnstileSiteKey && !turnstileToken) { setError("Please complete the CAPTCHA."); return; }
     setLoading(true);
     try {
@@ -128,6 +141,7 @@ export default function LoginModal({ onClose, onSwitchToSignup }) {
   const handleForgotSendOtp = async () => {
     setError(""); setMsg("");
     if (!forgotEmail) { setError("Enter your email address."); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(forgotEmail)) { setError("Please enter a valid email address."); return; }
     if (turnstileSiteKey && !turnstileToken) { setError("Please complete the CAPTCHA."); return; }
     setLoading(true);
     try {
@@ -174,24 +188,15 @@ export default function LoginModal({ onClose, onSwitchToSignup }) {
     finally { setLoading(false); }
   };
 
-  const Backdrop = ({ children }) => (
-    <div onClick={onClose} className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
-      <div onClick={e => e.stopPropagation()} className="w-full max-w-lg bg-[#0B0F10] rounded-2xl p-6 md:p-8 relative border border-white/10">
-        <button onClick={onClose} className="absolute top-4 right-4 text-white text-xl">✕</button>
-        {children}
-      </div>
-    </div>
-  );
-
   // ── PHONE LOGIN VIEW ───────────────────────────────────────
   if (view === "phone-login") return (
-    <Backdrop>
+    <Backdrop onClose={onClose}>
       <button onClick={() => { setView("email-login"); setError(""); setPhone(""); }} className="text-gray-400 text-sm mb-4 hover:text-white flex items-center gap-1">← Back to Login</button>
       <p className="text-gray-400 text-sm">Login via Phone</p>
       <h2 className="text-white text-2xl font-semibold mb-6">Enter your number</h2>
       <div className="flex gap-3 mb-4">
-        <div className="flex items-center gap-2 border border-white/20 rounded-lg px-4 py-3 text-white shrink-0">+91 <span className="text-xs">⌄</span></div>
-        <input type="tel" placeholder="Phone Number" value={phone} onChange={e => setPhone(e.target.value)} onKeyDown={e => e.key === "Enter" && handleSendPhoneOtp()} className="flex-1 bg-transparent border border-white/20 rounded-lg px-4 py-3 text-white outline-none focus:border-[#C7E36B]"/>
+        <div className="flex items-center border border-white/20 rounded-lg px-4 py-3 text-white shrink-0">+91</div>
+        <input type="tel" placeholder="Phone Number" value={phone} onChange={e => setPhone(e.target.value.replace(/[^0-9]/g, ""))} onKeyDown={e => e.key === "Enter" && handleSendPhoneOtp()} className="flex-1 bg-transparent border border-white/20 rounded-lg px-4 py-3 text-white outline-none focus:border-[#C7E36B]"/>
       </div>
       <TurnstileWidget />
       {error && <p className="text-red-400 text-sm mb-3">{error}</p>}
@@ -203,7 +208,7 @@ export default function LoginModal({ onClose, onSwitchToSignup }) {
 
   // ── PHONE OTP VERIFY VIEW ──────────────────────────────────
   if (view === "phone-otp") return (
-    <Backdrop>
+    <Backdrop onClose={onClose}>
       <button onClick={() => { setView("phone-login"); setError(""); setOtp(""); }} className="text-gray-400 text-sm mb-4 hover:text-white flex items-center gap-1">← Change Number</button>
       <h2 className="text-white text-2xl font-semibold mb-2">Enter OTP</h2>
       <p className="text-gray-400 text-sm mb-6">We sent a 6-digit code to <strong className="text-white">+91 {phone}</strong></p>
@@ -219,7 +224,7 @@ export default function LoginModal({ onClose, onSwitchToSignup }) {
 
   // ── FORGOT PASSWORD: EMAIL VIEW ────────────────────────────
   if (view === "forgot-email") return (
-    <Backdrop>
+    <Backdrop onClose={onClose}>
       <button onClick={() => { setView("email-login"); setError(""); setForgotEmail(""); }} className="text-gray-400 text-sm mb-4 hover:text-white flex items-center gap-1">← Back to Login</button>
       <h2 className="text-white text-2xl font-semibold mb-2">Forgot Password</h2>
       <p className="text-gray-400 text-sm mb-6">Enter your email and we'll send a 6-digit reset code.</p>
@@ -234,7 +239,7 @@ export default function LoginModal({ onClose, onSwitchToSignup }) {
 
   // ── FORGOT PASSWORD: OTP VIEW ──────────────────────────────
   if (view === "forgot-otp") return (
-    <Backdrop>
+    <Backdrop onClose={onClose}>
       <button onClick={() => { setView("forgot-email"); setError(""); setForgotOtp(""); }} className="text-gray-400 text-sm mb-4 hover:text-white flex items-center gap-1">← Change Email</button>
       <h2 className="text-white text-2xl font-semibold mb-2">Enter Reset Code</h2>
       <p className="text-gray-400 text-sm mb-6">We emailed a 6-digit code to <strong className="text-white">{forgotEmail}</strong></p>
@@ -250,7 +255,7 @@ export default function LoginModal({ onClose, onSwitchToSignup }) {
 
   // ── FORGOT PASSWORD: NEW PASSWORD VIEW ─────────────────────
   if (view === "forgot-newpass") return (
-    <Backdrop>
+    <Backdrop onClose={onClose}>
       <h2 className="text-white text-2xl font-semibold mb-2">Set New Password</h2>
       <p className="text-gray-400 text-sm mb-6">Create a new password for your account.</p>
       <div className="relative mb-6">
@@ -266,8 +271,8 @@ export default function LoginModal({ onClose, onSwitchToSignup }) {
 
   // ── MAIN EMAIL LOGIN VIEW ──────────────────────────────────
   return (
-    <div onClick={onClose} className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
-      <div onClick={e => e.stopPropagation()} className="w-full max-w-lg bg-[#0B0F10] rounded-2xl p-6 md:p-8 relative border border-white/10">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
+      <div className="w-full max-w-lg bg-[#0B0F10] rounded-2xl p-6 md:p-8 relative border border-white/10">
         <button onClick={onClose} className="absolute top-4 right-4 text-white text-xl">✕</button>
 
         <p className="text-gray-400 text-sm">Step 1 Of 2</p>
@@ -301,7 +306,7 @@ export default function LoginModal({ onClose, onSwitchToSignup }) {
           {loading ? "Logging in..." : "+ VERIFY AND LOGIN"}
         </button>
 
-        <p onClick={() => { setView("forgot-email"); setError(""); setMsg(""); resetTurnstile(); }} className="text-center text-blue-400 text-sm mb-4 cursor-pointer hover:underline">
+        <p onClick={() => { setView("forgot-email"); setError(""); setMsg(""); setForgotOtp(""); resetTurnstile(); }} className="text-center text-blue-400 text-sm mb-4 cursor-pointer hover:underline">
           forgot password?
         </p>
 

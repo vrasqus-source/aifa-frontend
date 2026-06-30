@@ -5,6 +5,7 @@ const PWD_RULES = [
   { label: "One uppercase letter",   test: p => /[A-Z]/.test(p) },
   { label: "One lowercase letter",   test: p => /[a-z]/.test(p) },
   { label: "One number",             test: p => /[0-9]/.test(p) },
+  { label: "No spaces",              test: p => p.length > 0 && !/\s/.test(p) },
 ];
 
 function PasswordStrength({ password }) {
@@ -118,7 +119,7 @@ export default function SignUpModal({ onClose, onSwitchToLogin }) {
   const stepLabel = step === 1 ? "Step 1 Of 3" : step === 2 ? "Step 2 Of 3" : "Step 3 Of 3";
 
   return (
-    <div onClick={onClose} className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
       <div onClick={e => e.stopPropagation()} className="w-full max-w-xl bg-[#0B0F10] rounded-[32px] p-6 md:p-10 relative border border-white/10">
         <button onClick={onClose} className="absolute top-5 right-5 text-white text-2xl">✕</button>
 
@@ -133,7 +134,7 @@ export default function SignUpModal({ onClose, onSwitchToLogin }) {
             <input type="email" placeholder="Enter Email" value={email} onChange={e => setEmail(e.target.value)}
               className="w-full bg-transparent border border-white/20 rounded-xl px-4 py-3 text-white mb-4 outline-none focus:border-[#C7E36B]"/>
             <div className="flex gap-3 mb-6">
-              <div className="flex items-center gap-2 border border-white/20 rounded-xl px-4 py-3 text-white shrink-0">+91 <span className="text-xs">⌄</span></div>
+              <div className="flex items-center border border-white/20 rounded-xl px-4 py-3 text-white shrink-0">+91</div>
               <input type="text" placeholder="Enter Phone" value={phone} onChange={e => setPhone(e.target.value)}
                 className="flex-1 bg-transparent border border-white/20 rounded-xl px-4 py-3 text-white outline-none focus:border-[#C7E36B]"/>
             </div>
@@ -162,7 +163,7 @@ export default function SignUpModal({ onClose, onSwitchToLogin }) {
             <p onClick={handleResendOtp} className="text-center text-gray-400 text-sm cursor-pointer hover:text-white">
               Did not get the code? <span className="text-blue-400">Click to resend</span>
             </p>
-            <button onClick={() => { setStep(1); setOtp(""); setError(""); }} className="w-full mt-3 text-gray-400 text-sm underline">
+            <button onClick={() => { setStep(1); setOtp(""); setError(""); }} className="w-full mt-3 text-gray-400 text-sm underline cursor-pointer hover:text-white transition">
               Back
             </button>
           </>
@@ -207,7 +208,7 @@ export default function SignUpModal({ onClose, onSwitchToLogin }) {
             <button onClick={handleSignup} disabled={loading} className="w-full bg-[#C7E36B] text-black py-3 rounded-md font-semibold disabled:opacity-60">
               {loading ? "Creating Account..." : "+ CREATE ACCOUNT"}
             </button>
-            <button onClick={() => { setStep(2); setError(""); }} className="w-full mt-3 text-gray-400 text-sm underline">
+            <button onClick={() => { setStep(2); setError(""); }} className="w-full mt-3 text-gray-400 text-sm underline cursor-pointer hover:text-white transition">
               Back
             </button>
           </>
